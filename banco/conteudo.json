@@ -1,0 +1,2126 @@
+{
+  "produtos": [
+    {
+      "id": "PRD_01",
+      "nome": "Suco",
+      "precoCentavos": 750
+    },
+    {
+      "id": "PRD_02",
+      "nome": "Caderno",
+      "precoCentavos": 1375
+    },
+    {
+      "id": "PRD_03",
+      "nome": "Lápis",
+      "precoCentavos": 225
+    },
+    {
+      "id": "PRD_04",
+      "nome": "Sanduíche",
+      "precoCentavos": 950
+    },
+    {
+      "id": "PRD_05",
+      "nome": "Livro",
+      "precoCentavos": 1850
+    },
+    {
+      "id": "PRD_06",
+      "nome": "Fruta",
+      "precoCentavos": 350
+    },
+    {
+      "id": "PRD_07",
+      "nome": "Garrafa",
+      "precoCentavos": 1200
+    },
+    {
+      "id": "PRD_08",
+      "nome": "Borracha",
+      "precoCentavos": 275
+    },
+    {
+      "id": "PRD_09",
+      "nome": "Caneta",
+      "precoCentavos": 425
+    },
+    {
+      "id": "PRD_10",
+      "nome": "Régua",
+      "precoCentavos": 550
+    }
+  ],
+  "tabuadas": [
+    {
+      "id": "TAB_6_2",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "6 × 2",
+      "resposta": 12,
+      "alternativas": [
+        12,
+        10,
+        6,
+        14
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_6_3",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "6 × 3",
+      "resposta": 18,
+      "alternativas": [
+        18,
+        15,
+        12,
+        21
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_6_4",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "6 × 4",
+      "resposta": 24,
+      "alternativas": [
+        24,
+        20,
+        18,
+        28
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_6_5",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "6 × 5",
+      "resposta": 30,
+      "alternativas": [
+        30,
+        25,
+        24,
+        35
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_6_6",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "6 × 6",
+      "resposta": 36,
+      "alternativas": [
+        36,
+        30,
+        42,
+        37
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_6_7",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "6 × 7",
+      "resposta": 42,
+      "alternativas": [
+        42,
+        35,
+        36,
+        49
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_6_8",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "6 × 8",
+      "resposta": 48,
+      "alternativas": [
+        48,
+        40,
+        42,
+        56
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_6_9",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "6 × 9",
+      "resposta": 54,
+      "alternativas": [
+        54,
+        45,
+        48,
+        63
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_6_10",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "6 × 10",
+      "resposta": 60,
+      "alternativas": [
+        60,
+        50,
+        54,
+        70
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_7_2",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "7 × 2",
+      "resposta": 14,
+      "alternativas": [
+        14,
+        12,
+        7,
+        16
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_7_3",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "7 × 3",
+      "resposta": 21,
+      "alternativas": [
+        21,
+        18,
+        14,
+        24
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_7_4",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "7 × 4",
+      "resposta": 28,
+      "alternativas": [
+        28,
+        24,
+        21,
+        32
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_7_5",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "7 × 5",
+      "resposta": 35,
+      "alternativas": [
+        35,
+        30,
+        28,
+        40
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_7_6",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "7 × 6",
+      "resposta": 42,
+      "alternativas": [
+        42,
+        36,
+        35,
+        48
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_7_7",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "7 × 7",
+      "resposta": 49,
+      "alternativas": [
+        49,
+        42,
+        56,
+        50
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_7_8",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "7 × 8",
+      "resposta": 56,
+      "alternativas": [
+        56,
+        48,
+        49,
+        64
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_7_9",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "7 × 9",
+      "resposta": 63,
+      "alternativas": [
+        63,
+        54,
+        56,
+        72
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_7_10",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "7 × 10",
+      "resposta": 70,
+      "alternativas": [
+        70,
+        60,
+        63,
+        80
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_8_2",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "8 × 2",
+      "resposta": 16,
+      "alternativas": [
+        16,
+        14,
+        8,
+        18
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_8_3",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "8 × 3",
+      "resposta": 24,
+      "alternativas": [
+        24,
+        21,
+        16,
+        27
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_8_4",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "8 × 4",
+      "resposta": 32,
+      "alternativas": [
+        32,
+        28,
+        24,
+        36
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_8_5",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "8 × 5",
+      "resposta": 40,
+      "alternativas": [
+        40,
+        35,
+        32,
+        45
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_8_6",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "8 × 6",
+      "resposta": 48,
+      "alternativas": [
+        48,
+        42,
+        40,
+        54
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_8_7",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "8 × 7",
+      "resposta": 56,
+      "alternativas": [
+        56,
+        49,
+        48,
+        63
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_8_8",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "8 × 8",
+      "resposta": 64,
+      "alternativas": [
+        64,
+        56,
+        72,
+        65
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_8_9",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "8 × 9",
+      "resposta": 72,
+      "alternativas": [
+        72,
+        63,
+        64,
+        81
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_8_10",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "8 × 10",
+      "resposta": 80,
+      "alternativas": [
+        80,
+        70,
+        72,
+        90
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_9_2",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "9 × 2",
+      "resposta": 18,
+      "alternativas": [
+        18,
+        16,
+        9,
+        20
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_9_3",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "9 × 3",
+      "resposta": 27,
+      "alternativas": [
+        27,
+        24,
+        18,
+        30
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_9_4",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "9 × 4",
+      "resposta": 36,
+      "alternativas": [
+        36,
+        32,
+        27,
+        40
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_9_5",
+      "categoria": "tabuada",
+      "dificuldade": 1,
+      "pergunta": "9 × 5",
+      "resposta": 45,
+      "alternativas": [
+        45,
+        40,
+        36,
+        50
+      ],
+      "peso": 1
+    },
+    {
+      "id": "TAB_9_6",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "9 × 6",
+      "resposta": 54,
+      "alternativas": [
+        54,
+        48,
+        45,
+        60
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_9_7",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "9 × 7",
+      "resposta": 63,
+      "alternativas": [
+        63,
+        56,
+        54,
+        70
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_9_8",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "9 × 8",
+      "resposta": 72,
+      "alternativas": [
+        72,
+        64,
+        63,
+        80
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_9_9",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "9 × 9",
+      "resposta": 81,
+      "alternativas": [
+        81,
+        72,
+        90,
+        82
+      ],
+      "peso": 3
+    },
+    {
+      "id": "TAB_9_10",
+      "categoria": "tabuada",
+      "dificuldade": 2,
+      "pergunta": "9 × 10",
+      "resposta": 90,
+      "alternativas": [
+        90,
+        80,
+        81,
+        100
+      ],
+      "peso": 3
+    }
+  ],
+  "expressoes": [
+    {
+      "id": "EXP_001",
+      "categoria": "expressao",
+      "dificuldade": 1,
+      "pergunta": "2 + 2 × 2",
+      "resposta": 6,
+      "alternativas": [
+        6,
+        8,
+        4,
+        10
+      ]
+    },
+    {
+      "id": "EXP_002",
+      "categoria": "expressao",
+      "dificuldade": 1,
+      "pergunta": "3 × 5 + 7",
+      "resposta": 22,
+      "alternativas": [
+        22,
+        36,
+        29,
+        17
+      ]
+    },
+    {
+      "id": "EXP_003",
+      "categoria": "expressao",
+      "dificuldade": 1,
+      "pergunta": "4 + 8 × 6 + 2",
+      "resposta": 54,
+      "alternativas": [
+        54,
+        74,
+        60,
+        46
+      ]
+    },
+    {
+      "id": "EXP_004",
+      "categoria": "expressao",
+      "dificuldade": 1,
+      "pergunta": "5 × 4 - 5",
+      "resposta": 15,
+      "alternativas": [
+        15,
+        -5,
+        20,
+        11
+      ]
+    },
+    {
+      "id": "EXP_005",
+      "categoria": "expressao",
+      "dificuldade": 1,
+      "pergunta": "6 + 7 × 4",
+      "resposta": 34,
+      "alternativas": [
+        34,
+        52,
+        38,
+        27
+      ]
+    },
+    {
+      "id": "EXP_006",
+      "categoria": "expressao",
+      "dificuldade": 1,
+      "pergunta": "7 × 3 + 3",
+      "resposta": 24,
+      "alternativas": [
+        24,
+        42,
+        27,
+        21
+      ]
+    },
+    {
+      "id": "EXP_007",
+      "categoria": "expressao",
+      "dificuldade": 1,
+      "pergunta": "8 + 6 × 2 + 1",
+      "resposta": 21,
+      "alternativas": [
+        21,
+        29,
+        23,
+        15
+      ]
+    },
+    {
+      "id": "EXP_008",
+      "categoria": "expressao",
+      "dificuldade": 2,
+      "pergunta": "9 × 2 - 7",
+      "resposta": 11,
+      "alternativas": [
+        11,
+        -45,
+        18,
+        9
+      ]
+    },
+    {
+      "id": "EXP_009",
+      "categoria": "expressao",
+      "dificuldade": 2,
+      "pergunta": "2 + 5 × 6",
+      "resposta": 32,
+      "alternativas": [
+        32,
+        42,
+        38,
+        27
+      ]
+    },
+    {
+      "id": "EXP_010",
+      "categoria": "expressao",
+      "dificuldade": 2,
+      "pergunta": "3 × 8 + 5",
+      "resposta": 29,
+      "alternativas": [
+        29,
+        39,
+        34,
+        21
+      ]
+    },
+    {
+      "id": "EXP_011",
+      "categoria": "expressao",
+      "dificuldade": 2,
+      "pergunta": "4 + 4 × 4 + 0",
+      "resposta": 20,
+      "alternativas": [
+        20,
+        32,
+        24,
+        16
+      ]
+    },
+    {
+      "id": "EXP_012",
+      "categoria": "expressao",
+      "dificuldade": 2,
+      "pergunta": "5 × 7 - 3",
+      "resposta": 32,
+      "alternativas": [
+        32,
+        20,
+        35,
+        25
+      ]
+    },
+    {
+      "id": "EXP_013",
+      "categoria": "expressao",
+      "dificuldade": 2,
+      "pergunta": "6 + 3 × 2",
+      "resposta": 12,
+      "alternativas": [
+        12,
+        18,
+        14,
+        9
+      ]
+    },
+    {
+      "id": "EXP_014",
+      "categoria": "expressao",
+      "dificuldade": 2,
+      "pergunta": "7 × 6 + 7",
+      "resposta": 49,
+      "alternativas": [
+        49,
+        91,
+        56,
+        43
+      ]
+    },
+    {
+      "id": "EXP_015",
+      "categoria": "expressao",
+      "dificuldade": 3,
+      "pergunta": "8 + 2 × 6 + 4",
+      "resposta": 24,
+      "alternativas": [
+        24,
+        64,
+        30,
+        22
+      ]
+    },
+    {
+      "id": "EXP_016",
+      "categoria": "expressao",
+      "dificuldade": 3,
+      "pergunta": "9 × 5 - 5",
+      "resposta": 40,
+      "alternativas": [
+        40,
+        0,
+        45,
+        35
+      ]
+    },
+    {
+      "id": "EXP_017",
+      "categoria": "expressao",
+      "dificuldade": 3,
+      "pergunta": "2 + 8 × 4",
+      "resposta": 34,
+      "alternativas": [
+        34,
+        40,
+        38,
+        26
+      ]
+    },
+    {
+      "id": "EXP_018",
+      "categoria": "expressao",
+      "dificuldade": 3,
+      "pergunta": "3 × 4 + 3",
+      "resposta": 15,
+      "alternativas": [
+        15,
+        21,
+        18,
+        11
+      ]
+    },
+    {
+      "id": "EXP_019",
+      "categoria": "expressao",
+      "dificuldade": 3,
+      "pergunta": "4 + 7 × 2 + 3",
+      "resposta": 21,
+      "alternativas": [
+        21,
+        25,
+        23,
+        14
+      ]
+    },
+    {
+      "id": "EXP_020",
+      "categoria": "expressao",
+      "dificuldade": 3,
+      "pergunta": "5 × 3 - 7",
+      "resposta": 8,
+      "alternativas": [
+        8,
+        -20,
+        15,
+        5
+      ]
+    }
+  ],
+  "dinheiro": [
+    {
+      "id": "DIN_001",
+      "categoria": "dinheiro",
+      "dificuldade": 1,
+      "pergunta": "1 unidade(s) de suco custam R$ 7,50. O pagamento foi de R$ 10,00. Qual é o troco?",
+      "resposta": 250,
+      "alternativas": [
+        250,
+        350,
+        150,
+        750
+      ]
+    },
+    {
+      "id": "DIN_002",
+      "categoria": "dinheiro",
+      "dificuldade": 1,
+      "pergunta": "Caderno custa R$ 13,75. Quanto custam 2 unidades?",
+      "resposta": 2750,
+      "alternativas": [
+        2750,
+        1575,
+        1375,
+        2850
+      ]
+    },
+    {
+      "id": "DIN_003",
+      "categoria": "dinheiro",
+      "dificuldade": 1,
+      "pergunta": "3 unidade(s) de lápis custam R$ 6,75. O pagamento foi de R$ 10,00. Qual é o troco?",
+      "resposta": 325,
+      "alternativas": [
+        325,
+        425,
+        225,
+        675
+      ]
+    },
+    {
+      "id": "DIN_004",
+      "categoria": "dinheiro",
+      "dificuldade": 1,
+      "pergunta": "Sanduíche custa R$ 9,50. Quanto custam 1 unidades?",
+      "resposta": 950,
+      "alternativas": [
+        950,
+        1050,
+        0,
+        1000
+      ]
+    },
+    {
+      "id": "DIN_005",
+      "categoria": "dinheiro",
+      "dificuldade": 1,
+      "pergunta": "2 unidade(s) de livro custam R$ 37,00. O pagamento foi de R$ 40,00. Qual é o troco?",
+      "resposta": 300,
+      "alternativas": [
+        300,
+        400,
+        200,
+        3700
+      ]
+    },
+    {
+      "id": "DIN_006",
+      "categoria": "dinheiro",
+      "dificuldade": 1,
+      "pergunta": "Fruta custa R$ 3,50. Quanto custam 3 unidades?",
+      "resposta": 1050,
+      "alternativas": [
+        1050,
+        650,
+        700,
+        1150
+      ]
+    },
+    {
+      "id": "DIN_007",
+      "categoria": "dinheiro",
+      "dificuldade": 1,
+      "pergunta": "1 unidade(s) de garrafa custam R$ 12,00. O pagamento foi de R$ 15,00. Qual é o troco?",
+      "resposta": 300,
+      "alternativas": [
+        300,
+        400,
+        200,
+        1200
+      ]
+    },
+    {
+      "id": "DIN_008",
+      "categoria": "dinheiro",
+      "dificuldade": 2,
+      "pergunta": "Borracha custa R$ 2,75. Quanto custam 2 unidades?",
+      "resposta": 550,
+      "alternativas": [
+        550,
+        475,
+        275,
+        650
+      ]
+    },
+    {
+      "id": "DIN_009",
+      "categoria": "dinheiro",
+      "dificuldade": 2,
+      "pergunta": "3 unidade(s) de caneta custam R$ 12,75. O pagamento foi de R$ 15,00. Qual é o troco?",
+      "resposta": 225,
+      "alternativas": [
+        225,
+        325,
+        125,
+        1275
+      ]
+    },
+    {
+      "id": "DIN_010",
+      "categoria": "dinheiro",
+      "dificuldade": 2,
+      "pergunta": "Régua custa R$ 5,50. Quanto custam 1 unidades?",
+      "resposta": 550,
+      "alternativas": [
+        550,
+        650,
+        0,
+        600
+      ]
+    },
+    {
+      "id": "DIN_011",
+      "categoria": "dinheiro",
+      "dificuldade": 2,
+      "pergunta": "2 unidade(s) de suco custam R$ 15,00. O pagamento foi de R$ 15,00. Qual é o troco?",
+      "resposta": 0,
+      "alternativas": [
+        0,
+        100,
+        1500,
+        50
+      ]
+    },
+    {
+      "id": "DIN_012",
+      "categoria": "dinheiro",
+      "dificuldade": 2,
+      "pergunta": "Caderno custa R$ 13,75. Quanto custam 3 unidades?",
+      "resposta": 4125,
+      "alternativas": [
+        4125,
+        1675,
+        2750,
+        4225
+      ]
+    },
+    {
+      "id": "DIN_013",
+      "categoria": "dinheiro",
+      "dificuldade": 2,
+      "pergunta": "1 unidade(s) de lápis custam R$ 2,25. O pagamento foi de R$ 5,00. Qual é o troco?",
+      "resposta": 275,
+      "alternativas": [
+        275,
+        375,
+        175,
+        225
+      ]
+    },
+    {
+      "id": "DIN_014",
+      "categoria": "dinheiro",
+      "dificuldade": 2,
+      "pergunta": "Sanduíche custa R$ 9,50. Quanto custam 2 unidades?",
+      "resposta": 1900,
+      "alternativas": [
+        1900,
+        1150,
+        950,
+        2000
+      ]
+    },
+    {
+      "id": "DIN_015",
+      "categoria": "dinheiro",
+      "dificuldade": 3,
+      "pergunta": "3 unidade(s) de livro custam R$ 55,50. O pagamento foi de R$ 60,00. Qual é o troco?",
+      "resposta": 450,
+      "alternativas": [
+        450,
+        550,
+        350,
+        5550
+      ]
+    },
+    {
+      "id": "DIN_016",
+      "categoria": "dinheiro",
+      "dificuldade": 3,
+      "pergunta": "Fruta custa R$ 3,50. Quanto custam 1 unidades?",
+      "resposta": 350,
+      "alternativas": [
+        350,
+        450,
+        0,
+        400
+      ]
+    },
+    {
+      "id": "DIN_017",
+      "categoria": "dinheiro",
+      "dificuldade": 3,
+      "pergunta": "2 unidade(s) de garrafa custam R$ 24,00. O pagamento foi de R$ 25,00. Qual é o troco?",
+      "resposta": 100,
+      "alternativas": [
+        100,
+        200,
+        0,
+        2400
+      ]
+    },
+    {
+      "id": "DIN_018",
+      "categoria": "dinheiro",
+      "dificuldade": 3,
+      "pergunta": "Borracha custa R$ 2,75. Quanto custam 3 unidades?",
+      "resposta": 825,
+      "alternativas": [
+        825,
+        575,
+        550,
+        925
+      ]
+    },
+    {
+      "id": "DIN_019",
+      "categoria": "dinheiro",
+      "dificuldade": 3,
+      "pergunta": "1 unidade(s) de caneta custam R$ 4,25. O pagamento foi de R$ 5,00. Qual é o troco?",
+      "resposta": 75,
+      "alternativas": [
+        75,
+        175,
+        0,
+        425
+      ]
+    },
+    {
+      "id": "DIN_020",
+      "categoria": "dinheiro",
+      "dificuldade": 3,
+      "pergunta": "Régua custa R$ 5,50. Quanto custam 2 unidades?",
+      "resposta": 1100,
+      "alternativas": [
+        1100,
+        750,
+        550,
+        1200
+      ]
+    }
+  ],
+  "problemas": [
+    {
+      "id": "PROB_0001",
+      "categoria": "problema",
+      "contexto": "escola",
+      "dificuldade": 1,
+      "problema": "A biblioteca recebeu 6 livros pela manhã e 3 à tarde. Quantos recebeu ao todo?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "6 + 3",
+      "resposta": 9,
+      "alternativasExpressao": [
+        "6 + 3",
+        "6 − 3",
+        "6 × 4",
+        "6 × 5"
+      ],
+      "alternativas": [
+        9,
+        12,
+        6,
+        10
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0002",
+      "categoria": "problema",
+      "contexto": "esportes",
+      "dificuldade": 1,
+      "problema": "Um time tinha 19 pontos e perdeu 6 por uma penalidade. Com quantos ficou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "19 - 6",
+      "resposta": 13,
+      "alternativasExpressao": [
+        "19 - 6",
+        "19 + 6",
+        "19 × 7",
+        "19 × 8"
+      ],
+      "alternativas": [
+        13,
+        19,
+        7,
+        14
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0003",
+      "categoria": "problema",
+      "contexto": "grupos",
+      "dificuldade": 1,
+      "problema": "Há 8 equipes com 5 estudantes em cada uma. Quantos estudantes participam?",
+      "operacoes": [
+        "multiplicacao"
+      ],
+      "expressao": "8 × 5",
+      "resposta": 40,
+      "alternativasExpressao": [
+        "8 × 5",
+        "8 + 5",
+        "8 × 6",
+        "8 × 7"
+      ],
+      "alternativas": [
+        40,
+        45,
+        35,
+        41
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0004",
+      "categoria": "problema",
+      "contexto": "alimentos",
+      "dificuldade": 1,
+      "problema": "30 frutas foram divididas igualmente entre 5 mesas. Quantas ficaram em cada mesa?",
+      "operacoes": [
+        "divisao"
+      ],
+      "expressao": "30 ÷ 5",
+      "resposta": 6,
+      "alternativasExpressao": [
+        "30 ÷ 5",
+        "30 × 5",
+        "30 + 5",
+        "30 × 7"
+      ],
+      "alternativas": [
+        6,
+        11,
+        1,
+        7
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0005",
+      "categoria": "problema",
+      "contexto": "evento",
+      "dificuldade": 1,
+      "problema": "Foram arrumadas 7 filas com 2 cadeiras e depois chegaram mais 6. Quantas cadeiras há?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "7 × 2 + 6",
+      "resposta": 20,
+      "alternativasExpressao": [
+        "7 × 2 + 6",
+        "7 × 2 − 6",
+        "7 + 2 + 6",
+        "7 + 2"
+      ],
+      "alternativas": [
+        20,
+        22,
+        18,
+        21
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0006",
+      "categoria": "problema",
+      "contexto": "jogos",
+      "dificuldade": 1,
+      "problema": "Uma coleção tinha 25 cartas. 3 jogadores pegaram 4 cartas cada. Quantas restaram?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "25 - (3 × 4)",
+      "resposta": 13,
+      "alternativasExpressao": [
+        "25 - (3 × 4)",
+        "25 - (3 + 4)",
+        "25 + 3",
+        "25 × 5"
+      ],
+      "alternativas": [
+        13,
+        16,
+        10,
+        14
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0007",
+      "categoria": "problema",
+      "contexto": "transporte",
+      "dificuldade": 1,
+      "problema": "Um ônibus começou com 12 passageiros e recebeu mais 9 no ponto. Quantos seguem viagem?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "12 + 9",
+      "resposta": 21,
+      "alternativasExpressao": [
+        "12 + 9",
+        "12 − 9",
+        "12 × 10",
+        "12 × 11"
+      ],
+      "alternativas": [
+        21,
+        30,
+        12,
+        22
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0008",
+      "categoria": "problema",
+      "contexto": "cotidiano",
+      "dificuldade": 1,
+      "problema": "Lia tinha 25 figurinhas. Depois da troca ficou com 12. Quantas ela entregou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "25 - 12",
+      "resposta": 13,
+      "alternativasExpressao": [
+        "25 - 12",
+        "25 + 12",
+        "25 × 13",
+        "25 × 14"
+      ],
+      "alternativas": [
+        13,
+        25,
+        1,
+        14
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0009",
+      "categoria": "problema",
+      "contexto": "escola",
+      "dificuldade": 1,
+      "problema": "A biblioteca recebeu 14 livros pela manhã e 3 à tarde. Quantos recebeu ao todo?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "14 + 3",
+      "resposta": 17,
+      "alternativasExpressao": [
+        "14 + 3",
+        "14 − 3",
+        "14 × 4",
+        "14 × 5"
+      ],
+      "alternativas": [
+        17,
+        20,
+        14,
+        18
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0010",
+      "categoria": "problema",
+      "contexto": "esportes",
+      "dificuldade": 1,
+      "problema": "Um time tinha 27 pontos e perdeu 6 por uma penalidade. Com quantos ficou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "27 - 6",
+      "resposta": 21,
+      "alternativasExpressao": [
+        "27 - 6",
+        "27 + 6",
+        "27 × 7",
+        "27 × 8"
+      ],
+      "alternativas": [
+        21,
+        27,
+        15,
+        22
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0011",
+      "categoria": "problema",
+      "contexto": "grupos",
+      "dificuldade": 1,
+      "problema": "Há 16 equipes com 5 estudantes em cada uma. Quantos estudantes participam?",
+      "operacoes": [
+        "multiplicacao"
+      ],
+      "expressao": "16 × 5",
+      "resposta": 80,
+      "alternativasExpressao": [
+        "16 × 5",
+        "16 + 5",
+        "16 × 6",
+        "16 × 7"
+      ],
+      "alternativas": [
+        80,
+        85,
+        75,
+        81
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0012",
+      "categoria": "problema",
+      "contexto": "alimentos",
+      "dificuldade": 1,
+      "problema": "24 frutas foram divididas igualmente entre 3 mesas. Quantas ficaram em cada mesa?",
+      "operacoes": [
+        "divisao"
+      ],
+      "expressao": "24 ÷ 3",
+      "resposta": 8,
+      "alternativasExpressao": [
+        "24 ÷ 3",
+        "24 × 3",
+        "24 + 3",
+        "24 × 5"
+      ],
+      "alternativas": [
+        8,
+        11,
+        5,
+        9
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0013",
+      "categoria": "problema",
+      "contexto": "evento",
+      "dificuldade": 1,
+      "problema": "Foram arrumadas 5 filas com 2 cadeiras e depois chegaram mais 7. Quantas cadeiras há?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "5 × 2 + 7",
+      "resposta": 17,
+      "alternativasExpressao": [
+        "5 × 2 + 7",
+        "5 × 2 − 7",
+        "5 + 2 + 7",
+        "5 + 2"
+      ],
+      "alternativas": [
+        17,
+        19,
+        15,
+        18
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0014",
+      "categoria": "problema",
+      "contexto": "jogos",
+      "dificuldade": 1,
+      "problema": "Uma coleção tinha 26 cartas. 3 jogadores pegaram 4 cartas cada. Quantas restaram?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "26 - (3 × 4)",
+      "resposta": 14,
+      "alternativasExpressao": [
+        "26 - (3 × 4)",
+        "26 - (3 + 4)",
+        "26 + 3",
+        "26 × 5"
+      ],
+      "alternativas": [
+        14,
+        17,
+        11,
+        15
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0015",
+      "categoria": "problema",
+      "contexto": "transporte",
+      "dificuldade": 2,
+      "problema": "Um ônibus começou com 20 passageiros e recebeu mais 9 no ponto. Quantos seguem viagem?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "20 + 9",
+      "resposta": 29,
+      "alternativasExpressao": [
+        "20 + 9",
+        "20 − 9",
+        "20 × 10",
+        "20 × 11"
+      ],
+      "alternativas": [
+        29,
+        38,
+        20,
+        30
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0016",
+      "categoria": "problema",
+      "contexto": "cotidiano",
+      "dificuldade": 2,
+      "problema": "Lia tinha 20 figurinhas. Depois da troca ficou com 12. Quantas ela entregou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "20 - 12",
+      "resposta": 8,
+      "alternativasExpressao": [
+        "20 - 12",
+        "20 + 12",
+        "20 × 13",
+        "20 × 14"
+      ],
+      "alternativas": [
+        8,
+        20,
+        0,
+        9
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0017",
+      "categoria": "problema",
+      "contexto": "escola",
+      "dificuldade": 2,
+      "problema": "A biblioteca recebeu 7 livros pela manhã e 3 à tarde. Quantos recebeu ao todo?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "7 + 3",
+      "resposta": 10,
+      "alternativasExpressao": [
+        "7 + 3",
+        "7 − 3",
+        "7 × 4",
+        "7 × 5"
+      ],
+      "alternativas": [
+        10,
+        13,
+        7,
+        11
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0018",
+      "categoria": "problema",
+      "contexto": "esportes",
+      "dificuldade": 2,
+      "problema": "Um time tinha 22 pontos e perdeu 6 por uma penalidade. Com quantos ficou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "22 - 6",
+      "resposta": 16,
+      "alternativasExpressao": [
+        "22 - 6",
+        "22 + 6",
+        "22 × 7",
+        "22 × 8"
+      ],
+      "alternativas": [
+        16,
+        22,
+        10,
+        17
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0019",
+      "categoria": "problema",
+      "contexto": "grupos",
+      "dificuldade": 2,
+      "problema": "Há 9 equipes com 5 estudantes em cada uma. Quantos estudantes participam?",
+      "operacoes": [
+        "multiplicacao"
+      ],
+      "expressao": "9 × 5",
+      "resposta": 45,
+      "alternativasExpressao": [
+        "9 × 5",
+        "9 + 5",
+        "9 × 6",
+        "9 × 7"
+      ],
+      "alternativas": [
+        45,
+        50,
+        40,
+        46
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0020",
+      "categoria": "problema",
+      "contexto": "alimentos",
+      "dificuldade": 2,
+      "problema": "24 frutas foram divididas igualmente entre 6 mesas. Quantas ficaram em cada mesa?",
+      "operacoes": [
+        "divisao"
+      ],
+      "expressao": "24 ÷ 6",
+      "resposta": 4,
+      "alternativasExpressao": [
+        "24 ÷ 6",
+        "24 × 6",
+        "24 + 6",
+        "24 × 8"
+      ],
+      "alternativas": [
+        4,
+        10,
+        0,
+        5
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0021",
+      "categoria": "problema",
+      "contexto": "evento",
+      "dificuldade": 2,
+      "problema": "Foram arrumadas 3 filas com 2 cadeiras e depois chegaram mais 8. Quantas cadeiras há?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "3 × 2 + 8",
+      "resposta": 14,
+      "alternativasExpressao": [
+        "3 × 2 + 8",
+        "3 × 2 − 8",
+        "3 + 2 + 8",
+        "3 + 2"
+      ],
+      "alternativas": [
+        14,
+        16,
+        12,
+        15
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0022",
+      "categoria": "problema",
+      "contexto": "jogos",
+      "dificuldade": 2,
+      "problema": "Uma coleção tinha 20 cartas. 3 jogadores pegaram 4 cartas cada. Quantas restaram?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "20 - (3 × 4)",
+      "resposta": 8,
+      "alternativasExpressao": [
+        "20 - (3 × 4)",
+        "20 - (3 + 4)",
+        "20 + 3",
+        "20 × 5"
+      ],
+      "alternativas": [
+        8,
+        11,
+        5,
+        9
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0023",
+      "categoria": "problema",
+      "contexto": "transporte",
+      "dificuldade": 2,
+      "problema": "Um ônibus começou com 13 passageiros e recebeu mais 9 no ponto. Quantos seguem viagem?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "13 + 9",
+      "resposta": 22,
+      "alternativasExpressao": [
+        "13 + 9",
+        "13 − 9",
+        "13 × 10",
+        "13 × 11"
+      ],
+      "alternativas": [
+        22,
+        31,
+        13,
+        23
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0024",
+      "categoria": "problema",
+      "contexto": "cotidiano",
+      "dificuldade": 2,
+      "problema": "Lia tinha 28 figurinhas. Depois da troca ficou com 12. Quantas ela entregou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "28 - 12",
+      "resposta": 16,
+      "alternativasExpressao": [
+        "28 - 12",
+        "28 + 12",
+        "28 × 13",
+        "28 × 14"
+      ],
+      "alternativas": [
+        16,
+        28,
+        4,
+        17
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0025",
+      "categoria": "problema",
+      "contexto": "escola",
+      "dificuldade": 2,
+      "problema": "A biblioteca recebeu 15 livros pela manhã e 3 à tarde. Quantos recebeu ao todo?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "15 + 3",
+      "resposta": 18,
+      "alternativasExpressao": [
+        "15 + 3",
+        "15 − 3",
+        "15 × 4",
+        "15 × 5"
+      ],
+      "alternativas": [
+        18,
+        21,
+        15,
+        19
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0026",
+      "categoria": "problema",
+      "contexto": "esportes",
+      "dificuldade": 2,
+      "problema": "Um time tinha 30 pontos e perdeu 6 por uma penalidade. Com quantos ficou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "30 - 6",
+      "resposta": 24,
+      "alternativasExpressao": [
+        "30 - 6",
+        "30 + 6",
+        "30 × 7",
+        "30 × 8"
+      ],
+      "alternativas": [
+        24,
+        30,
+        18,
+        25
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0027",
+      "categoria": "problema",
+      "contexto": "grupos",
+      "dificuldade": 2,
+      "problema": "Há 17 equipes com 5 estudantes em cada uma. Quantos estudantes participam?",
+      "operacoes": [
+        "multiplicacao"
+      ],
+      "expressao": "17 × 5",
+      "resposta": 85,
+      "alternativasExpressao": [
+        "17 × 5",
+        "17 + 5",
+        "17 × 6",
+        "17 × 7"
+      ],
+      "alternativas": [
+        85,
+        90,
+        80,
+        86
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0028",
+      "categoria": "problema",
+      "contexto": "alimentos",
+      "dificuldade": 2,
+      "problema": "24 frutas foram divididas igualmente entre 4 mesas. Quantas ficaram em cada mesa?",
+      "operacoes": [
+        "divisao"
+      ],
+      "expressao": "24 ÷ 4",
+      "resposta": 6,
+      "alternativasExpressao": [
+        "24 ÷ 4",
+        "24 × 4",
+        "24 + 4",
+        "24 × 6"
+      ],
+      "alternativas": [
+        6,
+        10,
+        2,
+        7
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0029",
+      "categoria": "problema",
+      "contexto": "evento",
+      "dificuldade": 3,
+      "problema": "Foram arrumadas 6 filas com 2 cadeiras e depois chegaram mais 2. Quantas cadeiras há?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "6 × 2 + 2",
+      "resposta": 14,
+      "alternativasExpressao": [
+        "6 × 2 + 2",
+        "6 × 2 − 2",
+        "6 + 2 + 2",
+        "6 + 2"
+      ],
+      "alternativas": [
+        14,
+        16,
+        12,
+        15
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0030",
+      "categoria": "problema",
+      "contexto": "jogos",
+      "dificuldade": 3,
+      "problema": "Uma coleção tinha 21 cartas. 3 jogadores pegaram 4 cartas cada. Quantas restaram?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "21 - (3 × 4)",
+      "resposta": 9,
+      "alternativasExpressao": [
+        "21 - (3 × 4)",
+        "21 - (3 + 4)",
+        "21 + 3",
+        "21 × 5"
+      ],
+      "alternativas": [
+        9,
+        12,
+        6,
+        10
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0031",
+      "categoria": "problema",
+      "contexto": "transporte",
+      "dificuldade": 3,
+      "problema": "Um ônibus começou com 6 passageiros e recebeu mais 9 no ponto. Quantos seguem viagem?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "6 + 9",
+      "resposta": 15,
+      "alternativasExpressao": [
+        "6 + 9",
+        "6 − 9",
+        "6 × 10",
+        "6 × 11"
+      ],
+      "alternativas": [
+        15,
+        24,
+        6,
+        16
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0032",
+      "categoria": "problema",
+      "contexto": "cotidiano",
+      "dificuldade": 3,
+      "problema": "Lia tinha 23 figurinhas. Depois da troca ficou com 12. Quantas ela entregou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "23 - 12",
+      "resposta": 11,
+      "alternativasExpressao": [
+        "23 - 12",
+        "23 + 12",
+        "23 × 13",
+        "23 × 14"
+      ],
+      "alternativas": [
+        11,
+        23,
+        0,
+        12
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0033",
+      "categoria": "problema",
+      "contexto": "escola",
+      "dificuldade": 3,
+      "problema": "A biblioteca recebeu 8 livros pela manhã e 3 à tarde. Quantos recebeu ao todo?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "8 + 3",
+      "resposta": 11,
+      "alternativasExpressao": [
+        "8 + 3",
+        "8 − 3",
+        "8 × 4",
+        "8 × 5"
+      ],
+      "alternativas": [
+        11,
+        14,
+        8,
+        12
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0034",
+      "categoria": "problema",
+      "contexto": "esportes",
+      "dificuldade": 3,
+      "problema": "Um time tinha 25 pontos e perdeu 6 por uma penalidade. Com quantos ficou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "25 - 6",
+      "resposta": 19,
+      "alternativasExpressao": [
+        "25 - 6",
+        "25 + 6",
+        "25 × 7",
+        "25 × 8"
+      ],
+      "alternativas": [
+        19,
+        25,
+        13,
+        20
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0035",
+      "categoria": "problema",
+      "contexto": "grupos",
+      "dificuldade": 3,
+      "problema": "Há 10 equipes com 5 estudantes em cada uma. Quantos estudantes participam?",
+      "operacoes": [
+        "multiplicacao"
+      ],
+      "expressao": "10 × 5",
+      "resposta": 50,
+      "alternativasExpressao": [
+        "10 × 5",
+        "10 + 5",
+        "10 × 6",
+        "10 × 7"
+      ],
+      "alternativas": [
+        50,
+        55,
+        45,
+        51
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0036",
+      "categoria": "problema",
+      "contexto": "alimentos",
+      "dificuldade": 3,
+      "problema": "16 frutas foram divididas igualmente entre 2 mesas. Quantas ficaram em cada mesa?",
+      "operacoes": [
+        "divisao"
+      ],
+      "expressao": "16 ÷ 2",
+      "resposta": 8,
+      "alternativasExpressao": [
+        "16 ÷ 2",
+        "16 × 2",
+        "16 + 2",
+        "16 × 4"
+      ],
+      "alternativas": [
+        8,
+        10,
+        6,
+        9
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0037",
+      "categoria": "problema",
+      "contexto": "evento",
+      "dificuldade": 3,
+      "problema": "Foram arrumadas 4 filas com 2 cadeiras e depois chegaram mais 3. Quantas cadeiras há?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "4 × 2 + 3",
+      "resposta": 11,
+      "alternativasExpressao": [
+        "4 × 2 + 3",
+        "4 × 2 − 3",
+        "4 + 2 + 3",
+        "4 + 2"
+      ],
+      "alternativas": [
+        11,
+        13,
+        9,
+        12
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0038",
+      "categoria": "problema",
+      "contexto": "jogos",
+      "dificuldade": 3,
+      "problema": "Uma coleção tinha 22 cartas. 3 jogadores pegaram 4 cartas cada. Quantas restaram?",
+      "operacoes": [
+        "duas_operacoes"
+      ],
+      "expressao": "22 - (3 × 4)",
+      "resposta": 10,
+      "alternativasExpressao": [
+        "22 - (3 × 4)",
+        "22 - (3 + 4)",
+        "22 + 3",
+        "22 × 5"
+      ],
+      "alternativas": [
+        10,
+        13,
+        7,
+        11
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0039",
+      "categoria": "problema",
+      "contexto": "transporte",
+      "dificuldade": 3,
+      "problema": "Um ônibus começou com 14 passageiros e recebeu mais 9 no ponto. Quantos seguem viagem?",
+      "operacoes": [
+        "adicao"
+      ],
+      "expressao": "14 + 9",
+      "resposta": 23,
+      "alternativasExpressao": [
+        "14 + 9",
+        "14 − 9",
+        "14 × 10",
+        "14 × 11"
+      ],
+      "alternativas": [
+        23,
+        32,
+        14,
+        24
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    },
+    {
+      "id": "PROB_0040",
+      "categoria": "problema",
+      "contexto": "cotidiano",
+      "dificuldade": 3,
+      "problema": "Lia tinha 18 figurinhas. Depois da troca ficou com 12. Quantas ela entregou?",
+      "operacoes": [
+        "subtracao"
+      ],
+      "expressao": "18 - 12",
+      "resposta": 6,
+      "alternativasExpressao": [
+        "18 - 12",
+        "18 + 12",
+        "18 × 13",
+        "18 × 14"
+      ],
+      "alternativas": [
+        6,
+        18,
+        0,
+        7
+      ],
+      "pontosInterpretacao": 150,
+      "pontosCalculo": 50
+    }
+  ]
+}
