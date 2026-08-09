@@ -2,17 +2,27 @@
 
 Um platformer educacional 2D para o 6º ano: o estudante corre, pula, coleta moedas e encontra estações de raciocínio. A ação pausa nas perguntas para que leitura e cálculo não disputem atenção.
 
-## Executar (sem internet)
+## Instalação recomendada em 15 computadores
 
-O jogo não faz nenhuma requisição externa. Como navegadores bloqueiam a leitura de JSON em páginas abertas por `file://`, use o servidor local incluído:
+O professor **não precisa abrir um servidor em cada computador**. O banco JSON também é empacotado como um script local, portanto a versão atual funciona diretamente por `file://`.
 
-1. Instale Python 3 (normalmente já presente em Linux e pode ser instalado uma vez no Windows).
-2. Copie **a pasta inteira**, preservando a estrutura.
-3. Abra um terminal nessa pasta e execute `python iniciar.py` (no Windows, `py iniciar.py` também funciona).
-4. Abra `http://127.0.0.1:8000` se o navegador não abrir sozinho.
-5. Para encerrar, feche a janela do terminal ou pressione `Ctrl+C`.
+### Opção 1 — instalador Windows (recomendada)
 
-Não é necessário instalar pacotes Python nem acessar a internet. Chrome, Edge e outros navegadores Chromium são recomendados. Um servidor alternativo, para quem já usa Node, é `npx serve` — mas este pode tentar baixar dependências, por isso o inicializador Python é preferível.
+1. Em apenas um computador de preparação, instale o [Inno Setup 6](https://jrsoftware.org/isinfo.php). Essa ferramenta é necessária somente para **criar** o instalador, nunca nos computadores dos estudantes.
+2. Dê duplo clique em `criar-instalador.cmd`.
+3. O arquivo pronto será criado em `installer\Output\Instalar-Aventura-Matematica.exe`.
+4. Copie somente esse `.exe` para um pendrive.
+5. Em cada computador escolar, dê duplo clique no instalador, avance pelas telas e conclua. Ele instala no perfil do estudante sem solicitar senha de administrador, cria atalhos no Menu Iniciar e na Área de Trabalho e pode abrir o jogo ao final.
+
+Assim, nos 15 computadores a rotina é apenas **executar → avançar → concluir**. O instalador contém HTML, CSS, JavaScript, banco e runtime; não baixa nada da internet. Edge é aberto em modo aplicativo, sem barra de endereços. Se Edge não existir, o navegador padrão será usado.
+
+### Opção 2 — versão portátil, sem instalação
+
+Copie a pasta inteira para o computador ou pendrive e dê duplo clique em `Abrir Jogo.cmd`. Também é possível abrir `index.html` diretamente. Não é necessário Python nem servidor local para jogar.
+
+### Servidor local opcional
+
+`python iniciar.py` continua disponível apenas para desenvolvimento. Ele não é necessário no laboratório. Ao usá-lo, abra `http://127.0.0.1:8000`. Não instala pacotes nem acessa a internet.
 
 ## Controles
 
@@ -39,7 +49,7 @@ A semente do cenário e a semente derivada das questões são independentes. Por
 
 ## Alterar conteúdo
 
-Edite `banco/conteudo.json` com um editor de texto. JSON exige aspas duplas, vírgula entre itens e nenhuma vírgula depois do último item.
+Edite `banco/conteudo.json` com um editor de texto. JSON exige aspas duplas, vírgula entre itens e nenhuma vírgula depois do último item. Depois execute `python tools/gerar-banco-js.py`; isso atualiza `banco/conteudo.js`, a cópia automática usada para permitir duplo clique sem servidor. Nunca edite essa cópia manualmente.
 
 ### Alterar ou adicionar questão
 
@@ -67,7 +77,7 @@ Execute `node tests/validar.js`. O teste confere determinismo, mínimos do banco
 
 ## Cópia para a escola e dados locais
 
-Copie todo o diretório por pendrive ou rede local. Faça um teste com Wi-Fi desligado. O recorde fica no perfil do navegador (`LocalStorage`) e não acompanha a pasta ao ser copiada. Não use janela anônima e não limpe “dados do site” se quiser conservar recordes. A seed permite repetir o mesmo conteúdo em outra máquina; digite-a em **Desafio da Turma**.
+Prefira copiar o instalador único gerado pelo Inno Setup; alternativamente, copie todo o diretório por pendrive ou rede local. Faça um teste com Wi-Fi desligado. O recorde fica no perfil do navegador (`LocalStorage`) e não acompanha a pasta ao ser copiada. Não use janela anônima e não limpe “dados do site” se quiser conservar recordes. A seed permite repetir o mesmo conteúdo em outra máquina; digite-a em **Desafio da Turma**.
 
 ## Escopo do MVP
 
