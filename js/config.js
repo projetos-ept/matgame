@@ -13,7 +13,8 @@ MatGame.CONFIG = Object.freeze({
     intervaloDesafioChunks: 3,
     moedasPorChunk: 5,
     dificuldadeACada: 5,
-    dificuldadeTempoSegundos: 55
+    dificuldadeTempoSegundos: 55,
+    retornoMaximo: 0.5
   },
   tempo: {
     inicial: 80,
@@ -35,7 +36,9 @@ MatGame.CONFIG = Object.freeze({
     giganteMaximo: 85,
     colisaoGigante: 12,
     projetil: 2,
-    projetilIntervalo: 2.4,
+    projetilIntervaloInicial: 3.6,
+    projetilIntervaloMinimo: 1.3,
+    projetilReducaoCadaMetros: 150,
     camufladoDistancia: 180,
     perguntaBonusMaximo: 18,
     respostaMuitoRapidaAte: 6,

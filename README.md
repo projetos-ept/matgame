@@ -116,3 +116,9 @@ Professores podem abrir **Configurações → Editor de questões** ou acessar `
 O gigante deixou de usar emoji e agora é um sprite original desenhado em Canvas, com corpo, rosto, coroa de espinhos, pernas animadas e aviso de salto. Sua próxima aparição é determinada pela seed em um intervalo variável de 45 a 85 segundos, evitando uma cadência previsível.
 
 Em plataformas elevadas podem surgir atiradores. Quando o estudante se aproxima, eles lançam projéteis luminosos com trajetória levemente curva; cada acerto remove 2 segundos e concede uma curta invulnerabilidade. Em pisos largos também podem existir inimigos camuflados como arbustos. Eles se revelam quando o jogador chega a 180 pixels, executam um salto alto e depois voltam a se esconder. A estrela de poder protege contra projéteis, camuflados e o gigante.
+
+## Retorno, atiradores e ambientação matemática
+
+O estudante pode caminhar para trás, mas nunca além de 50% da maior distância já alcançada na tentativa. Isso permite recuperar itens e corrigir um salto sem incentivar longos retornos por chunks já concluídos.
+
+Atiradores agora podem ser derrotados com um salto sobre a cabeça, usando a mesma leitura visual das bolinhas: o personagem rebate para cima, recebe 5 segundos e o inimigo mostra uma expressão de surpresa antes de desaparecer. Os disparos começam espaçados em 3,6 segundos e aceleram 0,35 segundo a cada 150 metros, respeitando o limite mínimo de 1,3 segundo. O fundo exibe `+`, `−`, `×` e `÷` em transparência e com parallax suave, preservando a legibilidade do cenário enquanto reforça o tema matemático.

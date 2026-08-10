@@ -134,7 +134,8 @@ MatGame.GameScene = class {
 
     const yAnterior = jogador.y;
     jogador.vy += config.gravidade * delta;
-    jogador.x = Math.max(0, jogador.x + jogador.vx * delta);
+    const limiteRetorno = Math.max(0, (this.app.distancia * 10) * config.mundo.retornoMaximo);
+    jogador.x = Math.max(limiteRetorno, jogador.x + jogador.vx * delta);
     jogador.y += jogador.vy * delta;
     jogador.noChao = false;
     for (const plataforma of this.plataformas) {
@@ -222,11 +223,33 @@ MatGame.GameScene = class {
     }
 
     for (const atirador of this.atiradores) {
+      if (atirador.derrotado) {
+        atirador.y -= 45 * delta;
+        if (agora >= atirador.derrotadoAte) atirador.invisivel = true;
+        continue;
+      }
+      if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: atirador.x - 19, y: atirador.y, w: atirador.w, h: atirador.h })) {
+        const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= atirador.y + 14;
+        if (pisouPorCima) {
+          atirador.derrotado = true;
+          atirador.derrotadoAte = agora + 800;
+          jogador.vy = -430;
+          this.app.adicionarTempo(config.tempo.pisarBicho);
+          this.app.placar.adicionar(config.pontos.especial);
+          continue;
+        }
+        jogador.danoAte = agora + 450;
+        jogador.invulneravelAte = agora + 1000;
+        jogador.vy = -350;
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
+      }
       const distanciaX = jogador.x - atirador.x;
       if (Math.abs(distanciaX) < 620 && this.app.tempoDecorrido >= atirador.proximoTiro) {
         const direcao = Math.sign(distanciaX) || 1;
         this.projeteis.push({ x: atirador.x + direcao * 22, y: atirador.y + 15, vx: direcao * 245, vy: -35, ativa: true });
-        atirador.proximoTiro = this.app.tempoDecorrido + config.tempo.projetilIntervalo;
+        const etapas = Math.floor(this.app.distancia / config.tempo.projetilReducaoCadaMetros);
+        const intervalo = Math.max(config.tempo.projetilIntervaloMinimo, config.tempo.projetilIntervaloInicial - etapas * 0.35);
+        atirador.proximoTiro = this.app.tempoDecorrido + intervalo;
       }
     }
     for (const projetil of this.projeteis) {
@@ -437,6 +460,18 @@ MatGame.GameScene = class {
       ctx.fill();
     }
 
+    const simbolos = ['+', '−', '×', '÷'];
+    ctx.save();
+    ctx.globalAlpha = nivelVisual === 3 ? 0.14 : 0.1;
+    ctx.fillStyle = nivelVisual === 3 ? '#d8f3ff' : '#174d6f';
+    ctx.font = 'bold 72px sans-serif';
+    for (let i = 0; i < 12; i += 1) {
+      const sx = ((i * 173 - camera * 0.08) % (largura + 180) + largura + 180) % (largura + 180) - 90;
+      const sy = 90 + (i % 4) * 105;
+      ctx.fillText(simbolos[i % simbolos.length], sx, sy);
+    }
+    ctx.restore();
+
     ctx.fillStyle = '#184b55';
     ctx.beginPath();
     ctx.moveTo(0, 620);
@@ -492,11 +527,13 @@ MatGame.GameScene = class {
       }
     }
     for (const atirador of this.atiradores) {
+      if (atirador.invisivel) continue;
       ctx.fillStyle = '#5b3a86';
       ctx.beginPath(); ctx.roundRect(atirador.x - camera - 19, atirador.y, 38, 42, 10); ctx.fill();
       ctx.fillStyle = '#d8f3ff'; ctx.fillRect(atirador.x - camera - 13, atirador.y + 9, 8, 8); ctx.fillRect(atirador.x - camera + 5, atirador.y + 9, 8, 8);
       ctx.fillStyle = '#102a43'; ctx.fillRect(atirador.x - camera - 10, atirador.y + 12, 4, 4); ctx.fillRect(atirador.x - camera + 6, atirador.y + 12, 4, 4);
       ctx.fillStyle = '#ffd166'; ctx.fillRect(atirador.x - camera + 16, atirador.y + 20, 20, 7);
+      if (atirador.derrotado) { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(atirador.x - camera, atirador.y + 30, 7, 0, Math.PI * 2); ctx.fill(); }
     }
     for (const projetil of this.projeteis) if (projetil.ativa) {
       ctx.fillStyle = '#ff4d9d'; ctx.shadowColor = '#ff4d9d'; ctx.shadowBlur = 12;
