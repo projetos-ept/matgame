@@ -9,7 +9,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     cena: null,
 
     parar() {
-      document.querySelector('#app').classList.remove('urgencia');
+      document.querySelector('#app').classList.remove('alerta-tempo', 'urgencia');
+      const avisoTempo = document.querySelector('#time-warning');
+      avisoTempo.classList.add('hidden');
+      avisoTempo.textContent = '';
       if (this.cena) this.cena.destruir();
       this.cena = null;
       this.hud.classList.add('hidden');

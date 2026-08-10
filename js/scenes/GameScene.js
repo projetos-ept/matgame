@@ -171,7 +171,17 @@ MatGame.GameScene = class {
     this.app.tempoRestante -= delta;
     this.app.tempoDecorrido += delta;
     this.app.gerador.tempoDecorrido = this.app.tempoDecorrido;
-    document.querySelector('#app').classList.toggle('urgencia', this.app.tempoRestante <= config.tempo.urgenciaAbaixo);
+    const raiz = document.querySelector('#app');
+    const avisoTempo = document.querySelector('#time-warning');
+    const emUrgencia = this.app.tempoRestante <= config.tempo.urgenciaAbaixo;
+    const emAlerta = this.app.tempoRestante <= config.tempo.alertaAbaixo && !emUrgencia;
+    raiz.classList.toggle('alerta-tempo', emAlerta);
+    raiz.classList.toggle('urgencia', emUrgencia);
+    avisoTempo.classList.toggle('hidden', !emAlerta && !emUrgencia);
+    avisoTempo.classList.toggle('critical', emUrgencia);
+    avisoTempo.innerHTML = emUrgencia
+      ? '⚠️ ÚLTIMOS 10s — CORRA PARA PEGAR TEMPO! ➜'
+      : emAlerta ? '⏱️ FALTAM 20s — AVANCE E COLETE BÔNUS! ➜' : '';
 
     if (this.app.tempoRestante <= 0) {
       this.app.tempoRestante = 0;

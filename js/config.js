@@ -35,6 +35,7 @@ MatGame.CONFIG = Object.freeze({
   },
   tempo: {
     inicial: 80,
+    alertaAbaixo: 20,
     urgenciaAbaixo: 10,
     moeda: 1.5,
     estrela: 12,
