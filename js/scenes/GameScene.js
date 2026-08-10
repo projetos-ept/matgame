@@ -27,6 +27,7 @@ MatGame.GameScene = class {
     this.proximaFada = MatGame.CONFIG.tempo.fadaPrimeira;
     this.particulas = [];
     this.chefe = null;
+    this.projeteisChefe = [];
     this.proximoChefeMetros = MatGame.CONFIG.mundo.chefeCadaMetros;
     this.ultimoDesafioTempo = 0;
     this.proximoGigante = 0;
@@ -159,7 +160,7 @@ MatGame.GameScene = class {
     this.app.tempoRestante -= delta;
     this.app.tempoDecorrido += delta;
     this.app.gerador.tempoDecorrido = this.app.tempoDecorrido;
-    document.querySelector('#app').classList.toggle('urgencia', this.app.tempoRestante <= 20);
+    document.querySelector('#app').classList.toggle('urgencia', this.app.tempoRestante <= config.tempo.urgenciaAbaixo);
 
     if (this.app.tempoRestante <= 0) {
       this.app.tempoRestante = 0;
@@ -508,7 +509,8 @@ MatGame.GameScene = class {
     if (!this.chefe && this.app.distancia >= this.proximoChefeMetros) {
       const inicio = this.camera;
       this.plataformas.push({ x: inicio, y: 620, w: this.app.canvas.width + 180, h: 100 });
-      this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: 3, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0 };
+      const aparicao = Math.round(this.proximoChefeMetros / mundo.chefeCadaMetros);
+      this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: 3, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0, aparicao, paleta: (aparicao - 1) % 4, proximoTiro: this.app.tempoDecorrido + MatGame.CONFIG.tempo.projetilChefeInicial };
       this.fantasmas.forEach((item) => { item.ativa = false; });
       this.gigantes.forEach((item) => { item.ativa = false; });
       this.magos.forEach((item) => { item.ativa = false; });
@@ -520,6 +522,21 @@ MatGame.GameScene = class {
     this.jogador.x = Math.max(chefe.arenaInicio, Math.min(this.jogador.x, chefe.arenaFim - this.jogador.w));
     chefe.x += chefe.direcao * (72 + (3 - chefe.vida) * 18) * delta;
     if (chefe.x <= chefe.arenaInicio + 500 || chefe.x + chefe.w >= chefe.arenaFim) chefe.direcao *= -1;
+    if (this.proximoChefeMetros >= mundo.chefeAtiradorMetros && this.app.tempoDecorrido >= chefe.proximoTiro) {
+      const origemX = chefe.x + chefe.w / 2; const origemY = 520; const dx = this.jogador.x - origemX; const dy = this.jogador.y - origemY; const distancia = Math.max(1, Math.hypot(dx, dy));
+      this.projeteisChefe.push({ x: origemX, y: origemY, vx: dx / distancia * 210, vy: dy / distancia * 150, ativo: true, simbolo: ['+', '−', '×', '÷'][chefe.aparicao % 4] });
+      const reducao = Math.max(0, chefe.aparicao - 3) * 0.25;
+      chefe.proximoTiro = this.app.tempoDecorrido + Math.max(MatGame.CONFIG.tempo.projetilChefeMinimo, MatGame.CONFIG.tempo.projetilChefeInicial - reducao);
+    }
+    for (const projetil of this.projeteisChefe) {
+      if (!projetil.ativo) continue;
+      projetil.x += projetil.vx * delta; projetil.y += projetil.vy * delta;
+      if (projetil.x < chefe.arenaInicio || projetil.x > chefe.arenaFim || projetil.y < 0 || projetil.y > 700) projetil.ativo = false;
+      if (projetil.ativo && agora >= Math.max(this.jogador.invulneravelAte, this.jogador.poderAte) && this.toca(this.jogador, { x: projetil.x - 13, y: projetil.y - 13, w: 26, h: 26 })) {
+        projetil.ativo = false; this.jogador.danoAte = agora + 450; this.jogador.invulneravelAte = agora + 900;
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - MatGame.CONFIG.tempo.projetilChefe);
+      }
+    }
     const escala = 0.55 + chefe.vida * 0.15;
     const hitbox = { x: chefe.x + chefe.w * (1 - escala) / 2, y: 620 - chefe.h * escala, w: chefe.w * escala, h: chefe.h * escala };
     if (this.toca(this.jogador, hitbox)) {
@@ -527,7 +544,7 @@ MatGame.GameScene = class {
       if (pisou && agora >= chefe.invulneravelAte) {
         chefe.vida -= 1; chefe.invulneravelAte = agora + 900; this.jogador.vy = -480; this.criarExplosao(hitbox.x + hitbox.w / 2, hitbox.y);
         if (chefe.vida <= 0) {
-          chefe.ativo = false; this.app.adicionarTempo(MatGame.CONFIG.tempo.chefe); this.app.placar.adicionar(MatGame.CONFIG.pontos.checkpoint);
+          chefe.ativo = false; this.projeteisChefe.forEach((item) => { item.ativo = false; }); this.app.adicionarTempo(MatGame.CONFIG.tempo.chefe); this.app.placar.adicionar(MatGame.CONFIG.pontos.checkpoint);
           this.proximoChefeMetros += mundo.chefeCadaMetros; this.chefe = null;
         }
       } else if (agora >= Math.max(this.jogador.invulneravelAte, this.jogador.poderAte)) {
@@ -548,6 +565,7 @@ MatGame.GameScene = class {
     for (const gigante of this.gigantes) if (gigante.ativa && perto(gigante)) { gigante.ativa = false; this.criarExplosao(gigante.x, gigante.y); }
     for (const projetil of this.projeteis) projetil.ativa = false;
     for (const bumerangue of this.bumerangues) bumerangue.ativo = false;
+    for (const projetil of this.projeteisChefe) projetil.ativo = false;
   }
 
   encontroFada() {
@@ -797,16 +815,27 @@ MatGame.GameScene = class {
       ctx.font = 'bold 14px sans-serif';
       ctx.fillText('PROBLEMA!', fantasma.x - camera - 35, fantasma.y - 35);
     }
+    for (const projetil of this.projeteisChefe) if (projetil.ativo) {
+      ctx.fillStyle = '#ff9f1c'; ctx.shadowColor = '#ff9f1c'; ctx.shadowBlur = 18; ctx.beginPath(); ctx.arc(projetil.x - camera, projetil.y, 14, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.fillStyle = '#102a43'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(projetil.simbolo, projetil.x - camera, projetil.y + 7); ctx.textAlign = 'start';
+    }
     if (this.chefe?.ativo) {
       const chefe = this.chefe; const escala = 0.55 + chefe.vida * 0.15; const cx = chefe.x - camera + chefe.w / 2; const base = 620;
+      const paletasChefe = [
+        { corpo: '#315c42', rosto: '#5fbf72', espinho: '#264536' },
+        { corpo: '#295b7a', rosto: '#56a6c9', espinho: '#183b59' },
+        { corpo: '#7a3d58', rosto: '#cc6685', espinho: '#52233a' },
+        { corpo: '#67508f', rosto: '#9b82c4', espinho: '#3d2c61' }
+      ];
+      const cores = paletasChefe[chefe.paleta];
       ctx.save(); ctx.translate(cx, base); ctx.scale(escala, escala);
       const coresBarriga = ['#6ee7ff', '#ffd166', '#ef476f', '#9b5de5']; const corBarriga = coresBarriga[Math.floor(performance.now() / 220) % coresBarriga.length];
-      ctx.fillStyle = '#315c42'; ctx.beginPath(); ctx.ellipse(0, -58, 58, 65, 0, 0, 7); ctx.fill();
-      ctx.fillStyle = '#264536'; ctx.beginPath(); ctx.moveTo(-48, -78); ctx.lineTo(-68, -112); ctx.lineTo(-27, -92); ctx.lineTo(0, -125); ctx.lineTo(26, -92); ctx.lineTo(68, -112); ctx.lineTo(48, -76); ctx.fill();
-      ctx.fillStyle = '#5fbf72'; ctx.beginPath(); ctx.arc(0, -103, 39, 0, 7); ctx.fill();
+      ctx.fillStyle = cores.corpo; ctx.beginPath(); ctx.ellipse(0, -58, 58, 65, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = cores.espinho; ctx.beginPath(); ctx.moveTo(-48, -78); ctx.lineTo(-68, -112); ctx.lineTo(-27, -92); ctx.lineTo(0, -125); ctx.lineTo(26, -92); ctx.lineTo(68, -112); ctx.lineTo(48, -76); ctx.fill();
+      ctx.fillStyle = cores.rosto; ctx.beginPath(); ctx.arc(0, -103, 39, 0, 7); ctx.fill();
       ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-14, -108, 10, 0, 7); ctx.arc(15, -108, 10, 0, 7); ctx.fill(); ctx.fillStyle = '#102a43'; ctx.beginPath(); ctx.arc(-12, -106, 5, 0, 7); ctx.arc(13, -106, 5, 0, 7); ctx.fill();
       ctx.fillStyle = corBarriga; ctx.beginPath(); ctx.ellipse(0, -50, 34, 41, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#102a43'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('?', 0, -35);
-      ctx.fillStyle = '#315c42'; ctx.fillRect(-47, -22, 28, 24); ctx.fillRect(19, -22, 28, 24); ctx.restore(); ctx.textAlign = 'start';
+      ctx.fillStyle = cores.corpo; ctx.fillRect(-47, -22, 28, 24); ctx.fillRect(19, -22, 28, 24); ctx.restore(); ctx.textAlign = 'start';
       ctx.fillStyle = '#fff'; ctx.font = 'bold 17px sans-serif'; ctx.fillText(`GUARDIÃO DA INCÓGNITA  ${'❤'.repeat(chefe.vida)}`, cx - 125, base - chefe.h * escala - 22);
     }
     for (const gigante of this.gigantes) if (gigante.ativa) {

@@ -95,7 +95,7 @@ Antes de cada partida, o estudante informa o primeiro nome e escolhe entre Lia, 
 
 ## Novos elementos de tempo
 
-As bolinhas patrulham apenas pisos largos. Pular sobre uma delas concede 5 segundos; encostar lateralmente retira 3 segundos e ativa uma breve invulnerabilidade. Espinhos sempre aparecem em trios com largura total compatível com o salto. A partir do vigésimo segundo de corrida, um mago voador visita a tela a cada 45 segundos, permanece por 10 segundos e concede 30 segundos ao ser tocado. Quando restam 20 segundos, uma borda vermelha pulsante sinaliza urgência sem esconder o cenário ou as perguntas.
+As bolinhas patrulham apenas pisos largos. Pular sobre uma delas concede 5 segundos; encostar lateralmente retira 3 segundos e ativa uma breve invulnerabilidade. Espinhos sempre aparecem em trios com largura total compatível com o salto. A partir do vigésimo segundo de corrida, um mago voador visita a tela a cada 45 segundos, permanece por 10 segundos e concede 30 segundos ao ser tocado. Quando restam 10 segundos, uma borda vermelha pulsante sinaliza urgência sem esconder o cenário ou as perguntas.
 
 ## Quedas, poderes e progressão visual
 
@@ -152,3 +152,11 @@ A antiga forma da Sombra Veloz foi substituída pelo morcego `🦇`. Enquanto es
 Depois dos 3.000 metros, aranhas `🕷` descem e sobem em fios. A ponta inferior do fio acompanha a aranha, portanto o segmento encolhe visualmente durante a subida. É possível esperar a aranha subir e passar por baixo ou pular sobre ela quando estiver baixa. Aranhas também podem ser derrotadas e são afetadas pela estrela.
 
 Até 10.000 metros, o equilíbrio anterior é preservado. A partir daí existe um nível extremo adicional a cada 1.000 metros: pisos largos recebem mais bolinhas, frutas e bolinhas de tempo ficam mais raras, Congelantes aceleram e o ciclo vertical das aranhas fica progressivamente mais rápido. Os limites existentes de projéteis, colisões e invulnerabilidade continuam ativos para evitar punições em sequência.
+
+## Urgência e evolução dos chefes
+
+A borda de urgência agora começa somente quando restam 10 segundos. Ela continua piscando sem cobrir o cenário, e é removida imediatamente ao receber tempo suficiente ou encerrar a partida.
+
+Os dois primeiros Guardiões da Incógnita mantêm apenas patrulha e contato. A partir do chefe dos 3.000 metros, ele lança orbes matemáticos mirando a posição do estudante. O primeiro intervalo é deliberadamente lento, com 4,2 segundos entre disparos; nos chefes seguintes diminui 0,25 segundo por aparição até o limite seguro de 1,8 segundo. Cada orbe remove 4 segundos e respeita a invulnerabilidade da estrela.
+
+Cada aparição usa uma das quatro paletas predefinidas — floresta, oceano, rubi e ametista — repetidas em ciclo. Corpo, rosto e espinhos mudam juntos, enquanto a barriga continua alternando cores durante a batalha. A estrela remove os orbes ativos, mas não causa dano direto ao chefe.
