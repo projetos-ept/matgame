@@ -17,6 +17,10 @@ MatGame.GameScene = class {
     this.atiradores = [];
     this.projeteis = [];
     this.camuflados = [];
+    this.chifres = [];
+    this.monstrosAvancados = [];
+    this.fadas = [];
+    this.proximaFada = MatGame.CONFIG.tempo.fadaPrimeira;
     this.particulas = [];
     this.ultimoDesafioTempo = 0;
     this.proximoGigante = 0;
@@ -62,13 +66,19 @@ MatGame.GameScene = class {
       const chunk = this.app.gerador.proximo();
       const base = this.fimGerado;
       const nivel = this.app.gerador.dificuldadeMotora();
+      const metrosChunk = base / 10;
+      const mundo = MatGame.CONFIG.mundo;
+      const populacao = metrosChunk < mundo.monstrosInicioMetros ? 0 : metrosChunk < mundo.atiradoresInicioMetros ? 1 : metrosChunk < mundo.monstroMolaMetros ? 2 : 3;
+      let atiradorCriado = false;
+      let camufladoCriado = false;
+      let avancadoCriado = false;
 
       for (const plataforma of chunk.plataformas) {
         const item = { x: base + plataforma[0], y: plataforma[1], w: plataforma[2], h: plataforma[3] };
         this.plataformas.push(item);
         // Bichos surgem apenas em pisos largos e planos, nunca em saltos estreitos.
-        if (nivel >= 2 && item.y === 620 && item.w >= 210) {
-          const quantidade = nivel >= 3 ? Math.min(2, Math.max(1, Math.floor(item.w / 230))) : 1;
+        if (populacao >= 1 && item.y === 620 && item.w >= 210) {
+          const quantidade = populacao >= 3 ? Math.min(2, Math.max(1, Math.floor(item.w / 280))) : 1;
           for (let i = 0; i < quantidade; i += 1) {
             const inicio = item.x + 70 + i * Math.min(260, item.w / 2);
             this.bichos.push({
@@ -78,11 +88,21 @@ MatGame.GameScene = class {
             });
           }
         }
-        if (nivel >= 2 && item.w >= 160 && item.y <= 540) {
+        if (!atiradorCriado && populacao >= 2 && item.w >= 180 && item.y <= 540) {
           this.atiradores.push({ x: item.x + item.w / 2, y: item.y - 42, w: 38, h: 42, proximoTiro: this.app.tempoDecorrido + 1.5 });
+          atiradorCriado = true;
         }
-        if (nivel >= 2 && item.y === 620 && item.w >= 250) {
-          this.camuflados.push({ x: item.x + item.w * 0.68, y: 578, baseY: 578, w: 40, h: 42, vy: 0, revelado: false, cooldownAte: 0 });
+        if (!camufladoCriado && populacao >= 2 && item.y === 620 && item.w >= 280) {
+          this.camuflados.push({ x: item.x + item.w * 0.68, y: 578, baseY: 578, w: 40, h: 42, vy: 0, revelado: false, cooldownAte: 0, morto: false });
+          camufladoCriado = true;
+        }
+        if (!avancadoCriado && metrosChunk >= mundo.monstroMolaMetros && metrosChunk < mundo.monstroSombraMetros && item.y === 620 && item.w >= 300) {
+          this.monstrosAvancados.push({ tipo: 'mola', x: item.x + item.w * 0.45, y: 574, baseY: 574, w: 44, h: 46, vy: 0, proximoSalto: 0, morto: false });
+          avancadoCriado = true;
+        }
+        if (!avancadoCriado && metrosChunk >= mundo.monstroSombraMetros && item.y === 620 && item.w >= 320) {
+          this.monstrosAvancados.push({ tipo: 'sombra', x: item.x + item.w * 0.55, y: 576, baseY: 576, w: 46, h: 44, vx: 0, proximaInvestida: 0, morto: false });
+          avancadoCriado = true;
         }
       }
 
@@ -187,11 +207,7 @@ MatGame.GameScene = class {
       if (this.toca(jogador, { x: estrela.x - 24, y: estrela.y - 24, w: 48, h: 48 })) {
         estrela.ativa = false;
         jogador.poderAte = agora + config.tempo.estrelaPoderDuracao * 1000;
-        for (const bicho of this.bichos) if (!bicho.derrotado && Math.abs(bicho.x - jogador.x) < this.app.canvas.width) {
-          bicho.derrotado = true;
-          bicho.derrotadoAte = agora + 900;
-          this.criarExplosao(bicho.x + bicho.w / 2, bicho.y + bicho.h / 2);
-        }
+        this.eliminarInimigosNaTela(agora);
         this.app.placar.adicionar(config.pontos.especial);
       }
     }
@@ -220,6 +236,18 @@ MatGame.GameScene = class {
         this.app.adicionarTempo(config.tempo.mago);
         this.app.placar.adicionar(config.pontos.especial);
       }
+    }
+
+    if (this.app.tempoDecorrido >= this.proximaFada) {
+      this.fadas.push({ nascimento: this.app.tempoDecorrido, ativa: true });
+      this.proximaFada += config.tempo.fadaIntervalo;
+    }
+    for (const fada of this.fadas) {
+      if (!fada.ativa) continue;
+      const idade = this.app.tempoDecorrido - fada.nascimento;
+      if (idade > 10) { fada.ativa = false; continue; }
+      fada.x = this.camera + 120 + idade * 55; fada.y = 190 + Math.sin(idade * 4) * 45;
+      if (this.toca(jogador, { x: fada.x - 26, y: fada.y - 26, w: 52, h: 52 })) { fada.ativa = false; this.encontroFada(); this.app.atualizarHud(); return; }
     }
 
     for (const atirador of this.atiradores) {
@@ -266,21 +294,49 @@ MatGame.GameScene = class {
       }
     }
     for (const camuflado of this.camuflados) {
+      if (camuflado.morto) continue;
       const perto = Math.abs(jogador.x - camuflado.x) <= config.tempo.camufladoDistancia;
       if (perto && !camuflado.revelado && agora >= camuflado.cooldownAte) {
-        camuflado.revelado = true;
-        camuflado.vy = -690;
+        camuflado.revelado = true; camuflado.vy = -690;
       }
       if (camuflado.revelado) {
-        camuflado.vy += config.gravidade * delta;
-        camuflado.y += camuflado.vy * delta;
+        camuflado.vy += config.gravidade * delta; camuflado.y += camuflado.vy * delta;
         if (camuflado.y >= camuflado.baseY) {
           camuflado.y = camuflado.baseY; camuflado.vy = 0; camuflado.revelado = false; camuflado.cooldownAte = agora + 2400;
         }
         if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, camuflado)) {
-          jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -390;
-          this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
+          const pisou = jogador.vy > 0 && yAnterior + jogador.h <= camuflado.y + 14;
+          if (pisou) {
+            camuflado.morto = true; jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho);
+            this.chifres.push({ x: camuflado.x + 10, y: camuflado.y - 18, w: 25, h: 14, vy: -250, baseY: camuflado.baseY + camuflado.h - 14, ativo: true });
+            this.criarExplosao(camuflado.x + 20, camuflado.y + 20);
+          } else {
+            jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -390;
+            this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
+          }
         }
+      }
+    }
+    for (const chifre of this.chifres) {
+      if (!chifre.ativo) continue;
+      if (chifre.y < chifre.baseY) { chifre.vy += config.gravidade * delta; chifre.y = Math.min(chifre.baseY, chifre.y + chifre.vy * delta); }
+      if (chifre.y >= chifre.baseY && jogador.vy >= 0 && this.toca(jogador, chifre) && yAnterior + jogador.h <= chifre.y + 8) {
+        jogador.y = chifre.y - jogador.h; jogador.vy = -config.pulo * 0.82; jogador.noChao = false;
+      }
+    }
+    for (const monstro of this.monstrosAvancados) {
+      if (monstro.morto) continue;
+      if (monstro.tipo === 'mola') {
+        if (this.app.tempoDecorrido >= monstro.proximoSalto && monstro.y >= monstro.baseY) { monstro.vy = -590; monstro.proximoSalto = this.app.tempoDecorrido + 2.8; }
+        monstro.vy += config.gravidade * delta; monstro.y = Math.min(monstro.baseY, monstro.y + monstro.vy * delta);
+      } else if (this.app.tempoDecorrido >= monstro.proximaInvestida) {
+        monstro.vx = Math.sign(jogador.x - monstro.x) * 340; monstro.proximaInvestida = this.app.tempoDecorrido + 3.5;
+      }
+      if (monstro.tipo === 'sombra') { monstro.x += monstro.vx * delta; monstro.vx *= Math.pow(0.985, delta * 60); }
+      if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, monstro)) {
+        const pisou = jogador.vy > 0 && yAnterior + jogador.h <= monstro.y + 15;
+        if (pisou) { monstro.morto = true; jogador.vy = -440; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(monstro.x + 22, monstro.y + 20); }
+        else { jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -380; this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho); }
       }
     }
 
@@ -363,6 +419,30 @@ MatGame.GameScene = class {
 
     if (jogador.y > 800) this.tratarQueda();
     this.app.atualizarHud();
+  }
+
+  eliminarInimigosNaTela(agora) {
+    const perto = (inimigo) => Math.abs(inimigo.x - this.jogador.x) < this.app.canvas.width;
+    for (const bicho of this.bichos) if (!bicho.derrotado && perto(bicho)) { bicho.derrotado = true; bicho.derrotadoAte = agora + 900; this.criarExplosao(bicho.x, bicho.y); }
+    for (const atirador of this.atiradores) if (!atirador.derrotado && perto(atirador)) { atirador.derrotado = true; atirador.derrotadoAte = agora + 900; this.criarExplosao(atirador.x, atirador.y); }
+    for (const camuflado of this.camuflados) if (!camuflado.morto && perto(camuflado)) { camuflado.morto = true; this.criarExplosao(camuflado.x, camuflado.y); }
+    for (const monstro of this.monstrosAvancados) if (!monstro.morto && perto(monstro)) { monstro.morto = true; this.criarExplosao(monstro.x, monstro.y); }
+    for (const gigante of this.gigantes) if (gigante.ativa && perto(gigante)) { gigante.ativa = false; this.criarExplosao(gigante.x, gigante.y); }
+    for (const projetil of this.projeteis) projetil.ativa = false;
+  }
+
+  encontroFada() {
+    this.app.pausado = true;
+    const painel = this.app.panel;
+    painel.className = 'panel compact'; painel.classList.remove('hidden');
+    painel.innerHTML = `<div style="font-size:4rem">🧚</div><h2>QUAL É O SEU DESEJO?</h2><p>A fada trouxe uma escolha. Selecione apenas um presente:</p><div class="answers"><button data-desejo="tempo">⏱️ +15 SEGUNDOS</button><button data-desejo="coringa" ${this.app.coringa ? 'disabled' : ''}>🃏 1 CORINGA</button><button data-desejo="estrela">🌟 PODER DA ESTRELA</button></div><p class="feedback">${this.app.coringa ? 'Você já tem um coringa; escolha outro presente.' : ''}</p>`;
+    painel.querySelectorAll('[data-desejo]').forEach((botao) => { botao.onclick = () => {
+      const desejo = botao.dataset.desejo;
+      if (desejo === 'tempo') this.app.adicionarTempo(MatGame.CONFIG.tempo.fadaTempo);
+      if (desejo === 'coringa') this.app.coringa = true;
+      if (desejo === 'estrela') { this.jogador.poderAte = performance.now() + MatGame.CONFIG.tempo.estrelaPoderDuracao * 1000; this.eliminarInimigosNaTela(performance.now()); }
+      painel.classList.add('hidden'); this.app.pausado = false;
+    }; });
   }
 
   desafioFantasma() {
@@ -540,14 +620,31 @@ MatGame.GameScene = class {
       ctx.beginPath(); ctx.arc(projetil.x - camera, projetil.y, 7, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
     }
     for (const camuflado of this.camuflados) {
+      if (camuflado.morto) continue;
       if (!camuflado.revelado) {
-        ctx.fillStyle = '#216e4e'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 20, camuflado.y + 31, 25, Math.PI, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#63d471'; ctx.fillRect(camuflado.x - camera - 3, camuflado.y + 27, 46, 7);
+        ctx.fillStyle = '#216e4e'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 20, camuflado.y + 42, 25, Math.PI, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#63d471'; ctx.fillRect(camuflado.x - camera - 3, camuflado.y + 35, 46, 7);
       } else {
         ctx.fillStyle = '#17a589'; ctx.beginPath(); ctx.roundRect(camuflado.x - camera, camuflado.y, 40, 42, 12); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 12, camuflado.y + 13, 6, 0, 7); ctx.arc(camuflado.x - camera + 29, camuflado.y + 13, 6, 0, 7); ctx.fill();
         ctx.fillStyle = '#102a43'; ctx.fillRect(camuflado.x - camera + 11, camuflado.y + 11, 4, 5); ctx.fillRect(camuflado.x - camera + 28, camuflado.y + 11, 4, 5);
         ctx.fillStyle = '#ef476f'; ctx.beginPath(); ctx.moveTo(camuflado.x - camera + 10, camuflado.y); ctx.lineTo(camuflado.x - camera + 20, camuflado.y - 18); ctx.lineTo(camuflado.x - camera + 29, camuflado.y); ctx.fill();
+      }
+    }
+    for (const chifre of this.chifres) if (chifre.ativo) {
+      ctx.save(); ctx.translate(chifre.x - camera + chifre.w / 2, chifre.y + chifre.h / 2);
+      if (chifre.y < chifre.baseY) ctx.rotate(performance.now() / 90);
+      ctx.fillStyle = '#ef476f'; ctx.beginPath(); ctx.moveTo(-12, 7); ctx.lineTo(0, -10); ctx.lineTo(12, 7); ctx.fill(); ctx.restore();
+    }
+    for (const monstro of this.monstrosAvancados) if (!monstro.morto) {
+      if (monstro.tipo === 'mola') {
+        ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(monstro.x - camera + 10, monstro.y + 15);
+        for (let i = 1; i < 4; i += 1) ctx.lineTo(monstro.x - camera + (i % 2 ? 34 : 10), monstro.y + 15 + i * 9);
+        ctx.stroke(); ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(monstro.x - camera + 22, monstro.y + 10, 20, 0, 7); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.fillRect(monstro.x - camera + 10, monstro.y + 5, 8, 8); ctx.fillRect(monstro.x - camera + 27, monstro.y + 5, 8, 8);
+      } else {
+        ctx.globalAlpha = 0.82; ctx.fillStyle = '#0b1026'; ctx.beginPath(); ctx.ellipse(monstro.x - camera + 23, monstro.y + 25, 25, 22, 0, 0, 7); ctx.fill();
+        ctx.fillStyle = '#6ee7ff'; ctx.beginPath(); ctx.arc(monstro.x - camera + 15, monstro.y + 18, 5, 0, 7); ctx.arc(monstro.x - camera + 31, monstro.y + 18, 5, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
       }
     }
     for (const fantasma of this.fantasmas) if (fantasma.ativa) {
@@ -597,6 +694,13 @@ MatGame.GameScene = class {
       ctx.strokeRect(carta.x - camera - 18, carta.y - 26, 36, 52);
       ctx.font = '28px sans-serif';
       ctx.fillText('🃏', carta.x - camera - 15, carta.y + 10);
+    }
+    for (const fada of this.fadas) if (fada.ativa) {
+      ctx.save(); ctx.translate(fada.x - camera, fada.y); ctx.globalAlpha = 0.9;
+      ctx.fillStyle = '#f7b2ff'; ctx.beginPath(); ctx.ellipse(-14, 0, 15, 8, -0.5, 0, 7); ctx.ellipse(14, 0, 15, 8, 0.5, 0, 7); ctx.fill();
+      ctx.globalAlpha = 1; ctx.fillStyle = '#ffe0bd'; ctx.beginPath(); ctx.arc(0, -4, 10, 0, 7); ctx.fill(); ctx.fillStyle = '#9b5de5'; ctx.fillRect(-7, 6, 14, 22);
+      ctx.fillStyle = '#fff176'; ctx.shadowColor = '#fff176'; ctx.shadowBlur = 15; ctx.beginPath(); ctx.arc(0, 0, 4, 0, 7); ctx.fill(); ctx.restore(); ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif'; ctx.fillText('UM DESEJO!', fada.x - camera - 42, fada.y - 30);
     }
     for (const mago of this.magos) if (mago.ativa) {
       ctx.font = '52px sans-serif';

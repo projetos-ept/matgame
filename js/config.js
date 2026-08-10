@@ -14,7 +14,11 @@ MatGame.CONFIG = Object.freeze({
     moedasPorChunk: 5,
     dificuldadeACada: 5,
     dificuldadeTempoSegundos: 55,
-    retornoMaximo: 0.5
+    retornoMaximo: 0.5,
+    monstrosInicioMetros: 200,
+    atiradoresInicioMetros: 500,
+    monstroMolaMetros: 1000,
+    monstroSombraMetros: 2000
   },
   tempo: {
     inicial: 80,
@@ -24,7 +28,10 @@ MatGame.CONFIG = Object.freeze({
     colisaoBicho: 3,
     mago: 30,
     magoDuracao: 10,
-    magoIntervalo: 45,
+    magoIntervalo: 90,
+    fadaPrimeira: 65,
+    fadaIntervalo: 90,
+    fadaTempo: 15,
     queda: 20,
     estrelaPoderDuracao: 10,
     estrelaPoderVelocidade: 1.45,

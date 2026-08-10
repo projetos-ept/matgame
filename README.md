@@ -122,3 +122,13 @@ Em plataformas elevadas podem surgir atiradores. Quando o estudante se aproxima,
 O estudante pode caminhar para trás, mas nunca além de 50% da maior distância já alcançada na tentativa. Isso permite recuperar itens e corrigir um salto sem incentivar longos retornos por chunks já concluídos.
 
 Atiradores agora podem ser derrotados com um salto sobre a cabeça, usando a mesma leitura visual das bolinhas: o personagem rebate para cima, recebe 5 segundos e o inimigo mostra uma expressão de surpresa antes de desaparecer. Os disparos começam espaçados em 3,6 segundos e aceleram 0,35 segundo a cada 150 metros, respeitando o limite mínimo de 1,3 segundo. O fundo exibe `+`, `−`, `×` e `÷` em transparência e com parallax suave, preservando a legibilidade do cenário enquanto reforça o tema matemático.
+
+## População progressiva, chifre e fada dos desejos
+
+Para evitar partidas difíceis logo no começo, os primeiros 200 metros não recebem monstros procedurais. Entre 200 e 500 metros surgem somente as bolinhas básicas; atiradores e camuflados entram depois de 500 metros. A quantidade aumenta por faixas, com no máximo dois monstros básicos por piso largo.
+
+O camuflado foi alinhado ao chão. Quando é derrotado por cima, seu chifre se desprende, gira durante a queda e permanece no piso como um pequeno trampolim. A estrela elimina bolinhas, atiradores, camuflados, monstros avançados, gigantes visíveis e projéteis na tela.
+
+Depois de 1.000 metros aparece o **Monstro-Mola**, que salta periodicamente e exige sincronizar o pulo. Depois de 2.000 metros surge a **Sombra Veloz**, que faz investidas horizontais na direção do jogador. Ambos podem ser derrotados pulando por cima, mas possuem comportamentos e silhuetas diferentes.
+
+A fada alterna suas visitas com o mago: mago aos 20 segundos, fada aos 65, novo mago aos 110 e assim por diante. Ao tocar na fada, a ação pausa e o estudante escolhe um único desejo: `+15s`, um coringa ou o poder da estrela. Como coringas não acumulam, essa opção fica desativada quando já existe uma carta no inventário.
