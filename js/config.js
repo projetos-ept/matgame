@@ -20,7 +20,11 @@ MatGame.CONFIG = Object.freeze({
     monstroMolaMetros: 1000,
     monstroBumerangueMetros: 1500,
     monstroSombraMetros: 2000,
-    chefeCadaMetros: 1000
+    chefeCadaMetros: 1000,
+    congelanteMetros: 2500,
+    aranhaMetros: 3000,
+    extremoInicioMetros: 10000,
+    extremoCadaMetros: 1000
   },
   tempo: {
     inicial: 80,
@@ -37,6 +41,7 @@ MatGame.CONFIG = Object.freeze({
     fruta: 5,
     chefe: 30,
     colisaoChefe: 5,
+    congelamentoDuracao: 3,
     queda: 20,
     estrelaPoderDuracao: 10,
     estrelaPoderVelocidade: 1.45,

@@ -19,6 +19,8 @@ MatGame.GameScene = class {
     this.projeteis = [];
     this.bumerangues = [];
     this.camuflados = [];
+    this.congelantes = [];
+    this.aranhas = [];
     this.chifres = [];
     this.monstrosAvancados = [];
     this.fadas = [];
@@ -39,7 +41,7 @@ MatGame.GameScene = class {
   iniciar() {
     this.rodando = true;
     this.app.pausado = false;
-    this.jogador = { x: 90, y: 460, w: 38, h: 56, vx: 0, vy: 0, noChao: false, invulneravelAte: 0, poderAte: 0, danoAte: 0 };
+    this.jogador = { x: 90, y: 460, w: 38, h: 56, vx: 0, vy: 0, noChao: false, invulneravelAte: 0, poderAte: 0, danoAte: 0, paralisadoAte: 0 };
     this.pontoRetorno = { x: 90, y: 460 };
     this.gerarAte(3200);
     this.agendarEstrelaPoder();
@@ -73,9 +75,11 @@ MatGame.GameScene = class {
       const metrosChunk = base / 10;
       const mundo = MatGame.CONFIG.mundo;
       const populacao = metrosChunk < mundo.monstrosInicioMetros ? 0 : metrosChunk < mundo.atiradoresInicioMetros ? 1 : metrosChunk < mundo.monstroMolaMetros ? 2 : 3;
+      const nivelExtremo = metrosChunk < mundo.extremoInicioMetros ? 0 : 1 + Math.floor((metrosChunk - mundo.extremoInicioMetros) / mundo.extremoCadaMetros);
       let atiradorCriado = false;
       let camufladoCriado = false;
       let avancadoCriado = false;
+      let congelanteCriado = false;
 
       for (const plataforma of chunk.plataformas) {
         const item = { x: base + plataforma[0], y: plataforma[1], w: plataforma[2], h: plataforma[3] };
@@ -86,7 +90,8 @@ MatGame.GameScene = class {
         }
         // Bichos surgem apenas em pisos largos e planos, nunca em saltos estreitos.
         if (populacao >= 1 && item.y === 620 && item.w >= 210) {
-          const quantidade = populacao >= 3 ? Math.min(2, Math.max(1, Math.floor(item.w / 280))) : 1;
+          const quantidadeBase = populacao >= 3 ? Math.min(2, Math.max(1, Math.floor(item.w / 280))) : 1;
+          const quantidade = Math.min(4, quantidadeBase + Math.min(2, nivelExtremo));
           for (let i = 0; i < quantidade; i += 1) {
             const inicio = item.x + 70 + i * Math.min(260, item.w / 2);
             this.bichos.push({
@@ -104,6 +109,10 @@ MatGame.GameScene = class {
           this.camuflados.push({ x: item.x + item.w * 0.68, y: 578, baseY: 578, w: 40, h: 42, vy: 0, revelado: false, cooldownAte: 0, morto: false });
           camufladoCriado = true;
         }
+        if (!congelanteCriado && metrosChunk >= mundo.congelanteMetros && item.y === 620 && item.w >= 300) {
+          this.congelantes.push({ x: item.x + item.w * 0.32, y: 576, w: 44, h: 44, inicio: item.x + 35, fim: item.x + item.w - 35, vx: 70 + nivelExtremo * 9, morto: false });
+          congelanteCriado = true;
+        }
         if (!avancadoCriado && metrosChunk >= mundo.monstroMolaMetros && metrosChunk < mundo.monstroBumerangueMetros && item.y === 620 && item.w >= 300) {
           this.monstrosAvancados.push({ tipo: 'mola', x: item.x + item.w * 0.45, y: 574, baseY: 574, w: 44, h: 46, vy: 0, proximoSalto: 0, morto: false });
           avancadoCriado = true;
@@ -113,12 +122,15 @@ MatGame.GameScene = class {
           avancadoCriado = true;
         }
         if (!avancadoCriado && metrosChunk >= mundo.monstroSombraMetros && item.y === 620 && item.w >= 320) {
-          this.monstrosAvancados.push({ tipo: 'sombra', x: item.x + item.w * 0.55, y: 576, baseY: 576, w: 46, h: 44, vx: 0, proximaInvestida: 0, morto: false });
+          this.monstrosAvancados.push({ tipo: 'sombra', x: item.x + item.w * 0.55, baseX: item.x + item.w * 0.55, y: 510, baseY: 510, w: 46, h: 44, vx: 0, vy: 0, atacandoAte: 0, proximaInvestida: 0, morto: false });
           avancadoCriado = true;
         }
       }
+      if (metrosChunk >= mundo.aranhaMetros) {
+        this.aranhas.push({ x: base + chunk.largura * 0.58, tetoY: 245, y: 245, w: 42, h: 40, fase: this.app.powerRng.proximo() * Math.PI * 2, morto: false, velocidade: 1.25 + Math.min(1.2, nivelExtremo * 0.08) });
+      }
 
-      const quantidadeMoedas = Math.max(2, MatGame.CONFIG.mundo.moedasPorChunk + 1 - nivel);
+      const quantidadeMoedas = Math.max(1, MatGame.CONFIG.mundo.moedasPorChunk + 1 - nivel - Math.min(2, nivelExtremo));
       for (let i = 0; i < quantidadeMoedas; i += 1) {
         this.moedas.push({ x: base + 160 + i * 130, y: 500 - (i % 2) * 45, r: 11, ativa: true });
       }
@@ -158,8 +170,9 @@ MatGame.GameScene = class {
     const esquerda = this.teclas.ArrowLeft || this.teclas.KeyA;
     const direita = this.teclas.ArrowRight || this.teclas.KeyD;
     const multiplicadorVelocidade = agora < jogador.poderAte ? config.tempo.estrelaPoderVelocidade : 1;
-    jogador.vx = ((direita ? config.velocidade : 0) - (esquerda ? config.velocidade : 0)) * multiplicadorVelocidade;
-    if ((this.teclas.ArrowUp || this.teclas.KeyW || this.teclas.Space) && jogador.noChao) {
+    const paralisado = agora < jogador.paralisadoAte;
+    jogador.vx = paralisado ? 0 : ((direita ? config.velocidade : 0) - (esquerda ? config.velocidade : 0)) * multiplicadorVelocidade;
+    if (!paralisado && (this.teclas.ArrowUp || this.teclas.KeyW || this.teclas.Space) && jogador.noChao) {
       jogador.vy = -config.pulo;
       jogador.noChao = false;
     }
@@ -338,6 +351,27 @@ MatGame.GameScene = class {
         jogador.y = chifre.y - jogador.h; jogador.vy = -config.pulo * 0.82; jogador.noChao = false;
       }
     }
+    for (const congelante of this.congelantes) {
+      if (congelante.morto) continue;
+      congelante.x += congelante.vx * delta;
+      if (congelante.x <= congelante.inicio || congelante.x + congelante.w >= congelante.fim) congelante.vx *= -1;
+      if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, congelante)) {
+        const pisou = jogador.vy > 0 && yAnterior + jogador.h <= congelante.y + 14;
+        if (pisou) { congelante.morto = true; jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(congelante.x, congelante.y); }
+        else { jogador.paralisadoAte = agora + config.tempo.congelamentoDuracao * 1000; jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 900; }
+      }
+    }
+    for (const aranha of this.aranhas) {
+      if (aranha.morto) continue;
+      const ciclo = (Math.sin(this.app.tempoDecorrido * aranha.velocidade + aranha.fase) + 1) / 2;
+      aranha.y = aranha.tetoY + ciclo * 315;
+      if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, aranha)) {
+        const pisou = jogador.vy > 0 && yAnterior + jogador.h <= aranha.y + 13;
+        if (pisou) { aranha.morto = true; jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(aranha.x, aranha.y); }
+        else { jogador.danoAte = agora + 450; jogador.invulneravelAte = agora + 1000; this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho); }
+      }
+    }
+
     for (const monstro of this.monstrosAvancados) {
       if (monstro.morto) continue;
       if (monstro.tipo === 'mola') {
@@ -350,8 +384,12 @@ MatGame.GameScene = class {
         monstro.proximoAtaque = this.app.tempoDecorrido + 3.2;
       }
       if (monstro.tipo === 'sombra') {
-        if (this.app.tempoDecorrido >= monstro.proximaInvestida) { monstro.vx = Math.sign(jogador.x - monstro.x) * 340; monstro.proximaInvestida = this.app.tempoDecorrido + 3.5; }
-        monstro.x += monstro.vx * delta; monstro.vx *= Math.pow(0.985, delta * 60);
+        if (this.app.tempoDecorrido >= monstro.proximaInvestida && this.app.tempoDecorrido >= monstro.atacandoAte) {
+          const alvoX = jogador.x; const alvoY = jogador.y; const dx = alvoX - monstro.x; const dy = alvoY - monstro.y; const distancia = Math.max(1, Math.hypot(dx, dy));
+          monstro.vx = dx / distancia * 360; monstro.vy = dy / distancia * 240; monstro.atacandoAte = this.app.tempoDecorrido + 1.45; monstro.proximaInvestida = this.app.tempoDecorrido + 3.8;
+        }
+        if (this.app.tempoDecorrido < monstro.atacandoAte) { monstro.x += monstro.vx * delta; monstro.y += monstro.vy * delta; }
+        else { monstro.x += (monstro.baseX - monstro.x) * delta * 1.8; monstro.y = monstro.baseY + Math.sin(this.app.tempoDecorrido * 3.2 + monstro.baseX) * 48; }
       }
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, monstro)) {
         const pisou = jogador.vy > 0 && yAnterior + jogador.h <= monstro.y + 15;
@@ -504,6 +542,8 @@ MatGame.GameScene = class {
     for (const bicho of this.bichos) if (!bicho.derrotado && perto(bicho)) { bicho.derrotado = true; bicho.derrotadoAte = agora + 900; this.criarExplosao(bicho.x, bicho.y); }
     for (const atirador of this.atiradores) if (!atirador.derrotado && perto(atirador)) { atirador.derrotado = true; atirador.derrotadoAte = agora + 900; this.criarExplosao(atirador.x, atirador.y); }
     for (const camuflado of this.camuflados) if (!camuflado.morto && perto(camuflado)) { camuflado.morto = true; this.criarExplosao(camuflado.x, camuflado.y); }
+    for (const congelante of this.congelantes) if (!congelante.morto && perto(congelante)) { congelante.morto = true; this.criarExplosao(congelante.x, congelante.y); }
+    for (const aranha of this.aranhas) if (!aranha.morto && perto(aranha)) { aranha.morto = true; this.criarExplosao(aranha.x, aranha.y); }
     for (const monstro of this.monstrosAvancados) if (!monstro.morto && perto(monstro)) { monstro.morto = true; this.criarExplosao(monstro.x, monstro.y); }
     for (const gigante of this.gigantes) if (gigante.ativa && perto(gigante)) { gigante.ativa = false; this.criarExplosao(gigante.x, gigante.y); }
     for (const projetil of this.projeteis) projetil.ativa = false;
@@ -719,6 +759,13 @@ MatGame.GameScene = class {
       if (chifre.y < chifre.baseY) ctx.rotate(performance.now() / 90);
       ctx.fillStyle = '#ef476f'; ctx.beginPath(); ctx.moveTo(-12, 7); ctx.lineTo(0, -10); ctx.lineTo(12, 7); ctx.fill(); ctx.restore();
     }
+    for (const congelante of this.congelantes) if (!congelante.morto) {
+      ctx.font = '42px sans-serif'; ctx.fillText('🥶', congelante.x - camera, congelante.y + 38);
+    }
+    for (const aranha of this.aranhas) if (!aranha.morto) {
+      ctx.strokeStyle = '#d8f3ff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(aranha.x - camera + 20, aranha.tetoY - 30); ctx.lineTo(aranha.x - camera + 20, aranha.y + 4); ctx.stroke();
+      ctx.font = '40px sans-serif'; ctx.fillText('🕷', aranha.x - camera, aranha.y + 36);
+    }
     for (const monstro of this.monstrosAvancados) if (!monstro.morto) {
       if (monstro.tipo === 'mola') {
         ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(monstro.x - camera + 10, monstro.y + 15);
@@ -733,8 +780,7 @@ MatGame.GameScene = class {
         ctx.fillStyle = '#102a43'; ctx.beginPath(); ctx.arc(mx + 16, monstro.y + 17, 3, 0, 7); ctx.arc(mx + 30, monstro.y + 17, 3, 0, 7); ctx.fill();
         ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(mx + 23, monstro.y + 30, 10, 0.2, 2.9); ctx.stroke();
       } else {
-        ctx.globalAlpha = 0.82; ctx.fillStyle = '#0b1026'; ctx.beginPath(); ctx.ellipse(monstro.x - camera + 23, monstro.y + 25, 25, 22, 0, 0, 7); ctx.fill();
-        ctx.fillStyle = '#6ee7ff'; ctx.beginPath(); ctx.arc(monstro.x - camera + 15, monstro.y + 18, 5, 0, 7); ctx.arc(monstro.x - camera + 31, monstro.y + 18, 5, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
+        ctx.font = '46px sans-serif'; ctx.fillText('🦇', monstro.x - camera, monstro.y + 40);
       }
     }
     for (const bumerangue of this.bumerangues) if (bumerangue.ativo) {
@@ -803,11 +849,8 @@ MatGame.GameScene = class {
       ctx.fillText('🃏', carta.x - camera - 15, carta.y + 10);
     }
     for (const fada of this.fadas) if (fada.ativa) {
-      ctx.save(); ctx.translate(fada.x - camera, fada.y); ctx.globalAlpha = 0.9;
-      ctx.fillStyle = '#f7b2ff'; ctx.beginPath(); ctx.ellipse(-14, 0, 15, 8, -0.5, 0, 7); ctx.ellipse(14, 0, 15, 8, 0.5, 0, 7); ctx.fill();
-      ctx.globalAlpha = 1; ctx.fillStyle = '#ffe0bd'; ctx.beginPath(); ctx.arc(0, -4, 10, 0, 7); ctx.fill(); ctx.fillStyle = '#9b5de5'; ctx.fillRect(-7, 6, 14, 22);
-      ctx.fillStyle = '#fff176'; ctx.shadowColor = '#fff176'; ctx.shadowBlur = 15; ctx.beginPath(); ctx.arc(0, 0, 4, 0, 7); ctx.fill(); ctx.restore(); ctx.shadowBlur = 0;
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif'; ctx.fillText('UM DESEJO!', fada.x - camera - 42, fada.y - 30);
+      ctx.font = '52px sans-serif'; ctx.fillText('🧚', fada.x - camera - 26, fada.y + 24);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif'; ctx.fillText('UM DESEJO!', fada.x - camera - 42, fada.y - 32);
     }
     for (const mago of this.magos) if (mago.ativa) {
       ctx.font = '52px sans-serif';
@@ -842,6 +885,7 @@ MatGame.GameScene = class {
     ctx.rotate(machucado ? 0.28 * Math.sin(agoraVisual / 35) : pulando ? -0.14 : corrida * 0.035);
     ctx.translate(-(telaX + 19), -(jogador.y + 29));
     const protegido = agoraVisual < Math.max(jogador.invulneravelAte, jogador.poderAte);
+    if (agoraVisual < jogador.paralisadoAte) { ctx.fillStyle = '#6ee7ff66'; ctx.fillRect(telaX - 8, jogador.y - 5, jogador.w + 16, jogador.h + 10); ctx.font = '22px sans-serif'; ctx.fillText('❄', telaX + 8, jogador.y - 10); }
     ctx.globalAlpha = protegido && Math.floor(performance.now() / 100) % 2 ? 0.45 : 1;
     if (performance.now() < jogador.poderAte) {
       ctx.strokeStyle = ['#fff176', '#6ee7ff', '#ef476f'][Math.floor(performance.now() / 120) % 3];

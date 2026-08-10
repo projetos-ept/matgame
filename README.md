@@ -142,3 +142,13 @@ Mago e fada agora voam em uma faixa alcançável pelo salto, possuem área de co
 Entre 1.500 e 2.000 metros aparece o **Bumerangueiro do Cálculo**, com máscara coral e corpo turquesa. Seu bumerangue possui duas fases visíveis: viaja para fora por 0,9 segundo e depois persegue o próprio lançador até retornar. A Sombra Veloz noturna continua surgindo depois dos 2.000 metros.
 
 A cada 1.000 metros, o **Guardião da Incógnita** fecha uma arena que impede avançar ou voltar. É um monstro original do projeto — não utiliza personagem ou sprite de franquias comerciais — com carapaça verde, espinhos, barriga que muda de cor e uma interrogação. Ele encolhe a cada salto recebido e é derrotado exatamente no terceiro; a vitória libera a arena e concede 30 segundos. A estrela protege contra o contato, mas propositalmente não elimina o chefe.
+
+## Congelante, morcego e aranhas
+
+A fada utiliza o sprite `🧚` e mantém sua área de coleta ampliada. Depois dos 2.500 metros pode surgir o Congelante `🥶`: contato lateral paralisa movimento e salto por 3 segundos, mas um salto sobre sua cabeça o derrota normalmente. A estrela também o elimina.
+
+A antiga forma da Sombra Veloz foi substituída pelo morcego `🦇`. Enquanto espera, ele sobe e desce; ao atacar, registra a posição atual do estudante e voa em linha reta para aquele ponto durante 1,45 segundo, sem corrigir a trajetória. Assim, o jogador pode observar o início da investida e pular para sair da linha de ataque.
+
+Depois dos 3.000 metros, aranhas `🕷` descem e sobem em fios. A ponta inferior do fio acompanha a aranha, portanto o segmento encolhe visualmente durante a subida. É possível esperar a aranha subir e passar por baixo ou pular sobre ela quando estiver baixa. Aranhas também podem ser derrotadas e são afetadas pela estrela.
+
+Até 10.000 metros, o equilíbrio anterior é preservado. A partir daí existe um nível extremo adicional a cada 1.000 metros: pisos largos recebem mais bolinhas, frutas e bolinhas de tempo ficam mais raras, Congelantes aceleram e o ciclo vertical das aranhas fica progressivamente mais rápido. Os limites existentes de projéteis, colisões e invulnerabilidade continuam ativos para evitar punições em sequência.
