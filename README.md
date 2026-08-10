@@ -85,7 +85,7 @@ Inclui movimento, salto, colisão, câmera, chunks infinitos, obstáculos, moeda
 
 ## Ritmo da partida infinita
 
-A partida começa com 80 segundos. Bolinhas azuis acrescentam 1,5 segundo e estrelas acrescentam 12 segundos, permitindo prolongar a corrida indefinidamente com boa exploração. O relógio principal pausa nas estações matemáticas. Cada etapa de pergunta possui uma janela visual de 18 segundos somente para calcular o bônus: respostas muito rápidas rendem 8 segundos, respostas rápidas 5 e respostas dentro da janela 3. Depois disso a questão continua sem punição, para preservar o tempo de leitura.
+A partida começa com 80 segundos. Bolinhas azuis acrescentam 1,5 segundo e estrelas acrescentam 12 segundos, permitindo prolongar a corrida indefinidamente com boa exploração. O relógio principal pausa nas estações matemáticas. Cada etapa de pergunta possui uma janela visual de 30 segundos para calcular o bônus: respostas em até 10 segundos rendem 10 segundos, em até 20 rendem 8 e em até 30 rendem 6. Depois que a faixa rápida se esgota, uma resposta correta ainda rende 5 segundos. Cada alternativa errada escolhida retira 3 segundos, mas a questão permanece pausada para permitir uma nova tentativa.
 
 A dificuldade motora cresce gradualmente: a variedade de chunks aumenta com a distância, e bichos patrulheiros aparecem e ficam mais rápidos conforme o tempo de partida. Um contato retira 3 segundos, reinicia o combo e concede 1,5 segundo de invulnerabilidade, evitando colisões repetidas injustas. Todos esses valores ficam em `js/config.js` para ajuste após testes com estudantes.
 
@@ -105,7 +105,7 @@ Cartas coringa aparecem sobre plataformas elevadas e difíceis. O estudante pode
 
 ## Animações, perseguições e editor do professor
 
-O personagem possui poses procedurais de corrida, salto e dano, além de aura durante a estrela de poder. A estrela explode visualmente as bolinhas inimigas próximas; antes de desaparecer, cada bolinha exibe uma expressão de surpresa. Se o estudante passar 45 segundos sem encontrar uma estação, um fantasma começa a persegui-lo e, ao tocar, abre obrigatoriamente um problema de dificuldade 3 com bônus de tempo reduzido. Mesmo uma resposta após o fim da faixa rápida sempre concede pelo menos 1 segundo.
+O personagem possui poses procedurais de corrida, salto e dano, além de aura durante a estrela de poder. A estrela explode visualmente as bolinhas inimigas próximas; antes de desaparecer, cada bolinha exibe uma expressão de surpresa. Se o estudante passar 45 segundos sem encontrar uma estação, um fantasma começa a persegui-lo e, ao tocar, abre obrigatoriamente um problema de dificuldade 3 com bônus de tempo reduzido. Mesmo uma resposta após o fim da faixa rápida sempre concede 5 segundos.
 
 Em intervalos variáveis, um gigante atravessa a tela por aproximadamente 6 segundos. O aviso “PULE!” sinaliza a ação; um contato custa 12 segundos e concede invulnerabilidade breve para não repetir a punição.
 
@@ -160,3 +160,9 @@ A borda de urgência agora começa somente quando restam 10 segundos. Ela contin
 Os dois primeiros Guardiões da Incógnita mantêm apenas patrulha e contato. A partir do chefe dos 3.000 metros, ele lança orbes matemáticos mirando a posição do estudante. O primeiro intervalo é deliberadamente lento, com 4,2 segundos entre disparos; nos chefes seguintes diminui 0,25 segundo por aparição até o limite seguro de 1,8 segundo. Cada orbe remove 4 segundos e respeita a invulnerabilidade da estrela.
 
 Cada aparição usa uma das quatro paletas predefinidas — floresta, oceano, rubi e ametista — repetidas em ciclo. Corpo, rosto e espinhos mudam juntos, enquanto a barriga continua alternando cores durante a batalha. A estrela remove os orbes ativos, mas não causa dano direto ao chefe.
+
+## Cinco cenários a cada 500 metros
+
+O fundo muda automaticamente a cada 500 metros entre cinco cenários Canvas: **Floresta dos Números**, **Deserto das Operações**, **Montanhas da Lógica**, **Cidade das Expressões** e **Cosmos Matemático**. Cada cenário possui silhueta própria — árvores, dunas e sol, picos nevados, prédios com janelas ou estrelas e planeta com anel — além dos símbolos matemáticos transparentes.
+
+Depois de completar os cinco cenários, o ciclo recomeça com outra variação de cores. Há três variações por cenário, totalizando 15 combinações visuais antes da repetição completa. As plataformas também recebem as cores de superfície e borda do cenário atual, sem alterar hitboxes, chunks ou a reprodução da seed.

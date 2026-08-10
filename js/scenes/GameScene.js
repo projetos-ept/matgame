@@ -655,53 +655,55 @@ MatGame.GameScene = class {
     });
   }
 
+  desenharFundo(ctx, largura, altura, camera) {
+    const trecho = Math.floor(this.app.distancia / 500);
+    const indice = trecho % 5;
+    const variacao = Math.floor(trecho / 5) % 3;
+    const temas = [
+      { nome: 'Floresta dos Números', variantes: [['#68c5db','#d6f5d6','#174d3d','#216e4e','#63d471'],['#53b6c8','#c9ecd0','#24513f','#2d7a54','#81db7d'],['#83d0b1','#e5f4bf','#385942','#397f57','#9bd879']] },
+      { nome: 'Deserto das Operações', variantes: [['#f6b26b','#ffe0a3','#a85d32','#9b6335','#f0b65a'],['#ef9364','#ffd29a','#8d4c3d','#a65c3c','#ffc857'],['#f7c873','#fff0bd','#9c673f','#b07745','#f4cf72']] },
+      { nome: 'Montanhas da Lógica', variantes: [['#7897c5','#d8e5f4','#384d72','#495f86','#a7c1e3'],['#7d83b8','#d8d5ee','#423f69','#56527e','#b0a8d8'],['#5e91a8','#cce7e8','#315d69','#427582','#a3d0cf']] },
+      { nome: 'Cidade das Expressões', variantes: [['#ef8d72','#5a4f82','#252946','#39405f','#f4c95d'],['#d4779b','#51446f','#2e294e','#47406b','#f0a6ca'],['#f0a35e','#4f628e','#293856','#3d5075','#ffd166']] },
+      { nome: 'Cosmos Matemático', variantes: [['#050b2c','#182d5a','#111a3b','#263b66','#6ee7ff'],['#170b35','#40265f','#241442','#493068','#d5a6ff'],['#061f2e','#164c5a','#0a303d','#205b66','#73f2c6']] }
+    ];
+    const tema = temas[indice];
+    const [topo, base, terreno, plataforma, borda] = tema.variantes[variacao];
+    const gradiente = ctx.createLinearGradient(0, 0, 0, altura); gradiente.addColorStop(0, topo); gradiente.addColorStop(1, base);
+    ctx.fillStyle = gradiente; ctx.fillRect(0, 0, largura, altura);
+
+    ctx.save(); ctx.globalAlpha = 0.2;
+    if (indice === 0) {
+      ctx.fillStyle = '#164e3b'; for (let i=0;i<10;i+=1){const x=((i*150-camera*.12)%1500+1500)%1500;ctx.fillRect(x,330,18,220);ctx.beginPath();ctx.arc(x+9,315,58,0,7);ctx.fill();}
+    } else if (indice === 1) {
+      ctx.fillStyle = '#ffe28a'; ctx.beginPath(); ctx.arc(1080,120,62,0,7); ctx.fill(); ctx.fillStyle=terreno; for(let i=0;i<5;i+=1){ctx.beginPath();ctx.ellipse(i*310-camera*.08,500,230,85,0,0,7);ctx.fill();}
+    } else if (indice === 2) {
+      ctx.fillStyle = terreno; for(let i=0;i<6;i+=1){const x=i*270-camera*.1;ctx.beginPath();ctx.moveTo(x,520);ctx.lineTo(x+140,190+(i%2)*80);ctx.lineTo(x+290,520);ctx.fill();ctx.fillStyle='#ffffff77';ctx.beginPath();ctx.moveTo(x+100,285+(i%2)*80);ctx.lineTo(x+140,190+(i%2)*80);ctx.lineTo(x+180,285+(i%2)*80);ctx.fill();ctx.fillStyle=terreno;}
+    } else if (indice === 3) {
+      ctx.fillStyle = terreno; for(let i=0;i<12;i+=1){const x=((i*125-camera*.16)%1550+1550)%1550;const h=120+(i%4)*55;ctx.fillRect(x,520-h,90,h);ctx.fillStyle='#ffd16677';for(let y=420;y<500;y+=28)ctx.fillRect(x+15,y,12,10);ctx.fillStyle=terreno;}
+    } else {
+      ctx.fillStyle='#ffffff';for(let i=0;i<45;i+=1){const x=((i*83-camera*.04)%largura+largura)%largura;const y=35+(i*47)%430;ctx.fillRect(x,y,2+(i%3===0),2+(i%3===0));}ctx.fillStyle='#9b5de5';ctx.beginPath();ctx.arc(1040,155,70,0,7);ctx.fill();ctx.strokeStyle='#ffd166';ctx.lineWidth=12;ctx.beginPath();ctx.ellipse(1040,155,110,28,-.25,0,7);ctx.stroke();
+    }
+    ctx.restore();
+
+    const simbolos = ['+', '−', '×', '÷']; ctx.save(); ctx.globalAlpha = 0.12; ctx.fillStyle = indice === 4 ? '#d8f3ff' : '#17324d'; ctx.font='bold 72px sans-serif';
+    for(let i=0;i<12;i+=1){const x=((i*173-camera*.08)%(largura+180)+largura+180)%(largura+180)-90;ctx.fillText(simbolos[i%4],x,90+(i%4)*105);} ctx.restore();
+    ctx.fillStyle=terreno;ctx.beginPath();ctx.moveTo(0,620);for(let x=0;x<=largura;x+=100)ctx.lineTo(x,510+Math.sin((x+camera*.25)/130)*50);ctx.lineTo(largura,altura);ctx.lineTo(0,altura);ctx.fill();
+    ctx.fillStyle='#08182caa';ctx.font='bold 15px sans-serif';ctx.fillText(`${tema.nome} • variação ${variacao+1}`,18,600);
+    return { plataforma, borda, nome: tema.nome, indice, variacao };
+  }
+
   desenhar() {
     const camera = this.camera;
     const ctx = this.ctx;
     const largura = this.app.canvas.width;
     const altura = this.app.canvas.height;
-    const ceu = ctx.createLinearGradient(0, 0, 0, altura);
-    const nivelVisual = this.app.gerador.dificuldadeMotora();
-    const paletas = { 1: ['#79c9ef', '#d8f3ff'], 2: ['#f28f6b', '#674d82'], 3: ['#07152f', '#243b67'] };
-    const paleta = paletas[nivelVisual];
-    ceu.addColorStop(0, paleta[0]);
-    ceu.addColorStop(1, paleta[1]);
-    ctx.fillStyle = ceu;
-    ctx.fillRect(0, 0, largura, altura);
-
-    ctx.fillStyle = '#ffffff18';
-    for (let i = 0; i < 8; i += 1) {
-      const x = ((i * 270 - camera * 0.15) % 1500 + 1500) % 1500;
-      ctx.beginPath();
-      ctx.arc(x, 120 + (i % 3) * 65, 50 + (i % 2) * 30, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    const simbolos = ['+', '−', '×', '÷'];
-    ctx.save();
-    ctx.globalAlpha = nivelVisual === 3 ? 0.14 : 0.1;
-    ctx.fillStyle = nivelVisual === 3 ? '#d8f3ff' : '#174d6f';
-    ctx.font = 'bold 72px sans-serif';
-    for (let i = 0; i < 12; i += 1) {
-      const sx = ((i * 173 - camera * 0.08) % (largura + 180) + largura + 180) % (largura + 180) - 90;
-      const sy = 90 + (i % 4) * 105;
-      ctx.fillText(simbolos[i % simbolos.length], sx, sy);
-    }
-    ctx.restore();
-
-    ctx.fillStyle = '#184b55';
-    ctx.beginPath();
-    ctx.moveTo(0, 620);
-    for (let x = 0; x <= largura; x += 100) ctx.lineTo(x, 510 + Math.sin((x + camera * 0.25) / 130) * 50);
-    ctx.lineTo(largura, altura);
-    ctx.lineTo(0, altura);
-    ctx.fill();
+    const tema = this.desenharFundo(ctx, largura, altura, camera);
 
     for (const plataforma of this.plataformas) {
       if (plataforma.x - camera > largura || plataforma.x + plataforma.w - camera < 0) continue;
-      ctx.fillStyle = '#216e4e';
+      ctx.fillStyle = tema.plataforma;
       ctx.fillRect(plataforma.x - camera, plataforma.y, plataforma.w, plataforma.h);
-      ctx.fillStyle = '#63d471';
+      ctx.fillStyle = tema.borda;
       ctx.fillRect(plataforma.x - camera, plataforma.y, plataforma.w, 12);
     }
     for (const fruta of this.frutas) if (fruta.ativa) {

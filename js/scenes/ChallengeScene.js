@@ -82,7 +82,7 @@ MatGame.ChallengeScene = {
       <div class="question-timer" aria-live="polite">
         <b>⚡ Bônus de tempo: <span data-tempo>${limite}</span>s</b>
         <div class="timer-track"><span data-barra></span></div>
-        <small>O bônus diminui, mas você pode responder com calma mesmo quando chegar a zero.</small>
+        <small>O bônus diminui; depois de zerar, uma resposta correta ainda vale +5s.</small>
       </div>
       <p class="question">${dados.texto}</p>
       <div class="answers"></div>
@@ -98,7 +98,7 @@ MatGame.ChallengeScene = {
       const restante = Math.max(0, limite - decorrido);
       textoTempo.textContent = Math.ceil(restante);
       barra.style.width = `${restante / limite * 100}%`;
-      if (restante === 0) textoTempo.parentElement.innerHTML = '💭 Sem bônus agora — continue pensando com calma';
+      if (restante === 0) textoTempo.parentElement.innerHTML = '💭 Faixa rápida encerrada — acertar ainda vale +5s';
     };
     const timer = setInterval(atualizarTimer, 200);
 
@@ -121,7 +121,9 @@ MatGame.ChallengeScene = {
         } else {
           botao.disabled = true;
           botao.textContent += ' — tente outra';
-          painel.querySelector('.feedback').textContent = 'Ainda não. Sem perder tempo da partida: pense e tente novamente!';
+          app.tempoRestante = Math.max(1, app.tempoRestante - MatGame.CONFIG.tempo.erroPergunta);
+          app.ultimoBonusTempo = { segundos: -MatGame.CONFIG.tempo.erroPergunta, ate: performance.now() + 1400 };
+          painel.querySelector('.feedback').textContent = `Ainda não. A tentativa custou ${MatGame.CONFIG.tempo.erroPergunta}s; pense com calma e tente novamente!`;
           app.placar.combo = 0;
         }
       };

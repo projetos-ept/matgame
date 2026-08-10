@@ -52,7 +52,8 @@ MatGame.CONFIG = Object.freeze({
     estrelaPoderVelocidade: 1.45,
     estrelaPoderMinimo: 35,
     estrelaPoderMaximo: 65,
-    respostaSemPressa: 1,
+    respostaSemPressa: 5,
+    erroPergunta: 3,
     fantasmaApos: 45,
     giganteMinimo: 45,
     giganteMaximo: 85,
@@ -62,12 +63,12 @@ MatGame.CONFIG = Object.freeze({
     projetilIntervaloMinimo: 1.3,
     projetilReducaoCadaMetros: 150,
     camufladoDistancia: 180,
-    perguntaBonusMaximo: 18,
-    respostaMuitoRapidaAte: 6,
-    respostaRapidaAte: 12,
-    bonusMuitoRapido: 8,
-    bonusRapido: 5,
-    bonusComCalma: 3
+    perguntaBonusMaximo: 30,
+    respostaMuitoRapidaAte: 10,
+    respostaRapidaAte: 20,
+    bonusMuitoRapido: 10,
+    bonusRapido: 8,
+    bonusComCalma: 6
   },
   pontos: {
     moeda: 10,
