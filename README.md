@@ -107,6 +107,12 @@ Cartas coringa aparecem sobre plataformas elevadas e difíceis. O estudante pode
 
 O personagem possui poses procedurais de corrida, salto e dano, além de aura durante a estrela de poder. A estrela explode visualmente as bolinhas inimigas próximas; antes de desaparecer, cada bolinha exibe uma expressão de surpresa. Se o estudante passar 45 segundos sem encontrar uma estação, um fantasma começa a persegui-lo e, ao tocar, abre obrigatoriamente um problema de dificuldade 3 com bônus de tempo reduzido. Mesmo uma resposta após o fim da faixa rápida sempre concede pelo menos 1 segundo.
 
-A cada 60 segundos, um gigante atravessa a tela por aproximadamente 6 segundos. O aviso “PULE!” sinaliza a ação; um contato custa 12 segundos e concede invulnerabilidade breve para não repetir a punição.
+Em intervalos variáveis, um gigante atravessa a tela por aproximadamente 6 segundos. O aviso “PULE!” sinaliza a ação; um contato custa 12 segundos e concede invulnerabilidade breve para não repetir a punição.
 
 Professores podem abrir **Configurações → Editor de questões** ou acessar `editor.html`. O editor altera, valida e salva questões no `LocalStorage`, permite duplicar questões e exportar/importar o banco completo em JSON. O jogo carrega automaticamente o banco editado. Isso não modifica `banco/conteudo.json`: para distribuir as mesmas edições em outros computadores, exporte o arquivo no editor e importe-o em cada máquina, ou altere o JSON-fonte e regenere `banco/conteudo.js`.
+
+## Novos inimigos e evento do gigante
+
+O gigante deixou de usar emoji e agora é um sprite original desenhado em Canvas, com corpo, rosto, coroa de espinhos, pernas animadas e aviso de salto. Sua próxima aparição é determinada pela seed em um intervalo variável de 45 a 85 segundos, evitando uma cadência previsível.
+
+Em plataformas elevadas podem surgir atiradores. Quando o estudante se aproxima, eles lançam projéteis luminosos com trajetória levemente curva; cada acerto remove 2 segundos e concede uma curta invulnerabilidade. Em pisos largos também podem existir inimigos camuflados como arbustos. Eles se revelam quando o jogador chega a 180 pixels, executam um salto alto e depois voltam a se esconder. A estrela de poder protege contra projéteis, camuflados e o gigante.

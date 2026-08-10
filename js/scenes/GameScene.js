@@ -14,9 +14,12 @@ MatGame.GameScene = class {
     this.cartasCoringa = [];
     this.fantasmas = [];
     this.gigantes = [];
+    this.atiradores = [];
+    this.projeteis = [];
+    this.camuflados = [];
     this.particulas = [];
     this.ultimoDesafioTempo = 0;
-    this.proximoGigante = MatGame.CONFIG.tempo.giganteIntervalo;
+    this.proximoGigante = 0;
     this.ultimaCartaX = -2000;
     this.proximaEstrelaPoder = 0;
     this.proximoMago = 20;
@@ -32,6 +35,7 @@ MatGame.GameScene = class {
     this.pontoRetorno = { x: 90, y: 460 };
     this.gerarAte(3200);
     this.agendarEstrelaPoder();
+    this.agendarGigante();
     this.ouvir();
     this.ultimo = performance.now();
     requestAnimationFrame((tempo) => this.loop(tempo));
@@ -73,6 +77,12 @@ MatGame.GameScene = class {
               vx: 55 + nivel * 20, nivel
             });
           }
+        }
+        if (nivel >= 2 && item.w >= 160 && item.y <= 540) {
+          this.atiradores.push({ x: item.x + item.w / 2, y: item.y - 42, w: 38, h: 42, proximoTiro: this.app.tempoDecorrido + 1.5 });
+        }
+        if (nivel >= 2 && item.y === 620 && item.w >= 250) {
+          this.camuflados.push({ x: item.x + item.w * 0.68, y: 578, baseY: 578, w: 40, h: 42, vy: 0, revelado: false, cooldownAte: 0 });
         }
       }
 
@@ -211,6 +221,46 @@ MatGame.GameScene = class {
       }
     }
 
+    for (const atirador of this.atiradores) {
+      const distanciaX = jogador.x - atirador.x;
+      if (Math.abs(distanciaX) < 620 && this.app.tempoDecorrido >= atirador.proximoTiro) {
+        const direcao = Math.sign(distanciaX) || 1;
+        this.projeteis.push({ x: atirador.x + direcao * 22, y: atirador.y + 15, vx: direcao * 245, vy: -35, ativa: true });
+        atirador.proximoTiro = this.app.tempoDecorrido + config.tempo.projetilIntervalo;
+      }
+    }
+    for (const projetil of this.projeteis) {
+      if (!projetil.ativa) continue;
+      projetil.x += projetil.vx * delta;
+      projetil.y += projetil.vy * delta;
+      projetil.vy += 80 * delta;
+      if (Math.abs(projetil.x - jogador.x) > 900 || projetil.y > 760) projetil.ativa = false;
+      if (projetil.ativa && agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: projetil.x - 7, y: projetil.y - 7, w: 14, h: 14 })) {
+        projetil.ativa = false;
+        jogador.danoAte = agora + 420;
+        jogador.invulneravelAte = agora + 700;
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.projetil);
+      }
+    }
+    for (const camuflado of this.camuflados) {
+      const perto = Math.abs(jogador.x - camuflado.x) <= config.tempo.camufladoDistancia;
+      if (perto && !camuflado.revelado && agora >= camuflado.cooldownAte) {
+        camuflado.revelado = true;
+        camuflado.vy = -690;
+      }
+      if (camuflado.revelado) {
+        camuflado.vy += config.gravidade * delta;
+        camuflado.y += camuflado.vy * delta;
+        if (camuflado.y >= camuflado.baseY) {
+          camuflado.y = camuflado.baseY; camuflado.vy = 0; camuflado.revelado = false; camuflado.cooldownAte = agora + 2400;
+        }
+        if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, camuflado)) {
+          jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -390;
+          this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
+        }
+      }
+    }
+
     if (this.app.tempoDecorrido - this.ultimoDesafioTempo >= config.tempo.fantasmaApos && !this.fantasmas.some((fantasma) => fantasma.ativa)) {
       this.fantasmas.push({ x: jogador.x - 420, y: jogador.y, ativa: true });
     }
@@ -231,7 +281,7 @@ MatGame.GameScene = class {
 
     if (this.app.tempoDecorrido >= this.proximoGigante) {
       this.gigantes.push({ nascimento: this.app.tempoDecorrido, ativa: true, atingiu: false });
-      this.proximoGigante += config.tempo.giganteIntervalo;
+      this.agendarGigante();
     }
     for (const gigante of this.gigantes) {
       if (!gigante.ativa) continue;
@@ -239,7 +289,7 @@ MatGame.GameScene = class {
       gigante.x = this.camera + this.app.canvas.width + 100 - idade * 330;
       gigante.y = 520;
       if (idade > 6) { gigante.ativa = false; continue; }
-      if (!gigante.atingiu && agora >= jogador.invulneravelAte && this.toca(jogador, { x: gigante.x, y: gigante.y, w: 82, h: 100 })) {
+      if (!gigante.atingiu && agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: gigante.x, y: gigante.y, w: 82, h: 100 })) {
         gigante.atingiu = true;
         jogador.danoAte = agora + 650;
         jogador.invulneravelAte = agora + 1600;
@@ -307,6 +357,11 @@ MatGame.GameScene = class {
       const angulo = i / 12 * Math.PI * 2;
       this.particulas.push({ x, y, vx: Math.cos(angulo) * 150, vy: Math.sin(angulo) * 150, vida: 0.8 });
     }
+  }
+
+  agendarGigante() {
+    const tempo = MatGame.CONFIG.tempo;
+    this.proximoGigante = this.app.tempoDecorrido + this.app.powerRng.inteiro(tempo.giganteMinimo, tempo.giganteMaximo);
   }
 
   agendarEstrelaPoder() {
@@ -436,6 +491,28 @@ MatGame.GameScene = class {
         ctx.fill();
       }
     }
+    for (const atirador of this.atiradores) {
+      ctx.fillStyle = '#5b3a86';
+      ctx.beginPath(); ctx.roundRect(atirador.x - camera - 19, atirador.y, 38, 42, 10); ctx.fill();
+      ctx.fillStyle = '#d8f3ff'; ctx.fillRect(atirador.x - camera - 13, atirador.y + 9, 8, 8); ctx.fillRect(atirador.x - camera + 5, atirador.y + 9, 8, 8);
+      ctx.fillStyle = '#102a43'; ctx.fillRect(atirador.x - camera - 10, atirador.y + 12, 4, 4); ctx.fillRect(atirador.x - camera + 6, atirador.y + 12, 4, 4);
+      ctx.fillStyle = '#ffd166'; ctx.fillRect(atirador.x - camera + 16, atirador.y + 20, 20, 7);
+    }
+    for (const projetil of this.projeteis) if (projetil.ativa) {
+      ctx.fillStyle = '#ff4d9d'; ctx.shadowColor = '#ff4d9d'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.arc(projetil.x - camera, projetil.y, 7, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    }
+    for (const camuflado of this.camuflados) {
+      if (!camuflado.revelado) {
+        ctx.fillStyle = '#216e4e'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 20, camuflado.y + 31, 25, Math.PI, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#63d471'; ctx.fillRect(camuflado.x - camera - 3, camuflado.y + 27, 46, 7);
+      } else {
+        ctx.fillStyle = '#17a589'; ctx.beginPath(); ctx.roundRect(camuflado.x - camera, camuflado.y, 40, 42, 12); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 12, camuflado.y + 13, 6, 0, 7); ctx.arc(camuflado.x - camera + 29, camuflado.y + 13, 6, 0, 7); ctx.fill();
+        ctx.fillStyle = '#102a43'; ctx.fillRect(camuflado.x - camera + 11, camuflado.y + 11, 4, 5); ctx.fillRect(camuflado.x - camera + 28, camuflado.y + 11, 4, 5);
+        ctx.fillStyle = '#ef476f'; ctx.beginPath(); ctx.moveTo(camuflado.x - camera + 10, camuflado.y); ctx.lineTo(camuflado.x - camera + 20, camuflado.y - 18); ctx.lineTo(camuflado.x - camera + 29, camuflado.y); ctx.fill();
+      }
+    }
     for (const fantasma of this.fantasmas) if (fantasma.ativa) {
       ctx.globalAlpha = 0.78;
       ctx.font = '58px sans-serif';
@@ -446,11 +523,16 @@ MatGame.GameScene = class {
       ctx.fillText('PROBLEMA!', fantasma.x - camera - 35, fantasma.y - 35);
     }
     for (const gigante of this.gigantes) if (gigante.ativa) {
-      ctx.font = '96px sans-serif';
-      ctx.fillText('🧌', gigante.x - camera, gigante.y + 88);
-      ctx.fillStyle = '#ef476f';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.fillText('PULE!', gigante.x - camera + 15, gigante.y - 8);
+      const gx = gigante.x - camera;
+      const passo = Math.sin(performance.now() / 65) * 8;
+      ctx.fillStyle = '#5a2d82'; ctx.beginPath(); ctx.ellipse(gx + 42, gigante.y + 48, 42, 48, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#8ac926'; ctx.beginPath(); ctx.arc(gx + 42, gigante.y + 18, 31, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3b225f'; ctx.beginPath(); ctx.moveTo(gx + 12, gigante.y + 10); ctx.lineTo(gx + 25, gigante.y - 24); ctx.lineTo(gx + 38, gigante.y + 4); ctx.lineTo(gx + 54, gigante.y - 25); ctx.lineTo(gx + 70, gigante.y + 12); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(gx + 31, gigante.y + 17, 8, 0, 7); ctx.arc(gx + 55, gigante.y + 17, 8, 0, 7); ctx.fill();
+      ctx.fillStyle = '#102a43'; ctx.beginPath(); ctx.arc(gx + 33, gigante.y + 19, 4, 0, 7); ctx.arc(gx + 57, gigante.y + 19, 4, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#102a43'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(gx + 43, gigante.y + 32, 14, 0.1, Math.PI - 0.1); ctx.stroke();
+      ctx.fillStyle = '#3b225f'; ctx.fillRect(gx + 8, gigante.y + 82 + passo, 25, 18); ctx.fillRect(gx + 52, gigante.y + 82 - passo, 25, 18);
+      ctx.fillStyle = '#ef476f'; ctx.font = 'bold 16px sans-serif'; ctx.fillText('PULE!', gx + 15, gigante.y - 31);
     }
     for (const particula of this.particulas) if (particula.vida > 0) {
       ctx.globalAlpha = particula.vida;
