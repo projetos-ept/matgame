@@ -132,3 +132,13 @@ O camuflado foi alinhado ao chão. Quando é derrotado por cima, seu chifre se d
 Depois de 1.000 metros aparece o **Monstro-Mola**, que salta periodicamente e exige sincronizar o pulo. Depois de 2.000 metros surge a **Sombra Veloz**, que faz investidas horizontais na direção do jogador. Ambos podem ser derrotados pulando por cima, mas possuem comportamentos e silhuetas diferentes.
 
 A fada alterna suas visitas com o mago: mago aos 20 segundos, fada aos 65, novo mago aos 110 e assim por diante. Ao tocar na fada, a ação pausa e o estudante escolhe um único desejo: `+15s`, um coringa ou o poder da estrela. Como coringas não acumulam, essa opção fica desativada quando já existe uma carta no inventário.
+
+## Frutas, visitantes e Guardião da Incógnita
+
+O chunk `ALTURAS` cria uma escadaria segura até plataformas mais altas. Maçãs, laranjas, uvas e morangos podem surgir de forma determinística nessas plataformas; cada fruta vale 5 segundos e pontos especiais.
+
+Mago e fada agora voam em uma faixa alcançável pelo salto, possuem área de coleta maior e começam devagar. A velocidade cresce moderadamente com a distância, com limite máximo para continuar possível alcançá-los. Eles alternam as visitas e permanecem disponíveis por 10 segundos.
+
+Entre 1.500 e 2.000 metros aparece o **Bumerangueiro do Cálculo**, com máscara coral e corpo turquesa. Seu bumerangue possui duas fases visíveis: viaja para fora por 0,9 segundo e depois persegue o próprio lançador até retornar. A Sombra Veloz noturna continua surgindo depois dos 2.000 metros.
+
+A cada 1.000 metros, o **Guardião da Incógnita** fecha uma arena que impede avançar ou voltar. É um monstro original do projeto — não utiliza personagem ou sprite de franquias comerciais — com carapaça verde, espinhos, barriga que muda de cor e uma interrogação. Ele encolhe a cada salto recebido e é derrotado exatamente no terceiro; a vitória libera a arena e concede 30 segundos. A estrela protege contra o contato, mas propositalmente não elimina o chefe.

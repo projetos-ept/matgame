@@ -5,6 +5,7 @@ MatGame.GameScene = class {
     this.teclas = {};
     this.plataformas = [];
     this.moedas = [];
+    this.frutas = [];
     this.estacoes = [];
     this.obstaculos = [];
     this.estrelas = [];
@@ -16,12 +17,15 @@ MatGame.GameScene = class {
     this.gigantes = [];
     this.atiradores = [];
     this.projeteis = [];
+    this.bumerangues = [];
     this.camuflados = [];
     this.chifres = [];
     this.monstrosAvancados = [];
     this.fadas = [];
     this.proximaFada = MatGame.CONFIG.tempo.fadaPrimeira;
     this.particulas = [];
+    this.chefe = null;
+    this.proximoChefeMetros = MatGame.CONFIG.mundo.chefeCadaMetros;
     this.ultimoDesafioTempo = 0;
     this.proximoGigante = 0;
     this.ultimaCartaX = -2000;
@@ -76,6 +80,10 @@ MatGame.GameScene = class {
       for (const plataforma of chunk.plataformas) {
         const item = { x: base + plataforma[0], y: plataforma[1], w: plataforma[2], h: plataforma[3] };
         this.plataformas.push(item);
+        if (item.y <= 500 && this.app.powerRng.proximo() < 0.38) {
+          const tiposFruta = ['🍎', '🍊', '🍇', '🍓'];
+          this.frutas.push({ x: item.x + item.w / 2, y: item.y - 34, tipo: this.app.powerRng.escolher(tiposFruta), ativa: true });
+        }
         // Bichos surgem apenas em pisos largos e planos, nunca em saltos estreitos.
         if (populacao >= 1 && item.y === 620 && item.w >= 210) {
           const quantidade = populacao >= 3 ? Math.min(2, Math.max(1, Math.floor(item.w / 280))) : 1;
@@ -96,8 +104,12 @@ MatGame.GameScene = class {
           this.camuflados.push({ x: item.x + item.w * 0.68, y: 578, baseY: 578, w: 40, h: 42, vy: 0, revelado: false, cooldownAte: 0, morto: false });
           camufladoCriado = true;
         }
-        if (!avancadoCriado && metrosChunk >= mundo.monstroMolaMetros && metrosChunk < mundo.monstroSombraMetros && item.y === 620 && item.w >= 300) {
+        if (!avancadoCriado && metrosChunk >= mundo.monstroMolaMetros && metrosChunk < mundo.monstroBumerangueMetros && item.y === 620 && item.w >= 300) {
           this.monstrosAvancados.push({ tipo: 'mola', x: item.x + item.w * 0.45, y: 574, baseY: 574, w: 44, h: 46, vy: 0, proximoSalto: 0, morto: false });
+          avancadoCriado = true;
+        }
+        if (!avancadoCriado && metrosChunk >= mundo.monstroBumerangueMetros && metrosChunk < mundo.monstroSombraMetros && item.y === 620 && item.w >= 300) {
+          this.monstrosAvancados.push({ tipo: 'bumerangue', x: item.x + item.w * 0.5, y: 574, baseY: 574, w: 46, h: 46, proximoAtaque: 0, morto: false });
           avancadoCriado = true;
         }
         if (!avancadoCriado && metrosChunk >= mundo.monstroSombraMetros && item.y === 620 && item.w >= 320) {
@@ -221,7 +233,7 @@ MatGame.GameScene = class {
       }
     }
 
-    if (this.app.tempoDecorrido >= this.proximoMago) {
+    if (!this.chefe?.ativo && this.app.tempoDecorrido >= this.proximoMago) {
       this.magos.push({ nascimento: this.app.tempoDecorrido, y: 210, ativa: true });
       this.proximoMago += config.tempo.magoIntervalo;
     }
@@ -229,16 +241,17 @@ MatGame.GameScene = class {
       if (!mago.ativa) continue;
       const idade = this.app.tempoDecorrido - mago.nascimento;
       if (idade >= config.tempo.magoDuracao) { mago.ativa = false; continue; }
-      mago.x = this.camera + this.app.canvas.width - 100 - idade * 72;
-      mago.y = 220 + Math.sin(idade * 3) * 55;
-      if (this.toca(jogador, { x: mago.x - 30, y: mago.y - 30, w: 60, h: 60 })) {
+      const velocidadeMago = Math.min(68, 36 + this.app.distancia / 120);
+      mago.x = this.camera + this.app.canvas.width - 80 - idade * velocidadeMago;
+      mago.y = 455 + Math.sin(idade * 2.5) * 42;
+      if (this.toca(jogador, { x: mago.x - 40, y: mago.y - 40, w: 80, h: 80 })) {
         mago.ativa = false;
         this.app.adicionarTempo(config.tempo.mago);
         this.app.placar.adicionar(config.pontos.especial);
       }
     }
 
-    if (this.app.tempoDecorrido >= this.proximaFada) {
+    if (!this.chefe?.ativo && this.app.tempoDecorrido >= this.proximaFada) {
       this.fadas.push({ nascimento: this.app.tempoDecorrido, ativa: true });
       this.proximaFada += config.tempo.fadaIntervalo;
     }
@@ -246,8 +259,9 @@ MatGame.GameScene = class {
       if (!fada.ativa) continue;
       const idade = this.app.tempoDecorrido - fada.nascimento;
       if (idade > 10) { fada.ativa = false; continue; }
-      fada.x = this.camera + 120 + idade * 55; fada.y = 190 + Math.sin(idade * 4) * 45;
-      if (this.toca(jogador, { x: fada.x - 26, y: fada.y - 26, w: 52, h: 52 })) { fada.ativa = false; this.encontroFada(); this.app.atualizarHud(); return; }
+      const velocidadeFada = Math.min(64, 34 + this.app.distancia / 140);
+      fada.x = this.camera + 90 + idade * velocidadeFada; fada.y = 445 + Math.sin(idade * 3) * 38;
+      if (this.toca(jogador, { x: fada.x - 38, y: fada.y - 38, w: 76, h: 76 })) { fada.ativa = false; this.encontroFada(); this.app.atualizarHud(); return; }
     }
 
     for (const atirador of this.atiradores) {
@@ -329,18 +343,43 @@ MatGame.GameScene = class {
       if (monstro.tipo === 'mola') {
         if (this.app.tempoDecorrido >= monstro.proximoSalto && monstro.y >= monstro.baseY) { monstro.vy = -590; monstro.proximoSalto = this.app.tempoDecorrido + 2.8; }
         monstro.vy += config.gravidade * delta; monstro.y = Math.min(monstro.baseY, monstro.y + monstro.vy * delta);
-      } else if (this.app.tempoDecorrido >= monstro.proximaInvestida) {
-        monstro.vx = Math.sign(jogador.x - monstro.x) * 340; monstro.proximaInvestida = this.app.tempoDecorrido + 3.5;
       }
-      if (monstro.tipo === 'sombra') { monstro.x += monstro.vx * delta; monstro.vx *= Math.pow(0.985, delta * 60); }
+      if (monstro.tipo === 'bumerangue' && this.app.tempoDecorrido >= monstro.proximoAtaque) {
+        const direcao = Math.sign(jogador.x - monstro.x) || 1;
+        this.bumerangues.push({ x: monstro.x + 23, y: monstro.y + 18, vx: direcao * 260, vy: -80, fase: 'ida', idade: 0, dono: monstro, ativo: true });
+        monstro.proximoAtaque = this.app.tempoDecorrido + 3.2;
+      }
+      if (monstro.tipo === 'sombra') {
+        if (this.app.tempoDecorrido >= monstro.proximaInvestida) { monstro.vx = Math.sign(jogador.x - monstro.x) * 340; monstro.proximaInvestida = this.app.tempoDecorrido + 3.5; }
+        monstro.x += monstro.vx * delta; monstro.vx *= Math.pow(0.985, delta * 60);
+      }
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, monstro)) {
         const pisou = jogador.vy > 0 && yAnterior + jogador.h <= monstro.y + 15;
         if (pisou) { monstro.morto = true; jogador.vy = -440; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(monstro.x + 22, monstro.y + 20); }
         else { jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -380; this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho); }
       }
     }
+    for (const bumerangue of this.bumerangues) {
+      if (!bumerangue.ativo) continue;
+      bumerangue.idade += delta;
+      if (bumerangue.fase === 'ida') {
+        bumerangue.x += bumerangue.vx * delta; bumerangue.y += bumerangue.vy * delta; bumerangue.vy += 150 * delta;
+        if (bumerangue.idade >= 0.9) bumerangue.fase = 'volta';
+      } else {
+        if (bumerangue.dono.morto) { bumerangue.ativo = false; continue; }
+        const dx = bumerangue.dono.x + 23 - bumerangue.x; const dy = bumerangue.dono.y + 18 - bumerangue.y;
+        const distancia = Math.max(1, Math.hypot(dx, dy)); bumerangue.x += dx / distancia * 310 * delta; bumerangue.y += dy / distancia * 310 * delta;
+        if (distancia < 20) { bumerangue.ativo = false; continue; }
+      }
+      if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: bumerangue.x - 12, y: bumerangue.y - 8, w: 24, h: 16 })) {
+        bumerangue.ativo = false; jogador.danoAte = agora + 400; jogador.invulneravelAte = agora + 800;
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.projetil);
+      }
+    }
 
-    if (this.app.tempoDecorrido - this.ultimoDesafioTempo >= config.tempo.fantasmaApos && !this.fantasmas.some((fantasma) => fantasma.ativa)) {
+    this.atualizarChefe(delta, agora, yAnterior);
+
+    if (!this.chefe?.ativo && this.app.tempoDecorrido - this.ultimoDesafioTempo >= config.tempo.fantasmaApos && !this.fantasmas.some((fantasma) => fantasma.ativa)) {
       this.fantasmas.push({ x: jogador.x - 420, y: jogador.y, ativa: true });
     }
     for (const fantasma of this.fantasmas) {
@@ -358,7 +397,7 @@ MatGame.GameScene = class {
       }
     }
 
-    if (this.app.tempoDecorrido >= this.proximoGigante) {
+    if (!this.chefe?.ativo && this.app.tempoDecorrido >= this.proximoGigante) {
       this.gigantes.push({ nascimento: this.app.tempoDecorrido, ativa: true, atingiu: false });
       this.agendarGigante();
     }
@@ -387,6 +426,11 @@ MatGame.GameScene = class {
     this.app.distancia = Math.max(this.app.distancia, Math.floor(jogador.x / 10));
     this.gerarAte(jogador.x + config.mundo.gerarAdiante);
 
+    for (const fruta of this.frutas) {
+      if (fruta.ativa && this.toca(jogador, { x: fruta.x - 18, y: fruta.y - 18, w: 36, h: 36 })) {
+        fruta.ativa = false; this.app.adicionarTempo(config.tempo.fruta); this.app.placar.adicionar(config.pontos.especial);
+      }
+    }
     for (const moeda of this.moedas) {
       if (moeda.ativa && this.toca(jogador, { x: moeda.x - moeda.r, y: moeda.y - moeda.r, w: moeda.r * 2, h: moeda.r * 2 })) {
         moeda.ativa = false;
@@ -411,7 +455,7 @@ MatGame.GameScene = class {
       }
     }
     for (const estacao of this.estacoes) {
-      if (estacao.ativa && Math.abs(jogador.x - estacao.x) < 50) {
+      if (!this.chefe?.ativo && estacao.ativa && Math.abs(jogador.x - estacao.x) < 50) {
         estacao.ativa = false;
         this.desafio();
       }
@@ -419,6 +463,40 @@ MatGame.GameScene = class {
 
     if (jogador.y > 800) this.tratarQueda();
     this.app.atualizarHud();
+  }
+
+  atualizarChefe(delta, agora, yAnterior) {
+    const mundo = MatGame.CONFIG.mundo;
+    if (!this.chefe && this.app.distancia >= this.proximoChefeMetros) {
+      const inicio = this.camera;
+      this.plataformas.push({ x: inicio, y: 620, w: this.app.canvas.width + 180, h: 100 });
+      this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: 3, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0 };
+      this.fantasmas.forEach((item) => { item.ativa = false; });
+      this.gigantes.forEach((item) => { item.ativa = false; });
+      this.magos.forEach((item) => { item.ativa = false; });
+      this.fadas.forEach((item) => { item.ativa = false; });
+      this.eliminarInimigosNaTela(agora);
+    }
+    const chefe = this.chefe;
+    if (!chefe?.ativo) return;
+    this.jogador.x = Math.max(chefe.arenaInicio, Math.min(this.jogador.x, chefe.arenaFim - this.jogador.w));
+    chefe.x += chefe.direcao * (72 + (3 - chefe.vida) * 18) * delta;
+    if (chefe.x <= chefe.arenaInicio + 500 || chefe.x + chefe.w >= chefe.arenaFim) chefe.direcao *= -1;
+    const escala = 0.55 + chefe.vida * 0.15;
+    const hitbox = { x: chefe.x + chefe.w * (1 - escala) / 2, y: 620 - chefe.h * escala, w: chefe.w * escala, h: chefe.h * escala };
+    if (this.toca(this.jogador, hitbox)) {
+      const pisou = this.jogador.vy > 0 && yAnterior + this.jogador.h <= hitbox.y + 18;
+      if (pisou && agora >= chefe.invulneravelAte) {
+        chefe.vida -= 1; chefe.invulneravelAte = agora + 900; this.jogador.vy = -480; this.criarExplosao(hitbox.x + hitbox.w / 2, hitbox.y);
+        if (chefe.vida <= 0) {
+          chefe.ativo = false; this.app.adicionarTempo(MatGame.CONFIG.tempo.chefe); this.app.placar.adicionar(MatGame.CONFIG.pontos.checkpoint);
+          this.proximoChefeMetros += mundo.chefeCadaMetros; this.chefe = null;
+        }
+      } else if (agora >= Math.max(this.jogador.invulneravelAte, this.jogador.poderAte)) {
+        this.jogador.danoAte = agora + 550; this.jogador.invulneravelAte = agora + 1300; this.jogador.vy = -400;
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - MatGame.CONFIG.tempo.colisaoChefe);
+      }
+    }
   }
 
   eliminarInimigosNaTela(agora) {
@@ -429,6 +507,7 @@ MatGame.GameScene = class {
     for (const monstro of this.monstrosAvancados) if (!monstro.morto && perto(monstro)) { monstro.morto = true; this.criarExplosao(monstro.x, monstro.y); }
     for (const gigante of this.gigantes) if (gigante.ativa && perto(gigante)) { gigante.ativa = false; this.criarExplosao(gigante.x, gigante.y); }
     for (const projetil of this.projeteis) projetil.ativa = false;
+    for (const bumerangue of this.bumerangues) bumerangue.ativo = false;
   }
 
   encontroFada() {
@@ -567,6 +646,10 @@ MatGame.GameScene = class {
       ctx.fillStyle = '#63d471';
       ctx.fillRect(plataforma.x - camera, plataforma.y, plataforma.w, 12);
     }
+    for (const fruta of this.frutas) if (fruta.ativa) {
+      ctx.font = '32px sans-serif'; ctx.fillText(fruta.tipo, fruta.x - camera - 16, fruta.y + 12);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 13px sans-serif'; ctx.fillText('+5s', fruta.x - camera - 12, fruta.y - 18);
+    }
     for (const moeda of this.moedas) if (moeda.ativa) {
       ctx.fillStyle = '#6ee7ff';
       ctx.beginPath();
@@ -642,10 +725,22 @@ MatGame.GameScene = class {
         for (let i = 1; i < 4; i += 1) ctx.lineTo(monstro.x - camera + (i % 2 ? 34 : 10), monstro.y + 15 + i * 9);
         ctx.stroke(); ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(monstro.x - camera + 22, monstro.y + 10, 20, 0, 7); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.fillRect(monstro.x - camera + 10, monstro.y + 5, 8, 8); ctx.fillRect(monstro.x - camera + 27, monstro.y + 5, 8, 8);
+      } else if (monstro.tipo === 'bumerangue') {
+        const mx = monstro.x - camera;
+        ctx.fillStyle = '#0fa3b1'; ctx.beginPath(); ctx.ellipse(mx + 23, monstro.y + 25, 23, 21, 0, 0, 7); ctx.fill();
+        ctx.fillStyle = '#f7a072'; ctx.beginPath(); ctx.moveTo(mx + 4, monstro.y + 15); ctx.lineTo(mx + 23, monstro.y + 2); ctx.lineTo(mx + 42, monstro.y + 15); ctx.lineTo(mx + 35, monstro.y + 22); ctx.lineTo(mx + 11, monstro.y + 22); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(mx + 15, monstro.y + 16, 6, 0, 7); ctx.arc(mx + 31, monstro.y + 16, 6, 0, 7); ctx.fill();
+        ctx.fillStyle = '#102a43'; ctx.beginPath(); ctx.arc(mx + 16, monstro.y + 17, 3, 0, 7); ctx.arc(mx + 30, monstro.y + 17, 3, 0, 7); ctx.fill();
+        ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(mx + 23, monstro.y + 30, 10, 0.2, 2.9); ctx.stroke();
       } else {
         ctx.globalAlpha = 0.82; ctx.fillStyle = '#0b1026'; ctx.beginPath(); ctx.ellipse(monstro.x - camera + 23, monstro.y + 25, 25, 22, 0, 0, 7); ctx.fill();
         ctx.fillStyle = '#6ee7ff'; ctx.beginPath(); ctx.arc(monstro.x - camera + 15, monstro.y + 18, 5, 0, 7); ctx.arc(monstro.x - camera + 31, monstro.y + 18, 5, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
       }
+    }
+    for (const bumerangue of this.bumerangues) if (bumerangue.ativo) {
+      ctx.save(); ctx.translate(bumerangue.x - camera, bumerangue.y); ctx.rotate(performance.now() / 90);
+      ctx.strokeStyle = bumerangue.fase === 'ida' ? '#ffd166' : '#6ee7ff'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(-11, -7); ctx.quadraticCurveTo(0, 8, 11, -7); ctx.stroke(); ctx.restore();
     }
     for (const fantasma of this.fantasmas) if (fantasma.ativa) {
       ctx.globalAlpha = 0.78;
@@ -655,6 +750,18 @@ MatGame.GameScene = class {
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 14px sans-serif';
       ctx.fillText('PROBLEMA!', fantasma.x - camera - 35, fantasma.y - 35);
+    }
+    if (this.chefe?.ativo) {
+      const chefe = this.chefe; const escala = 0.55 + chefe.vida * 0.15; const cx = chefe.x - camera + chefe.w / 2; const base = 620;
+      ctx.save(); ctx.translate(cx, base); ctx.scale(escala, escala);
+      const coresBarriga = ['#6ee7ff', '#ffd166', '#ef476f', '#9b5de5']; const corBarriga = coresBarriga[Math.floor(performance.now() / 220) % coresBarriga.length];
+      ctx.fillStyle = '#315c42'; ctx.beginPath(); ctx.ellipse(0, -58, 58, 65, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#264536'; ctx.beginPath(); ctx.moveTo(-48, -78); ctx.lineTo(-68, -112); ctx.lineTo(-27, -92); ctx.lineTo(0, -125); ctx.lineTo(26, -92); ctx.lineTo(68, -112); ctx.lineTo(48, -76); ctx.fill();
+      ctx.fillStyle = '#5fbf72'; ctx.beginPath(); ctx.arc(0, -103, 39, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-14, -108, 10, 0, 7); ctx.arc(15, -108, 10, 0, 7); ctx.fill(); ctx.fillStyle = '#102a43'; ctx.beginPath(); ctx.arc(-12, -106, 5, 0, 7); ctx.arc(13, -106, 5, 0, 7); ctx.fill();
+      ctx.fillStyle = corBarriga; ctx.beginPath(); ctx.ellipse(0, -50, 34, 41, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#102a43'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('?', 0, -35);
+      ctx.fillStyle = '#315c42'; ctx.fillRect(-47, -22, 28, 24); ctx.fillRect(19, -22, 28, 24); ctx.restore(); ctx.textAlign = 'start';
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 17px sans-serif'; ctx.fillText(`GUARDIÃO DA INCÓGNITA  ${'❤'.repeat(chefe.vida)}`, cx - 125, base - chefe.h * escala - 22);
     }
     for (const gigante of this.gigantes) if (gigante.ativa) {
       const gx = gigante.x - camera;

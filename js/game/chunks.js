@@ -6,5 +6,6 @@ MatGame.CHUNKS = [
  {id:'ESTACAO',dificuldade:1,largura:960,pontoEntrada:560,pontoSaida:560,peso:2,permiteDesafio:true,pontuacaoMaxima:250,plataformas:[[0,620,960,100],[310,500,170,24],[600,530,150,24]],estacao:[790,550]},
  {id:'BONUS',dificuldade:2,largura:960,pontoEntrada:560,pontoSaida:560,peso:1,permiteDesafio:false,pontuacaoMaxima:100,plataformas:[[0,620,180,100],[240,540,150,24],[450,470,150,24],[660,540,150,24],[870,620,90,100]]},
  {id:'CHECKPOINT',dificuldade:1,largura:960,pontoEntrada:560,pontoSaida:560,peso:1,permiteDesafio:false,pontuacaoMaxima:250,checkpoint:[500,540],plataformas:[[0,620,960,100]]},
- {id:'ABISMO',dificuldade:3,largura:960,pontoEntrada:560,pontoSaida:560,peso:2,permiteDesafio:false,pontuacaoMaxima:100,plataformas:[[0,620,170,100],[245,540,130,24],[455,455,125,24],[665,530,125,24],[865,620,95,100]]}
+ {id:'ABISMO',dificuldade:3,largura:960,pontoEntrada:560,pontoSaida:560,peso:2,permiteDesafio:false,pontuacaoMaxima:100,plataformas:[[0,620,170,100],[245,540,130,24],[455,455,125,24],[665,530,125,24],[865,620,95,100]]},
+ {id:'ALTURAS',dificuldade:2,largura:960,pontoEntrada:560,pontoSaida:560,peso:2,permiteDesafio:false,pontuacaoMaxima:100,plataformas:[[0,620,190,100],[230,550,135,24],[405,485,130,24],[575,420,140,24],[755,500,120,24],[915,620,45,100]]}
 ];
