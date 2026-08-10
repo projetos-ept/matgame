@@ -10,9 +10,16 @@ MatGame.ChallengeScene = {
       dinheiro: 'DINHEIRO',
       problema: 'INTERPRETAÇÃO'
     }[categoria];
+    const aoTrocar = () => {
+      const nova = opcoes.origem === 'fantasma'
+        ? app.seletor.selecionarDificil()
+        : app.seletor.selecionar(categoria, app.gerador.dificuldade());
+      app.questaoDebug = nova;
+      this.mostrar(app, nova, categoria, aoFim, opcoes);
+    };
 
     if (categoria === 'problema') {
-      this.etapaInterpretacao(app, questao, aoFim, titulo, opcoes);
+      this.etapaInterpretacao(app, questao, aoFim, titulo, opcoes, aoTrocar);
       return;
     }
 
@@ -30,12 +37,13 @@ MatGame.ChallengeScene = {
     });
   },
 
-  etapaInterpretacao(app, questao, aoFim, titulo, opcoes) {
+  etapaInterpretacao(app, questao, aoFim, titulo, opcoes, aoTrocar) {
     this.pergunta(app, {
       titulo,
       texto: `${questao.problema}<br><small>Qual cálculo resolve o problema?</small>`,
       alternativas: questao.alternativasExpressao,
-      resposta: questao.expressao
+      resposta: questao.expressao,
+      aoTrocar
     }, (correta, primeiraTentativa, bonusTempo) => {
       app.placar.responder('interpretacao', correta, MatGame.CONFIG.pontos.interpretacao);
       app.adicionarTempo(this.ajustarBonus(bonusTempo, opcoes));
@@ -87,6 +95,7 @@ MatGame.ChallengeScene = {
       <p class="question">${dados.texto}</p>
       <div class="answers"></div>
       ${app.coringa ? '<button type="button" class="joker-button" data-coringa>🃏 USAR CORINGA — remover 2 erradas</button>' : ''}
+      ${app.reciclagens > 0 && dados.aoTrocar ? `<button type="button" class="secondary" data-reciclar>♻ TROCAR PROBLEMA (${app.reciclagens})</button>` : ''}
       <p class="feedback" role="status"></p>`;
 
     const caixa = painel.querySelector('.answers');
@@ -101,6 +110,14 @@ MatGame.ChallengeScene = {
       if (restante === 0) textoTempo.parentElement.innerHTML = '💭 Faixa rápida encerrada — acertar ainda vale +5s';
     };
     const timer = setInterval(atualizarTimer, 200);
+
+    const reciclar = painel.querySelector('[data-reciclar]');
+    if (reciclar) reciclar.onclick = () => {
+      finalizada = true;
+      clearInterval(timer);
+      app.reciclagens = Math.max(0, app.reciclagens - 1);
+      dados.aoTrocar();
+    };
 
     dados.alternativas.forEach((alternativa, indice) => {
       const botao = document.createElement('button');

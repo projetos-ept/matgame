@@ -170,3 +170,10 @@ Depois de completar os cinco cenários, o ciclo recomeça com outra variação d
 ## Camuflagem adaptativa
 
 O inimigo camuflado acompanha o cenário atual em vez de usar sempre um arbusto verde. Na floresta ele assume forma de moita; no deserto, de rocha arredondada; nas montanhas, de pico irregular; na cidade, de caixa; e no cosmos, de cristal. A cor principal e a borda são herdadas da paleta atual da plataforma, incluindo as três variações cromáticas de cada cenário. Ao saltar, ele revela a aparência original para que o estudante identifique claramente o perigo.
+
+### Novidades de progressão
+
+- A partir de 1.000 m podem surgir plataformas móveis horizontais opcionais; após 3.000 m também aparecem versões verticais. A rota estática continua jogável e checkpoints nunca são gravados sobre plataformas móveis.
+- O dragão 🐉 caminha lentamente na plataforma e dispara rajadas de três fogos lineares, com uma pausa clara entre rajadas. O morcego usa uma investida reta e retorna suavemente ao ponto de espera.
+- O mago segue o mesmo percurso previsível da fada, mas aparece raramente, em um intervalo determinístico entre 90 e 180 segundos.
+- Cada Guardião da Incógnita derrotado deixa um ♻. É possível guardar até três trocas e consumir uma durante um desafio para receber outro problema, sem registrar erro na questão substituída.

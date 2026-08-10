@@ -22,6 +22,7 @@ MatGame.GameScene = class {
     this.congelantes = [];
     this.aranhas = [];
     this.chifres = [];
+    this.reciclagens = [];
     this.monstrosAvancados = [];
     this.fadas = [];
     this.proximaFada = MatGame.CONFIG.tempo.fadaPrimeira;
@@ -33,7 +34,7 @@ MatGame.GameScene = class {
     this.proximoGigante = 0;
     this.ultimaCartaX = -2000;
     this.proximaEstrelaPoder = 0;
-    this.proximoMago = 20;
+    this.proximoMago = this.app.powerRng.inteiro(MatGame.CONFIG.tempo.magoMinimo, MatGame.CONFIG.tempo.magoMaximo);
     this.fimGerado = 0;
     this.camera = 0;
     this.rodando = false;
@@ -103,7 +104,7 @@ MatGame.GameScene = class {
           }
         }
         if (!atiradorCriado && populacao >= 2 && item.w >= 180 && item.y <= 540) {
-          this.atiradores.push({ x: item.x + item.w / 2, y: item.y - 42, w: 38, h: 42, proximoTiro: this.app.tempoDecorrido + 1.5 });
+          this.atiradores.push({ x: item.x + item.w / 2, y: item.y - 50, w: 48, h: 50, inicio: item.x + 30, fim: item.x + item.w - 30, rajadaRestante: 0, proximoTiro: this.app.tempoDecorrido + 2.5 });
           atiradorCriado = true;
         }
         if (!camufladoCriado && populacao >= 2 && item.y === 620 && item.w >= 280) {
@@ -123,9 +124,13 @@ MatGame.GameScene = class {
           avancadoCriado = true;
         }
         if (!avancadoCriado && metrosChunk >= mundo.monstroSombraMetros && item.y === 620 && item.w >= 320) {
-          this.monstrosAvancados.push({ tipo: 'sombra', x: item.x + item.w * 0.55, baseX: item.x + item.w * 0.55, y: 510, baseY: 510, w: 46, h: 44, vx: 0, vy: 0, atacandoAte: 0, proximaInvestida: 0, morto: false });
+          this.monstrosAvancados.push({ tipo: 'sombra', x: item.x + item.w * 0.55, baseX: item.x + item.w * 0.55, y: 510, baseY: 510, w: 46, h: 44, vx: 0, vy: 0, estado: 'espera', estadoAte: 0, proximaInvestida: 0, morto: false });
           avancadoCriado = true;
         }
+      }
+      if (metrosChunk >= mundo.plataformaHorizontalMetros && Math.floor(metrosChunk / 96) % 2 === 0) {
+        const vertical = metrosChunk >= mundo.plataformaVerticalMetros && Math.floor(metrosChunk / 96) % 4 === 0;
+        this.plataformas.push({ x: base + 410, y: vertical ? 410 : 455, w: 140, h: 20, movel: true, eixo: vertical ? 'y' : 'x', origemX: base + 410, origemY: vertical ? 410 : 455, amplitude: vertical ? 75 : 85, velocidade: vertical ? 1.05 : 0.8, fase: this.app.powerRng.proximo() * 6.28 });
       }
       if (metrosChunk >= mundo.aranhaMetros) {
         this.aranhas.push({ x: base + chunk.largura * 0.58, tetoY: 245, y: 245, w: 42, h: 40, fase: this.app.powerRng.proximo() * Math.PI * 2, morto: false, velocidade: 1.25 + Math.min(1.2, nivelExtremo * 0.08) });
@@ -178,6 +183,20 @@ MatGame.GameScene = class {
       jogador.noChao = false;
     }
 
+    // As plataformas móveis são opcionais: a rota principal permanece sempre estática.
+    for (const plataforma of this.plataformas) {
+      if (!plataforma.movel) continue;
+      const xAnterior = plataforma.x; const plataformaYAnterior = plataforma.y;
+      const oscilacao = Math.sin(this.app.tempoDecorrido * plataforma.velocidade + plataforma.fase) * plataforma.amplitude;
+      if (plataforma.eixo === 'x') plataforma.x = plataforma.origemX + oscilacao;
+      else plataforma.y = plataforma.origemY + oscilacao;
+      if (jogador.plataformaMovel === plataforma) {
+        jogador.x += plataforma.x - xAnterior;
+        jogador.y += plataforma.y - plataformaYAnterior;
+      }
+    }
+    jogador.plataformaMovel = null;
+
     const yAnterior = jogador.y;
     jogador.vy += config.gravidade * delta;
     const limiteRetorno = Math.max(0, (this.app.distancia * 10) * config.mundo.retornoMaximo);
@@ -191,8 +210,9 @@ MatGame.GameScene = class {
         jogador.y = plataforma.y - jogador.h;
         jogador.vy = 0;
         jogador.noChao = true;
+        if (plataforma.movel) jogador.plataformaMovel = plataforma;
         const margem = Math.min(35, plataforma.w / 4);
-        this.pontoRetorno = {
+        if (!plataforma.movel) this.pontoRetorno = {
           x: Math.max(plataforma.x + margem, Math.min(jogador.x, plataforma.x + plataforma.w - jogador.w - margem)),
           y: plataforma.y - jogador.h
         };
@@ -246,19 +266,27 @@ MatGame.GameScene = class {
         this.app.placar.adicionar(config.pontos.especial);
       }
     }
+    for (const reciclagem of this.reciclagens) {
+      if (!reciclagem.ativa || this.app.reciclagens >= 3) continue;
+      if (this.toca(jogador, { x: reciclagem.x - 24, y: reciclagem.y - 28, w: 48, h: 56 })) {
+        reciclagem.ativa = false;
+        this.app.reciclagens = Math.min(3, this.app.reciclagens + 1);
+        this.app.placar.adicionar(config.pontos.especial);
+      }
+    }
 
     if (!this.chefe?.ativo && this.app.tempoDecorrido >= this.proximoMago) {
-      this.magos.push({ nascimento: this.app.tempoDecorrido, y: 210, ativa: true });
-      this.proximoMago += config.tempo.magoIntervalo;
+      this.magos.push({ nascimento: this.app.tempoDecorrido, ativa: true });
+      this.agendarMago();
     }
     for (const mago of this.magos) {
       if (!mago.ativa) continue;
       const idade = this.app.tempoDecorrido - mago.nascimento;
       if (idade >= config.tempo.magoDuracao) { mago.ativa = false; continue; }
-      const velocidadeMago = Math.min(68, 36 + this.app.distancia / 120);
-      mago.x = this.camera + this.app.canvas.width - 80 - idade * velocidadeMago;
-      mago.y = 455 + Math.sin(idade * 2.5) * 42;
-      if (this.toca(jogador, { x: mago.x - 40, y: mago.y - 40, w: 80, h: 80 })) {
+      const velocidadeMago = Math.min(64, 34 + this.app.distancia / 140);
+      mago.x = this.camera + 90 + idade * velocidadeMago;
+      mago.y = 445 + Math.sin(idade * 3) * 38;
+      if (this.toca(jogador, { x: mago.x - 38, y: mago.y - 38, w: 76, h: 76 })) {
         mago.ativa = false;
         this.app.adicionarTempo(config.tempo.mago);
         this.app.placar.adicionar(config.pontos.especial);
@@ -284,6 +312,8 @@ MatGame.GameScene = class {
         if (agora >= atirador.derrotadoAte) atirador.invisivel = true;
         continue;
       }
+      const direcaoPasso = Math.sign(jogador.x - atirador.x) || 1;
+      atirador.x = Math.max(atirador.inicio, Math.min(atirador.fim - atirador.w, atirador.x + direcaoPasso * 18 * delta));
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: atirador.x - 19, y: atirador.y, w: atirador.w, h: atirador.h })) {
         const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= atirador.y + 14;
         if (pisouPorCima) {
@@ -302,17 +332,21 @@ MatGame.GameScene = class {
       const distanciaX = jogador.x - atirador.x;
       if (Math.abs(distanciaX) < 620 && this.app.tempoDecorrido >= atirador.proximoTiro) {
         const direcao = Math.sign(distanciaX) || 1;
-        this.projeteis.push({ x: atirador.x + direcao * 22, y: atirador.y + 15, vx: direcao * 245, vy: -35, ativa: true });
+        this.projeteis.push({ tipo: 'fogo', x: atirador.x + direcao * 28, y: atirador.y + 20, vx: direcao * 255, vy: 0, escala: 1, idade: 0, ativa: true });
         const etapas = Math.floor(this.app.distancia / config.tempo.projetilReducaoCadaMetros);
         const intervalo = Math.max(config.tempo.projetilIntervaloMinimo, config.tempo.projetilIntervaloInicial - etapas * 0.35);
-        atirador.proximoTiro = this.app.tempoDecorrido + intervalo;
+        atirador.rajadaRestante = atirador.rajadaRestante || config.tempo.dragaoTirosPorRajada;
+        atirador.rajadaRestante -= 1;
+        atirador.proximoTiro = this.app.tempoDecorrido + (atirador.rajadaRestante > 0 ? config.tempo.dragaoIntervaloRajada : intervalo);
+        if (atirador.rajadaRestante <= 0) atirador.rajadaRestante = config.tempo.dragaoTirosPorRajada;
       }
     }
     for (const projetil of this.projeteis) {
       if (!projetil.ativa) continue;
       projetil.x += projetil.vx * delta;
       projetil.y += projetil.vy * delta;
-      projetil.vy += 80 * delta;
+      projetil.idade += delta;
+      projetil.escala = Math.min(1.5, 1 + projetil.idade * 0.22);
       if (Math.abs(projetil.x - jogador.x) > 900 || projetil.y > 760) projetil.ativa = false;
       if (projetil.ativa && agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: projetil.x - 7, y: projetil.y - 7, w: 14, h: 14 })) {
         projetil.ativa = false;
@@ -385,12 +419,21 @@ MatGame.GameScene = class {
         monstro.proximoAtaque = this.app.tempoDecorrido + 3.2;
       }
       if (monstro.tipo === 'sombra') {
-        if (this.app.tempoDecorrido >= monstro.proximaInvestida && this.app.tempoDecorrido >= monstro.atacandoAte) {
-          const alvoX = jogador.x; const alvoY = jogador.y; const dx = alvoX - monstro.x; const dy = alvoY - monstro.y; const distancia = Math.max(1, Math.hypot(dx, dy));
-          monstro.vx = dx / distancia * 360; monstro.vy = dy / distancia * 240; monstro.atacandoAte = this.app.tempoDecorrido + 1.45; monstro.proximaInvestida = this.app.tempoDecorrido + 3.8;
+        if (monstro.estado === 'espera') {
+          monstro.y = monstro.baseY + Math.sin(this.app.tempoDecorrido * 2.4 + monstro.baseX) * 28;
         }
-        if (this.app.tempoDecorrido < monstro.atacandoAte) { monstro.x += monstro.vx * delta; monstro.y += monstro.vy * delta; }
-        else { monstro.x += (monstro.baseX - monstro.x) * delta * 1.8; monstro.y = monstro.baseY + Math.sin(this.app.tempoDecorrido * 3.2 + monstro.baseX) * 48; }
+        if (monstro.estado === 'espera' && this.app.tempoDecorrido >= monstro.proximaInvestida) {
+          const alvoX = jogador.x; const alvoY = jogador.y; const dx = alvoX - monstro.x; const dy = alvoY - monstro.y; const distancia = Math.max(1, Math.hypot(dx, dy));
+          monstro.vx = dx / distancia * 330; monstro.vy = dy / distancia * 330; monstro.estado = 'ataque'; monstro.estadoAte = this.app.tempoDecorrido + 1.35;
+        }
+        if (monstro.estado === 'ataque') {
+          monstro.x += monstro.vx * delta; monstro.y += monstro.vy * delta;
+          if (this.app.tempoDecorrido >= monstro.estadoAte) monstro.estado = 'retorno';
+        } else if (monstro.estado === 'retorno') {
+          const dx = monstro.baseX - monstro.x; const dy = monstro.baseY - monstro.y;
+          monstro.x += dx * delta * 2.4; monstro.y += dy * delta * 2.4;
+          if (Math.hypot(dx, dy) < 15) { monstro.x = monstro.baseX; monstro.y = monstro.baseY; monstro.estado = 'espera'; monstro.proximaInvestida = this.app.tempoDecorrido + 2.5; }
+        }
       }
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, monstro)) {
         const pisou = jogador.vy > 0 && yAnterior + jogador.h <= monstro.y + 15;
@@ -545,6 +588,7 @@ MatGame.GameScene = class {
         chefe.vida -= 1; chefe.invulneravelAte = agora + 900; this.jogador.vy = -480; this.criarExplosao(hitbox.x + hitbox.w / 2, hitbox.y);
         if (chefe.vida <= 0) {
           chefe.ativo = false; this.projeteisChefe.forEach((item) => { item.ativo = false; }); this.app.adicionarTempo(MatGame.CONFIG.tempo.chefe); this.app.placar.adicionar(MatGame.CONFIG.pontos.checkpoint);
+          this.reciclagens.push({ x: chefe.x + chefe.w / 2, y: 555, ativa: true });
           this.proximoChefeMetros += mundo.chefeCadaMetros; this.chefe = null;
         }
       } else if (agora >= Math.max(this.jogador.invulneravelAte, this.jogador.poderAte)) {
@@ -602,6 +646,11 @@ MatGame.GameScene = class {
   agendarGigante() {
     const tempo = MatGame.CONFIG.tempo;
     this.proximoGigante = this.app.tempoDecorrido + this.app.powerRng.inteiro(tempo.giganteMinimo, tempo.giganteMaximo);
+  }
+
+  agendarMago() {
+    const tempo = MatGame.CONFIG.tempo;
+    this.proximoMago = this.app.tempoDecorrido + this.app.powerRng.inteiro(tempo.magoMinimo, tempo.magoMaximo);
   }
 
   agendarEstrelaPoder() {
@@ -705,6 +754,10 @@ MatGame.GameScene = class {
       ctx.fillRect(plataforma.x - camera, plataforma.y, plataforma.w, plataforma.h);
       ctx.fillStyle = tema.borda;
       ctx.fillRect(plataforma.x - camera, plataforma.y, plataforma.w, 12);
+      if (plataforma.movel) {
+        ctx.fillStyle = '#fff8'; ctx.font = 'bold 16px sans-serif';
+        ctx.fillText(plataforma.eixo === 'x' ? '↔ MÓVEL' : '↕ MÓVEL', plataforma.x - camera + 18, plataforma.y + 18);
+      }
     }
     for (const fruta of this.frutas) if (fruta.ativa) {
       ctx.font = '32px sans-serif'; ctx.fillText(fruta.tipo, fruta.x - camera - 16, fruta.y + 12);
@@ -751,16 +804,12 @@ MatGame.GameScene = class {
     }
     for (const atirador of this.atiradores) {
       if (atirador.invisivel) continue;
-      ctx.fillStyle = '#5b3a86';
-      ctx.beginPath(); ctx.roundRect(atirador.x - camera - 19, atirador.y, 38, 42, 10); ctx.fill();
-      ctx.fillStyle = '#d8f3ff'; ctx.fillRect(atirador.x - camera - 13, atirador.y + 9, 8, 8); ctx.fillRect(atirador.x - camera + 5, atirador.y + 9, 8, 8);
-      ctx.fillStyle = '#102a43'; ctx.fillRect(atirador.x - camera - 10, atirador.y + 12, 4, 4); ctx.fillRect(atirador.x - camera + 6, atirador.y + 12, 4, 4);
-      ctx.fillStyle = '#ffd166'; ctx.fillRect(atirador.x - camera + 16, atirador.y + 20, 20, 7);
-      if (atirador.derrotado) { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(atirador.x - camera, atirador.y + 30, 7, 0, Math.PI * 2); ctx.fill(); }
+      ctx.font = '48px sans-serif'; ctx.fillText('🐉', atirador.x - camera - 24, atirador.y + 43);
+      if (atirador.derrotado) { ctx.font = '25px sans-serif'; ctx.fillText('😲', atirador.x - camera - 12, atirador.y + 28); }
     }
     for (const projetil of this.projeteis) if (projetil.ativa) {
-      ctx.fillStyle = '#ff4d9d'; ctx.shadowColor = '#ff4d9d'; ctx.shadowBlur = 12;
-      ctx.beginPath(); ctx.arc(projetil.x - camera, projetil.y, 7, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.save(); ctx.translate(projetil.x - camera, projetil.y); ctx.scale(projetil.escala || 1, projetil.escala || 1);
+      ctx.shadowColor = '#ff6b00'; ctx.shadowBlur = 14; ctx.font = '24px sans-serif'; ctx.fillText('💥', -12, 9); ctx.restore();
     }
     for (const camuflado of this.camuflados) {
       if (camuflado.morto) continue;
@@ -892,6 +941,11 @@ MatGame.GameScene = class {
       ctx.strokeRect(carta.x - camera - 18, carta.y - 26, 36, 52);
       ctx.font = '28px sans-serif';
       ctx.fillText('🃏', carta.x - camera - 15, carta.y + 10);
+    }
+    for (const reciclagem of this.reciclagens) if (reciclagem.ativa) {
+      const flutuar = Math.sin(performance.now() / 180) * 5;
+      ctx.font = '44px sans-serif'; ctx.fillText('♻', reciclagem.x - camera - 22, reciclagem.y + flutuar);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 13px sans-serif'; ctx.fillText('TROCAR PROBLEMA', reciclagem.x - camera - 58, reciclagem.y - 36 + flutuar);
     }
     for (const fada of this.fadas) if (fada.ativa) {
       ctx.font = '52px sans-serif'; ctx.fillText('🧚', fada.x - camera - 26, fada.y + 24);
