@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       avisoTempo.classList.add('hidden');
       avisoTempo.textContent = '';
       if (this.cena) this.cena.destruir();
+      this.soundtrack?.parar();
       this.cena = null;
       this.hud.classList.add('hidden');
       this.pause.classList.add('hidden');
@@ -39,6 +40,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       this.pause.classList.remove('hidden');
       this.cena = new MatGame.GameScene(this);
       this.cena.iniciar();
+      this.soundtrack ||= new MatGame.Soundtrack();
+      this.soundtrack.iniciar();
     },
 
     adicionarTempo(segundos) {
@@ -71,12 +74,14 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (!this.cena || !this.panel.classList.contains('hidden')) return;
       this.pausado = !this.pausado;
       if (this.pausado) {
+        this.soundtrack?.pausar();
         this.panel.className = 'panel compact';
         this.panel.classList.remove('hidden');
         this.panel.innerHTML = '<h2>JOGO PAUSADO</h2><p>Respire um pouco. Sua aventura está esperando!</p><button id="resume">CONTINUAR</button><button id="quit" class="secondary">ENCERRAR PARTIDA</button>';
         this.panel.querySelector('#resume').onclick = () => this.alternarPausa();
         this.panel.querySelector('#quit').onclick = () => MatGame.ResultScene.mostrar(this, 'pausa');
       } else {
+        this.soundtrack?.continuar();
         this.panel.classList.add('hidden');
       }
     }

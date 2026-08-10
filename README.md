@@ -178,3 +178,9 @@ O inimigo camuflado acompanha o cenário atual em vez de usar sempre um arbusto 
 - Quando deixa o disfarce, o inimigo camuflado recebe uma de seis cores por meio do gerador determinístico da partida, mantendo a reprodução por seed.
 - O mago segue o mesmo percurso previsível da fada, mas aparece raramente, em um intervalo determinístico entre 90 e 180 segundos.
 - Cada Guardião da Incógnita derrotado deixa um ♻. É possível guardar até três trocas e consumir uma durante um desafio para receber outro problema, sem registrar erro na questão substituída.
+
+## Trilha sonora offline por cenário
+
+O jogo procura cinco arquivos MIDI locais em `assets/audio/soundtrack/` e troca a faixa junto com o cenário a cada 500 metros. Consulte o `README.md` dessa pasta para ver os nomes exatos. O volume inicial pode ser alterado em `js/config.js`, na propriedade `audio.volumeTrilha`.
+
+A reprodução é tolerante a falhas: arquivo ausente, formato MIDI não suportado ou bloqueio de reprodução pelo navegador não interrompem a partida nem exibem aviso ao estudante. Como o suporte nativo a MIDI varia entre navegadores, para uma distribuição mais previsível também é possível converter, mediante autorização, as faixas para um formato amplamente aceito e atualizar os caminhos em `js/game/soundtrack.js`.

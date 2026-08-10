@@ -171,6 +171,7 @@ MatGame.GameScene = class {
     this.app.tempoRestante -= delta;
     this.app.tempoDecorrido += delta;
     this.app.gerador.tempoDecorrido = this.app.tempoDecorrido;
+    this.app.soundtrack?.atualizar(this.app.distancia);
     const raiz = document.querySelector('#app');
     const avisoTempo = document.querySelector('#time-warning');
     const emUrgencia = this.app.tempoRestante <= config.tempo.urgenciaAbaixo;
