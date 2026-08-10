@@ -173,7 +173,8 @@ O inimigo camuflado acompanha o cenário atual em vez de usar sempre um arbusto 
 
 ### Novidades de progressão
 
-- A partir de 1.000 m podem surgir plataformas móveis horizontais opcionais; após 3.000 m também aparecem versões verticais. A rota estática continua jogável e checkpoints nunca são gravados sobre plataformas móveis.
-- O dragão 🐉 caminha lentamente na plataforma e dispara rajadas de três fogos lineares, com uma pausa clara entre rajadas. O morcego usa uma investida reta e retorna suavemente ao ponto de espera.
+- A partir de 1.000 m podem surgir plataformas móveis horizontais opcionais; após 3.000 m também aparecem versões verticais. Elas percorrem trechos mais amplos e rápidos, mas não exibem rótulos sobre a arte. A rota estática continua jogável e checkpoints nunca são gravados sobre plataformas móveis.
+- O dragão 🐉 caminha lentamente na plataforma e dispara rajadas de três fogos lineares, com uma pausa clara entre rajadas. Cada fogo cresce, esmaece progressivamente e desaparece após 720 pixels. O morcego usa uma investida reta e retorna suavemente ao ponto de espera.
+- Quando deixa o disfarce, o inimigo camuflado recebe uma de seis cores por meio do gerador determinístico da partida, mantendo a reprodução por seed.
 - O mago segue o mesmo percurso previsível da fada, mas aparece raramente, em um intervalo determinístico entre 90 e 180 segundos.
 - Cada Guardião da Incógnita derrotado deixa um ♻. É possível guardar até três trocas e consumir uma durante um desafio para receber outro problema, sem registrar erro na questão substituída.

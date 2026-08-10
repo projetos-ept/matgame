@@ -130,7 +130,13 @@ MatGame.GameScene = class {
       }
       if (metrosChunk >= mundo.plataformaHorizontalMetros && Math.floor(metrosChunk / 96) % 2 === 0) {
         const vertical = metrosChunk >= mundo.plataformaVerticalMetros && Math.floor(metrosChunk / 96) % 4 === 0;
-        this.plataformas.push({ x: base + 410, y: vertical ? 410 : 455, w: 140, h: 20, movel: true, eixo: vertical ? 'y' : 'x', origemX: base + 410, origemY: vertical ? 410 : 455, amplitude: vertical ? 75 : 85, velocidade: vertical ? 1.05 : 0.8, fase: this.app.powerRng.proximo() * 6.28 });
+        this.plataformas.push({
+          x: base + 410, y: vertical ? 410 : 455, w: 130, h: 20, movel: true,
+          eixo: vertical ? 'y' : 'x', origemX: base + 410, origemY: vertical ? 410 : 455,
+          amplitude: vertical ? mundo.plataformaMovelAmplitudeVertical : mundo.plataformaMovelAmplitudeHorizontal,
+          velocidade: vertical ? mundo.plataformaMovelVelocidadeVertical : mundo.plataformaMovelVelocidadeHorizontal,
+          fase: this.app.powerRng.proximo() * 6.28
+        });
       }
       if (metrosChunk >= mundo.aranhaMetros) {
         this.aranhas.push({ x: base + chunk.largura * 0.58, tetoY: 245, y: 245, w: 42, h: 40, fase: this.app.powerRng.proximo() * Math.PI * 2, morto: false, velocidade: 1.25 + Math.min(1.2, nivelExtremo * 0.08) });
@@ -332,7 +338,8 @@ MatGame.GameScene = class {
       const distanciaX = jogador.x - atirador.x;
       if (Math.abs(distanciaX) < 620 && this.app.tempoDecorrido >= atirador.proximoTiro) {
         const direcao = Math.sign(distanciaX) || 1;
-        this.projeteis.push({ tipo: 'fogo', x: atirador.x + direcao * 28, y: atirador.y + 20, vx: direcao * 255, vy: 0, escala: 1, idade: 0, ativa: true });
+        const origemFogo = atirador.x + direcao * 28;
+        this.projeteis.push({ tipo: 'fogo', x: origemFogo, origemX: origemFogo, y: atirador.y + 20, vx: direcao * 255, vy: 0, escala: 1, opacidade: 1, idade: 0, ativa: true });
         const etapas = Math.floor(this.app.distancia / config.tempo.projetilReducaoCadaMetros);
         const intervalo = Math.max(config.tempo.projetilIntervaloMinimo, config.tempo.projetilIntervaloInicial - etapas * 0.35);
         atirador.rajadaRestante = atirador.rajadaRestante || config.tempo.dragaoTirosPorRajada;
@@ -347,7 +354,12 @@ MatGame.GameScene = class {
       projetil.y += projetil.vy * delta;
       projetil.idade += delta;
       projetil.escala = Math.min(1.5, 1 + projetil.idade * 0.22);
-      if (Math.abs(projetil.x - jogador.x) > 900 || projetil.y > 760) projetil.ativa = false;
+      const distanciaFogo = Math.abs(projetil.x - projetil.origemX);
+      const faixaEsmaecer = config.tempo.dragaoFogoDistancia - config.tempo.dragaoFogoEsmaecerApos;
+      projetil.opacidade = distanciaFogo <= config.tempo.dragaoFogoEsmaecerApos
+        ? 1
+        : Math.max(0, 1 - (distanciaFogo - config.tempo.dragaoFogoEsmaecerApos) / faixaEsmaecer);
+      if (distanciaFogo >= config.tempo.dragaoFogoDistancia || projetil.opacidade <= 0 || projetil.y > 760) projetil.ativa = false;
       if (projetil.ativa && agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: projetil.x - 7, y: projetil.y - 7, w: 14, h: 14 })) {
         projetil.ativa = false;
         jogador.danoAte = agora + 420;
@@ -359,6 +371,8 @@ MatGame.GameScene = class {
       if (camuflado.morto) continue;
       const perto = Math.abs(jogador.x - camuflado.x) <= config.tempo.camufladoDistancia;
       if (perto && !camuflado.revelado && agora >= camuflado.cooldownAte) {
+        const coresRevelacao = ['#17a589', '#e056fd', '#ff8c42', '#3a86ff', '#ef476f', '#ffd166'];
+        camuflado.corRevelada = this.app.powerRng.escolher(coresRevelacao);
         camuflado.revelado = true; camuflado.vy = -690;
       }
       if (camuflado.revelado) {
@@ -737,7 +751,7 @@ MatGame.GameScene = class {
     const simbolos = ['+', '−', '×', '÷']; ctx.save(); ctx.globalAlpha = 0.12; ctx.fillStyle = indice === 4 ? '#d8f3ff' : '#17324d'; ctx.font='bold 72px sans-serif';
     for(let i=0;i<12;i+=1){const x=((i*173-camera*.08)%(largura+180)+largura+180)%(largura+180)-90;ctx.fillText(simbolos[i%4],x,90+(i%4)*105);} ctx.restore();
     ctx.fillStyle=terreno;ctx.beginPath();ctx.moveTo(0,620);for(let x=0;x<=largura;x+=100)ctx.lineTo(x,510+Math.sin((x+camera*.25)/130)*50);ctx.lineTo(largura,altura);ctx.lineTo(0,altura);ctx.fill();
-    ctx.fillStyle='#08182caa';ctx.font='bold 15px sans-serif';ctx.fillText(`${tema.nome} • variação ${variacao+1}`,18,600);
+    ctx.fillStyle='#08182caa';ctx.font='bold 11px sans-serif';ctx.fillText(`${tema.nome} • variação ${variacao+1}`,18,600);
     return { plataforma, borda, nome: tema.nome, indice, variacao };
   }
 
@@ -754,10 +768,6 @@ MatGame.GameScene = class {
       ctx.fillRect(plataforma.x - camera, plataforma.y, plataforma.w, plataforma.h);
       ctx.fillStyle = tema.borda;
       ctx.fillRect(plataforma.x - camera, plataforma.y, plataforma.w, 12);
-      if (plataforma.movel) {
-        ctx.fillStyle = '#fff8'; ctx.font = 'bold 16px sans-serif';
-        ctx.fillText(plataforma.eixo === 'x' ? '↔ MÓVEL' : '↕ MÓVEL', plataforma.x - camera + 18, plataforma.y + 18);
-      }
     }
     for (const fruta of this.frutas) if (fruta.ativa) {
       ctx.font = '32px sans-serif'; ctx.fillText(fruta.tipo, fruta.x - camera - 16, fruta.y + 12);
@@ -808,7 +818,7 @@ MatGame.GameScene = class {
       if (atirador.derrotado) { ctx.font = '25px sans-serif'; ctx.fillText('😲', atirador.x - camera - 12, atirador.y + 28); }
     }
     for (const projetil of this.projeteis) if (projetil.ativa) {
-      ctx.save(); ctx.translate(projetil.x - camera, projetil.y); ctx.scale(projetil.escala || 1, projetil.escala || 1);
+      ctx.save(); ctx.globalAlpha = projetil.opacidade ?? 1; ctx.translate(projetil.x - camera, projetil.y); ctx.scale(projetil.escala || 1, projetil.escala || 1);
       ctx.shadowColor = '#ff6b00'; ctx.shadowBlur = 14; ctx.font = '24px sans-serif'; ctx.fillText('💥', -12, 9); ctx.restore();
     }
     for (const camuflado of this.camuflados) {
@@ -831,7 +841,7 @@ MatGame.GameScene = class {
         ctx.fill();
         ctx.fillStyle = tema.borda; ctx.fillRect(xCamuflado - 3, camuflado.y + 35, 46, 7);
       } else {
-        ctx.fillStyle = '#17a589'; ctx.beginPath(); ctx.roundRect(camuflado.x - camera, camuflado.y, 40, 42, 12); ctx.fill();
+        ctx.fillStyle = camuflado.corRevelada || '#17a589'; ctx.beginPath(); ctx.roundRect(camuflado.x - camera, camuflado.y, 40, 42, 12); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 12, camuflado.y + 13, 6, 0, 7); ctx.arc(camuflado.x - camera + 29, camuflado.y + 13, 6, 0, 7); ctx.fill();
         ctx.fillStyle = '#102a43'; ctx.fillRect(camuflado.x - camera + 11, camuflado.y + 11, 4, 5); ctx.fillRect(camuflado.x - camera + 28, camuflado.y + 11, 4, 5);
         ctx.fillStyle = '#ef476f'; ctx.beginPath(); ctx.moveTo(camuflado.x - camera + 10, camuflado.y); ctx.lineTo(camuflado.x - camera + 20, camuflado.y - 18); ctx.lineTo(camuflado.x - camera + 29, camuflado.y); ctx.fill();
