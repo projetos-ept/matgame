@@ -9,16 +9,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     cena: null,
 
     parar() {
+      document.querySelector('#app').classList.remove('urgencia');
       if (this.cena) this.cena.destruir();
       this.cena = null;
       this.hud.classList.add('hidden');
       this.pause.classList.add('hidden');
     },
 
-    iniciar(seed, modo) {
+    iniciar(seed, modo, aluno, personagem) {
       this.parar();
       this.seed = String(seed);
       this.modo = modo;
+      this.aluno = aluno;
+      this.personagem = personagem;
       this.distancia = 0;
       this.tempoRestante = MatGame.CONFIG.tempo.inicial;
       this.tempoDecorrido = 0;
@@ -43,10 +46,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         ? `<span class="pill bonus-tempo">+${this.ultimoBonusTempo.segundos.toFixed(1).replace('.0', '')} s</span>`
         : '';
       this.hud.innerHTML = `
+        <span class="pill">👤 ${this.aluno}</span>
         <span class="pill">⏱️ ${Math.max(0, Math.ceil(this.tempoRestante))} s</span>
         ${bonus}
-        <span class="pill">⭐ ${this.placar.pontos}</span>
-        <span class="pill">🏆 ${recorde}</span>
+        <span class="pill">⭐ ATUAL ${this.placar.pontos}</span>
+        <span class="pill">🏆 MELHOR ${recorde}</span>
         <span class="pill">🔥 ×${this.placar.combo}</span>
         <span class="pill">📏 ${this.distancia} m</span>
         <span class="pill">SEED ${this.seed}</span>`;

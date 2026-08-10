@@ -9,6 +9,8 @@ MatGame.GameScene = class {
     this.obstaculos = [];
     this.estrelas = [];
     this.bichos = [];
+    this.magos = [];
+    this.proximoMago = 20;
     this.fimGerado = 0;
     this.camera = 0;
     this.rodando = false;
@@ -91,6 +93,7 @@ MatGame.GameScene = class {
     this.app.tempoRestante -= delta;
     this.app.tempoDecorrido += delta;
     this.app.gerador.tempoDecorrido = this.app.tempoDecorrido;
+    document.querySelector('#app').classList.toggle('urgencia', this.app.tempoRestante <= 20);
 
     if (this.app.tempoRestante <= 0) {
       this.app.tempoRestante = 0;
@@ -122,14 +125,40 @@ MatGame.GameScene = class {
     }
 
     for (const bicho of this.bichos) {
+      if (bicho.derrotado) continue;
       bicho.x += bicho.vx * delta;
       if (bicho.x <= bicho.inicio || bicho.x + bicho.w >= bicho.fim) bicho.vx *= -1;
       if (agora >= jogador.invulneravelAte && this.toca(jogador, bicho)) {
-        jogador.invulneravelAte = agora + 1500;
-        jogador.vy = -360;
-        jogador.x -= Math.sign(bicho.vx || 1) * 45;
-        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
-        this.app.placar.combo = 0;
+        const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= bicho.y + 14;
+        if (pisouPorCima) {
+          bicho.derrotado = true;
+          jogador.vy = -430;
+          this.app.adicionarTempo(config.tempo.pisarBicho);
+          this.app.placar.adicionar(config.pontos.especial);
+        } else {
+          jogador.invulneravelAte = agora + 1500;
+          jogador.vy = -360;
+          jogador.x -= Math.sign(bicho.vx || 1) * 45;
+          this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
+          this.app.placar.combo = 0;
+        }
+      }
+    }
+
+    if (this.app.tempoDecorrido >= this.proximoMago) {
+      this.magos.push({ nascimento: this.app.tempoDecorrido, y: 210, ativa: true });
+      this.proximoMago += config.tempo.magoIntervalo;
+    }
+    for (const mago of this.magos) {
+      if (!mago.ativa) continue;
+      const idade = this.app.tempoDecorrido - mago.nascimento;
+      if (idade >= config.tempo.magoDuracao) { mago.ativa = false; continue; }
+      mago.x = this.camera + this.app.canvas.width - 100 - idade * 72;
+      mago.y = 220 + Math.sin(idade * 3) * 55;
+      if (this.toca(jogador, { x: mago.x - 30, y: mago.y - 30, w: 60, h: 60 })) {
+        mago.ativa = false;
+        this.app.adicionarTempo(config.tempo.mago);
+        this.app.placar.adicionar(config.pontos.especial);
       }
     }
 
@@ -239,9 +268,10 @@ MatGame.GameScene = class {
       ctx.fill();
     }
     for (const bicho of this.bichos) {
+      if (bicho.derrotado) continue;
       ctx.fillStyle = bicho.nivel >= 3 ? '#9b5de5' : '#ef476f';
       ctx.beginPath();
-      ctx.ellipse(bicho.x + bicho.w / 2 - camera, bicho.y + 21, bicho.w / 2, 18, 0, 0, Math.PI * 2);
+      ctx.arc(bicho.x + bicho.w / 2 - camera, bicho.y + 18, 20, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#fff';
       ctx.fillRect(bicho.x + 10 - camera, bicho.y + 10, 7, 8);
@@ -249,6 +279,13 @@ MatGame.GameScene = class {
       ctx.fillStyle = '#102a43';
       ctx.fillRect(bicho.x + 13 - camera, bicho.y + 12, 3, 4);
       ctx.fillRect(bicho.x + 30 - camera, bicho.y + 12, 3, 4);
+    }
+    for (const mago of this.magos) if (mago.ativa) {
+      ctx.font = '52px sans-serif';
+      ctx.fillText('🧙‍♂️', mago.x - camera - 28, mago.y + 18);
+      ctx.fillStyle = '#ffd166';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText('+30s', mago.x - camera - 18, mago.y + 42);
     }
     for (const estacao of this.estacoes) if (estacao.ativa) {
       ctx.fillStyle = '#6ee7ff';
@@ -267,7 +304,8 @@ MatGame.GameScene = class {
 
     const jogador = this.jogador;
     ctx.globalAlpha = performance.now() < jogador.invulneravelAte && Math.floor(performance.now() / 100) % 2 ? 0.35 : 1;
-    ctx.fillStyle = '#ff8c42';
+    const personagemCores = { exploradora: '#ff8c42', cientista: '#36c5f0', inventora: '#9b5de5' };
+    ctx.fillStyle = personagemCores[this.app.personagem] || '#ff8c42';
     ctx.fillRect(jogador.x - camera, jogador.y, jogador.w, jogador.h);
     ctx.fillStyle = '#fff';
     ctx.fillRect(jogador.x - camera + 23, jogador.y + 10, 8, 9);
@@ -276,6 +314,8 @@ MatGame.GameScene = class {
     ctx.fillStyle = '#ffd166';
     ctx.fillRect(jogador.x - camera - 5, jogador.y + 42, 18, 14);
     ctx.globalAlpha = 1;
+    ctx.font = '18px sans-serif';
+    ctx.fillText(this.app.personagem === 'cientista' ? '⚗' : this.app.personagem === 'inventora' ? '⚙' : '◆', jogador.x - camera + 8, jogador.y + 35);
 
     if (this.app.debug) {
       ctx.fillStyle = '#000b';

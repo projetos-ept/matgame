@@ -88,3 +88,11 @@ Inclui movimento, salto, colisão, câmera, chunks infinitos, obstáculos, moeda
 A partida começa com 80 segundos. Bolinhas azuis acrescentam 1,5 segundo e estrelas acrescentam 12 segundos, permitindo prolongar a corrida indefinidamente com boa exploração. O relógio principal pausa nas estações matemáticas. Cada etapa de pergunta possui uma janela visual de 18 segundos somente para calcular o bônus: respostas muito rápidas rendem 8 segundos, respostas rápidas 5 e respostas dentro da janela 3. Depois disso a questão continua sem punição, para preservar o tempo de leitura.
 
 A dificuldade motora cresce gradualmente: a variedade de chunks aumenta com a distância, e bichos patrulheiros aparecem e ficam mais rápidos conforme o tempo de partida. Um contato retira 4 segundos, reinicia o combo e concede 1,5 segundo de invulnerabilidade, evitando colisões repetidas injustas. Todos esses valores ficam em `js/config.js` para ajuste após testes com estudantes.
+
+## Alunos, personagens e ranking local
+
+Antes de cada partida, o estudante informa o primeiro nome e escolhe entre Lia, Theo e Bia. O HUD mostra simultaneamente a pontuação atual e a maior pontuação do modo. Ao final, pontos e distância entram no ranking local deste computador, acessível pelo menu e pela tela de resultado. Os dados permanecem somente no `LocalStorage`: não são enviados pela internet e podem ser apagados limpando os dados locais do navegador.
+
+## Novos elementos de tempo
+
+As bolinhas patrulham apenas pisos largos. Pular sobre uma delas concede 5 segundos; encostar lateralmente retira 3 segundos e ativa uma breve invulnerabilidade. Espinhos sempre aparecem em trios com largura total compatível com o salto. A partir do vigésimo segundo de corrida, um mago voador visita a tela a cada 45 segundos, permanece por 10 segundos e concede 30 segundos ao ser tocado. Quando restam 20 segundos, uma borda vermelha pulsante sinaliza urgência sem esconder o cenário ou as perguntas.
