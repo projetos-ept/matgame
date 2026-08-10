@@ -10,6 +10,10 @@ MatGame.GameScene = class {
     this.estrelas = [];
     this.bichos = [];
     this.magos = [];
+    this.estrelasPoder = [];
+    this.cartasCoringa = [];
+    this.ultimaCartaX = -2000;
+    this.proximaEstrelaPoder = 0;
     this.proximoMago = 20;
     this.fimGerado = 0;
     this.camera = 0;
@@ -19,8 +23,10 @@ MatGame.GameScene = class {
   iniciar() {
     this.rodando = true;
     this.app.pausado = false;
-    this.jogador = { x: 90, y: 460, w: 38, h: 56, vx: 0, vy: 0, noChao: false, invulneravelAte: 0 };
+    this.jogador = { x: 90, y: 460, w: 38, h: 56, vx: 0, vy: 0, noChao: false, invulneravelAte: 0, poderAte: 0 };
+    this.pontoRetorno = { x: 90, y: 460 };
     this.gerarAte(3200);
+    this.agendarEstrelaPoder();
     this.ouvir();
     this.ultimo = performance.now();
     requestAnimationFrame((tempo) => this.loop(tempo));
@@ -53,7 +59,7 @@ MatGame.GameScene = class {
         this.plataformas.push(item);
         // Bichos surgem apenas em pisos largos e planos, nunca em saltos estreitos.
         if (nivel >= 2 && item.y === 620 && item.w >= 210) {
-          const quantidade = nivel >= 3 && item.w >= 500 ? 2 : 1;
+          const quantidade = nivel >= 3 ? Math.min(2, Math.max(1, Math.floor(item.w / 230))) : 1;
           for (let i = 0; i < quantidade; i += 1) {
             const inicio = item.x + 70 + i * Math.min(260, item.w / 2);
             this.bichos.push({
@@ -65,7 +71,8 @@ MatGame.GameScene = class {
         }
       }
 
-      for (let i = 0; i < MatGame.CONFIG.mundo.moedasPorChunk; i += 1) {
+      const quantidadeMoedas = Math.max(2, MatGame.CONFIG.mundo.moedasPorChunk + 1 - nivel);
+      for (let i = 0; i < quantidadeMoedas; i += 1) {
         this.moedas.push({ x: base + 160 + i * 130, y: 500 - (i % 2) * 45, r: 11, ativa: true });
       }
       for (const obstaculo of chunk.obstaculos || []) {
@@ -103,7 +110,8 @@ MatGame.GameScene = class {
 
     const esquerda = this.teclas.ArrowLeft || this.teclas.KeyA;
     const direita = this.teclas.ArrowRight || this.teclas.KeyD;
-    jogador.vx = (direita ? config.velocidade : 0) - (esquerda ? config.velocidade : 0);
+    const multiplicadorVelocidade = agora < jogador.poderAte ? config.tempo.estrelaPoderVelocidade : 1;
+    jogador.vx = ((direita ? config.velocidade : 0) - (esquerda ? config.velocidade : 0)) * multiplicadorVelocidade;
     if ((this.teclas.ArrowUp || this.teclas.KeyW || this.teclas.Space) && jogador.noChao) {
       jogador.vy = -config.pulo;
       jogador.noChao = false;
@@ -121,6 +129,11 @@ MatGame.GameScene = class {
         jogador.y = plataforma.y - jogador.h;
         jogador.vy = 0;
         jogador.noChao = true;
+        const margem = Math.min(35, plataforma.w / 4);
+        this.pontoRetorno = {
+          x: Math.max(plataforma.x + margem, Math.min(jogador.x, plataforma.x + plataforma.w - jogador.w - margem)),
+          y: plataforma.y - jogador.h
+        };
       }
     }
 
@@ -128,7 +141,7 @@ MatGame.GameScene = class {
       if (bicho.derrotado) continue;
       bicho.x += bicho.vx * delta;
       if (bicho.x <= bicho.inicio || bicho.x + bicho.w >= bicho.fim) bicho.vx *= -1;
-      if (agora >= jogador.invulneravelAte && this.toca(jogador, bicho)) {
+      if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, bicho)) {
         const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= bicho.y + 14;
         if (pisouPorCima) {
           bicho.derrotado = true;
@@ -142,6 +155,26 @@ MatGame.GameScene = class {
           this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
           this.app.placar.combo = 0;
         }
+      }
+    }
+
+    if (this.app.tempoDecorrido >= this.proximaEstrelaPoder) this.criarEstrelaPoder();
+    for (const estrela of this.estrelasPoder) {
+      if (!estrela.ativa) continue;
+      if (this.app.tempoDecorrido - estrela.nascimento > 12) { estrela.ativa = false; continue; }
+      if (this.toca(jogador, { x: estrela.x - 24, y: estrela.y - 24, w: 48, h: 48 })) {
+        estrela.ativa = false;
+        jogador.poderAte = agora + config.tempo.estrelaPoderDuracao * 1000;
+        this.app.placar.adicionar(config.pontos.especial);
+      }
+    }
+
+    this.criarCartaSePossivel();
+    for (const carta of this.cartasCoringa) {
+      if (carta.ativa && !this.app.coringa && this.toca(jogador, { x: carta.x - 20, y: carta.y - 28, w: 40, h: 56 })) {
+        carta.ativa = false;
+        this.app.coringa = true;
+        this.app.placar.adicionar(config.pontos.especial);
       }
     }
 
@@ -195,8 +228,44 @@ MatGame.GameScene = class {
       }
     }
 
-    if (jogador.y > 800) MatGame.ResultScene.mostrar(this.app, 'queda');
+    if (jogador.y > 800) this.tratarQueda();
     this.app.atualizarHud();
+  }
+
+  agendarEstrelaPoder() {
+    const config = MatGame.CONFIG.tempo;
+    this.proximaEstrelaPoder = this.app.tempoDecorrido
+      + this.app.powerRng.inteiro(config.estrelaPoderMinimo, config.estrelaPoderMaximo);
+  }
+
+  criarEstrelaPoder() {
+    const plataforma = this.plataformas.find((item) => item.x > this.jogador.x + 260 && item.x < this.jogador.x + 950 && item.w >= 125);
+    if (plataforma) {
+      this.estrelasPoder.push({ x: plataforma.x + plataforma.w / 2, y: plataforma.y - 45, nascimento: this.app.tempoDecorrido, ativa: true });
+    }
+    this.agendarEstrelaPoder();
+  }
+
+  criarCartaSePossivel() {
+    if (this.app.coringa || this.cartasCoringa.some((carta) => carta.ativa) || this.jogador.x - this.ultimaCartaX < 1800) return;
+    const plataforma = this.plataformas.find((item) => item.x > this.jogador.x + 500 && item.x < this.jogador.x + 1500 && item.y <= 490 && item.w >= 120);
+    if (plataforma) {
+      this.cartasCoringa.push({ x: plataforma.x + plataforma.w / 2, y: plataforma.y - 38, ativa: true });
+      this.ultimaCartaX = plataforma.x;
+    }
+  }
+
+  tratarQueda() {
+    const custo = MatGame.CONFIG.tempo.queda;
+    if (this.app.tempoRestante < custo + 1) {
+      MatGame.ResultScene.mostrar(this.app, 'queda');
+      return;
+    }
+    this.app.tempoRestante -= custo;
+    this.app.placar.combo = 0;
+    Object.assign(this.jogador, { x: this.pontoRetorno.x, y: this.pontoRetorno.y, vx: 0, vy: 0, invulneravelAte: performance.now() + 1800 });
+    this.camera = Math.max(0, this.jogador.x - 330);
+    this.app.ultimoBonusTempo = { segundos: -custo, ate: performance.now() + 1500 };
   }
 
   toca(a, b) {
@@ -219,8 +288,11 @@ MatGame.GameScene = class {
     const largura = this.app.canvas.width;
     const altura = this.app.canvas.height;
     const ceu = ctx.createLinearGradient(0, 0, 0, altura);
-    ceu.addColorStop(0, '#112c50');
-    ceu.addColorStop(1, '#4e9cc0');
+    const nivelVisual = this.app.gerador.dificuldadeMotora();
+    const paletas = { 1: ['#79c9ef', '#d8f3ff'], 2: ['#f28f6b', '#674d82'], 3: ['#07152f', '#243b67'] };
+    const paleta = paletas[nivelVisual];
+    ceu.addColorStop(0, paleta[0]);
+    ceu.addColorStop(1, paleta[1]);
     ctx.fillStyle = ceu;
     ctx.fillRect(0, 0, largura, altura);
 
@@ -280,6 +352,27 @@ MatGame.GameScene = class {
       ctx.fillRect(bicho.x + 13 - camera, bicho.y + 12, 3, 4);
       ctx.fillRect(bicho.x + 30 - camera, bicho.y + 12, 3, 4);
     }
+    for (const estrela of this.estrelasPoder) if (estrela.ativa) {
+      const brilho = 1 + Math.sin(performance.now() / 120) * 0.12;
+      ctx.save();
+      ctx.translate(estrela.x - camera, estrela.y);
+      ctx.scale(brilho, brilho);
+      ctx.shadowColor = '#fff59d';
+      ctx.shadowBlur = 22;
+      ctx.fillStyle = '#fff176';
+      ctx.font = '48px sans-serif';
+      ctx.fillText('★', -24, 18);
+      ctx.restore();
+    }
+    for (const carta of this.cartasCoringa) if (carta.ativa && !this.app.coringa) {
+      ctx.fillStyle = '#f7fafc';
+      ctx.fillRect(carta.x - camera - 18, carta.y - 26, 36, 52);
+      ctx.strokeStyle = '#9b5de5';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(carta.x - camera - 18, carta.y - 26, 36, 52);
+      ctx.font = '28px sans-serif';
+      ctx.fillText('🃏', carta.x - camera - 15, carta.y + 10);
+    }
     for (const mago of this.magos) if (mago.ativa) {
       ctx.font = '52px sans-serif';
       ctx.fillText('🧙‍♂️', mago.x - camera - 28, mago.y + 18);
@@ -303,19 +396,63 @@ MatGame.GameScene = class {
     }
 
     const jogador = this.jogador;
-    ctx.globalAlpha = performance.now() < jogador.invulneravelAte && Math.floor(performance.now() / 100) % 2 ? 0.35 : 1;
+    const telaX = jogador.x - camera;
+    const protegido = performance.now() < Math.max(jogador.invulneravelAte, jogador.poderAte);
+    ctx.globalAlpha = protegido && Math.floor(performance.now() / 100) % 2 ? 0.45 : 1;
+    if (performance.now() < jogador.poderAte) {
+      ctx.strokeStyle = ['#fff176', '#6ee7ff', '#ef476f'][Math.floor(performance.now() / 120) % 3];
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(telaX + 19, jogador.y + 29, 36, 0, Math.PI * 2);
+      ctx.stroke();
+    }
     const personagemCores = { exploradora: '#ff8c42', cientista: '#36c5f0', inventora: '#9b5de5' };
-    ctx.fillStyle = personagemCores[this.app.personagem] || '#ff8c42';
-    ctx.fillRect(jogador.x - camera, jogador.y, jogador.w, jogador.h);
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(jogador.x - camera + 23, jogador.y + 10, 8, 9);
-    ctx.fillStyle = '#102a43';
-    ctx.fillRect(jogador.x - camera + 26, jogador.y + 12, 4, 5);
+    const cor = personagemCores[this.app.personagem] || '#ff8c42';
+    // Pernas e botas dão uma silhueta de corredor em vez de um único retângulo.
+    ctx.fillStyle = '#183153';
+    ctx.fillRect(telaX + 7, jogador.y + 40, 9, 15);
+    ctx.fillRect(telaX + 24, jogador.y + 40, 9, 15);
     ctx.fillStyle = '#ffd166';
-    ctx.fillRect(jogador.x - camera - 5, jogador.y + 42, 18, 14);
+    ctx.fillRect(telaX + 2, jogador.y + 51, 16, 7);
+    ctx.fillRect(telaX + 22, jogador.y + 51, 17, 7);
+    // Corpo, mochila, braços e lenço.
+    ctx.fillStyle = '#704214';
+    ctx.fillRect(telaX - 4, jogador.y + 22, 10, 23);
+    ctx.fillStyle = cor;
+    ctx.beginPath();
+    ctx.roundRect(telaX + 4, jogador.y + 20, 31, 27, 8);
+    ctx.fill();
+    ctx.fillStyle = '#f2b58d';
+    ctx.fillRect(telaX - 1, jogador.y + 24, 8, 20);
+    ctx.fillRect(telaX + 33, jogador.y + 24, 8, 20);
+    ctx.fillStyle = '#ef476f';
+    ctx.beginPath();
+    ctx.moveTo(telaX + 5, jogador.y + 22);
+    ctx.lineTo(telaX - 10, jogador.y + 31);
+    ctx.lineTo(telaX + 7, jogador.y + 29);
+    ctx.fill();
+    // Cabeça, cabelo, olho e sorriso.
+    ctx.fillStyle = '#f2b58d';
+    ctx.beginPath();
+    ctx.arc(telaX + 21, jogador.y + 13, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#3b2a20';
+    ctx.beginPath();
+    ctx.arc(telaX + 19, jogador.y + 8, 14, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(telaX + 25, jogador.y + 10, 7, 6);
+    ctx.fillStyle = '#102a43';
+    ctx.fillRect(telaX + 28, jogador.y + 11, 3, 4);
+    ctx.strokeStyle = '#8b3a3a';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(telaX + 25, jogador.y + 17, 5, 0.2, 1.2);
+    ctx.stroke();
     ctx.globalAlpha = 1;
-    ctx.font = '18px sans-serif';
-    ctx.fillText(this.app.personagem === 'cientista' ? '⚗' : this.app.personagem === 'inventora' ? '⚙' : '◆', jogador.x - camera + 8, jogador.y + 35);
+    ctx.fillStyle = '#102a43';
+    ctx.font = 'bold 15px sans-serif';
+    ctx.fillText(this.app.personagem === 'cientista' ? '⚗' : this.app.personagem === 'inventora' ? '⚙' : '◆', telaX + 11, jogador.y + 39);
 
     if (this.app.debug) {
       ctx.fillStyle = '#000b';

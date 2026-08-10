@@ -25,8 +25,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       this.distancia = 0;
       this.tempoRestante = MatGame.CONFIG.tempo.inicial;
       this.tempoDecorrido = 0;
+      this.coringa = false;
       this.placar = new MatGame.Placar();
       this.gerador = new MatGame.Gerador(this.seed);
+      this.powerRng = new MatGame.Seed(`${this.seed}-poderes`);
       this.seletor = new MatGame.SeletorQuestoes(this.banco, new MatGame.Seed(`${this.seed}-questoes`));
       this.panel.classList.add('hidden');
       this.hud.classList.remove('hidden');
@@ -42,8 +44,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     atualizarHud() {
       const recorde = MatGame.Recordes.ler()[this.modo]?.pontos || 0;
-      const bonus = this.ultimoBonusTempo && performance.now() < this.ultimoBonusTempo.ate
-        ? `<span class="pill bonus-tempo">+${this.ultimoBonusTempo.segundos.toFixed(1).replace('.0', '')} s</span>`
+      const bonusAtivo = this.ultimoBonusTempo && performance.now() < this.ultimoBonusTempo.ate;
+      const valorBonus = bonusAtivo ? this.ultimoBonusTempo.segundos.toFixed(1).replace('.0', '') : '';
+      const bonus = bonusAtivo
+        ? `<span class="pill bonus-tempo">${this.ultimoBonusTempo.segundos > 0 ? '+' : ''}${valorBonus} s</span>`
         : '';
       this.hud.innerHTML = `
         <span class="pill">👤 ${this.aluno}</span>
@@ -52,6 +56,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         <span class="pill">⭐ ATUAL ${this.placar.pontos}</span>
         <span class="pill">🏆 MELHOR ${recorde}</span>
         <span class="pill">🔥 ×${this.placar.combo}</span>
+        ${this.coringa ? '<span class="pill joker-hud">🃏 CORINGA</span>' : ''}
+        ${this.cena?.jogador && performance.now() < this.cena.jogador.poderAte ? '<span class="pill">🌟 PODER ATIVO</span>' : ''}
         <span class="pill">📏 ${this.distancia} m</span>
         <span class="pill">SEED ${this.seed}</span>`;
     },

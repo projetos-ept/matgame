@@ -87,7 +87,7 @@ Inclui movimento, salto, colisão, câmera, chunks infinitos, obstáculos, moeda
 
 A partida começa com 80 segundos. Bolinhas azuis acrescentam 1,5 segundo e estrelas acrescentam 12 segundos, permitindo prolongar a corrida indefinidamente com boa exploração. O relógio principal pausa nas estações matemáticas. Cada etapa de pergunta possui uma janela visual de 18 segundos somente para calcular o bônus: respostas muito rápidas rendem 8 segundos, respostas rápidas 5 e respostas dentro da janela 3. Depois disso a questão continua sem punição, para preservar o tempo de leitura.
 
-A dificuldade motora cresce gradualmente: a variedade de chunks aumenta com a distância, e bichos patrulheiros aparecem e ficam mais rápidos conforme o tempo de partida. Um contato retira 4 segundos, reinicia o combo e concede 1,5 segundo de invulnerabilidade, evitando colisões repetidas injustas. Todos esses valores ficam em `js/config.js` para ajuste após testes com estudantes.
+A dificuldade motora cresce gradualmente: a variedade de chunks aumenta com a distância, e bichos patrulheiros aparecem e ficam mais rápidos conforme o tempo de partida. Um contato retira 3 segundos, reinicia o combo e concede 1,5 segundo de invulnerabilidade, evitando colisões repetidas injustas. Todos esses valores ficam em `js/config.js` para ajuste após testes com estudantes.
 
 ## Alunos, personagens e ranking local
 
@@ -96,3 +96,9 @@ Antes de cada partida, o estudante informa o primeiro nome e escolhe entre Lia, 
 ## Novos elementos de tempo
 
 As bolinhas patrulham apenas pisos largos. Pular sobre uma delas concede 5 segundos; encostar lateralmente retira 3 segundos e ativa uma breve invulnerabilidade. Espinhos sempre aparecem em trios com largura total compatível com o salto. A partir do vigésimo segundo de corrida, um mago voador visita a tela a cada 45 segundos, permanece por 10 segundos e concede 30 segundos ao ser tocado. Quando restam 20 segundos, uma borda vermelha pulsante sinaliza urgência sem esconder o cenário ou as perguntas.
+
+## Quedas, poderes e progressão visual
+
+Cair em um buraco custa 20 segundos e devolve o personagem a uma posição segura da plataforma anterior. Se restarem menos de 21 segundos, a queda encerra a partida. Em intervalos determinísticos de 35 a 65 segundos pode surgir uma estrela de poder: ela fica disponível por 12 segundos e, quando coletada, deixa o personagem invulnerável e 45% mais rápido durante 10 segundos.
+
+Cartas coringa aparecem sobre plataformas elevadas e difíceis. O estudante pode guardar somente uma; nas estações, o botão do coringa elimina exatamente duas alternativas erradas e consome a carta. A progressão reduz gradualmente a quantidade de bolinhas azuis de tempo, adiciona mais inimigos e libera o chunk `ABISMO`, com saltos maiores ainda dentro dos limites do personagem. O céu passa de claro para entardecer e finalmente noite conforme a dificuldade motora aumenta.

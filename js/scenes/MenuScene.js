@@ -80,7 +80,7 @@ MatGame.MenuScene = {
   },
 
   ajuda(app) {
-    app.panel.innerHTML = `<h2>COMO JOGAR</h2><p class="question">← → ou A/D para andar<br>↑, W ou ESPAÇO para pular<br>ESC para pausar<br><br>Pule sobre as bolinhas inimigas para ganhar +5s; se elas encostarem de lado, você perde 3s. Colete estrelas e toque no mago voador para +30s. Desvie dos trios de espinhos e encontre os portais <b>?</b>.</p><button id="back">ENTENDI!</button>`;
+    app.panel.innerHTML = `<h2>COMO JOGAR</h2><p class="question">← → ou A/D para andar<br>↑, W ou ESPAÇO para pular<br>ESC para pausar<br><br>Pule sobre as bolinhas inimigas para ganhar +5s; se elas encostarem de lado, você perde 3s. Cair custa 20s e leva você à plataforma anterior. Colete a estrela brilhante para correr mais rápido e ficar invulnerável, toque no mago para +30s e procure a carta coringa, que remove duas respostas erradas. Desvie dos trios de espinhos e encontre os portais <b>?</b>.</p><button id="back">ENTENDI!</button>`;
     app.panel.querySelector('#back').onclick = () => this.mostrar(app);
   },
 

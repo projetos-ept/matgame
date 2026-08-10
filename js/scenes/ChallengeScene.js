@@ -81,6 +81,7 @@ MatGame.ChallengeScene = {
       </div>
       <p class="question">${dados.texto}</p>
       <div class="answers"></div>
+      ${app.coringa ? '<button type="button" class="joker-button" data-coringa>🃏 USAR CORINGA — remover 2 erradas</button>' : ''}
       <p class="feedback" role="status"></p>`;
 
     const caixa = painel.querySelector('.answers');
@@ -99,6 +100,7 @@ MatGame.ChallengeScene = {
     dados.alternativas.forEach((alternativa, indice) => {
       const botao = document.createElement('button');
       botao.textContent = dados.exibicao ? dados.exibicao[indice] : alternativa;
+      botao.dataset.correta = alternativa === dados.resposta ? 'sim' : 'nao';
       botao.onclick = () => {
         tentativas += 1;
         if (alternativa === dados.resposta) {
@@ -120,5 +122,17 @@ MatGame.ChallengeScene = {
       };
       caixa.appendChild(botao);
     });
+
+    const usarCoringa = painel.querySelector('[data-coringa]');
+    if (usarCoringa) usarCoringa.onclick = () => {
+      const erradas = [...caixa.querySelectorAll('button[data-correta="nao"]:not(:disabled)')].slice(0, 2);
+      erradas.forEach((botao) => {
+        botao.disabled = true;
+        botao.textContent = '✕ Alternativa removida pelo coringa';
+      });
+      app.coringa = false;
+      usarCoringa.remove();
+      painel.querySelector('.feedback').textContent = '🃏 O coringa eliminou duas alternativas erradas!';
+    };
   }
 };
