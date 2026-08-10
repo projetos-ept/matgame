@@ -1,5 +1,5 @@
 MatGame.ChallengeScene = {
-  mostrar(app, questao, categoria, aoFim) {
+  mostrar(app, questao, categoria, aoFim, opcoes = {}) {
     app.pausado = true;
     const painel = app.panel;
     painel.className = 'panel compact';
@@ -12,7 +12,7 @@ MatGame.ChallengeScene = {
     }[categoria];
 
     if (categoria === 'problema') {
-      this.etapaInterpretacao(app, questao, aoFim, titulo);
+      this.etapaInterpretacao(app, questao, aoFim, titulo, opcoes);
       return;
     }
 
@@ -25,12 +25,12 @@ MatGame.ChallengeScene = {
     }, (correta, primeiraTentativa, bonusTempo) => {
       app.placar.responder(categoria, correta, MatGame.CONFIG.pontos[categoria]);
       if (correta && primeiraTentativa) app.placar.adicionar(MatGame.CONFIG.pontos.primeiraTentativa);
-      if (bonusTempo) app.adicionarTempo(bonusTempo);
+      app.adicionarTempo(this.ajustarBonus(bonusTempo, opcoes));
       aoFim();
     });
   },
 
-  etapaInterpretacao(app, questao, aoFim, titulo) {
+  etapaInterpretacao(app, questao, aoFim, titulo, opcoes) {
     this.pergunta(app, {
       titulo,
       texto: `${questao.problema}<br><small>Qual cálculo resolve o problema?</small>`,
@@ -38,7 +38,7 @@ MatGame.ChallengeScene = {
       resposta: questao.expressao
     }, (correta, primeiraTentativa, bonusTempo) => {
       app.placar.responder('interpretacao', correta, MatGame.CONFIG.pontos.interpretacao);
-      if (bonusTempo) app.adicionarTempo(bonusTempo);
+      app.adicionarTempo(this.ajustarBonus(bonusTempo, opcoes));
       this.pergunta(app, {
         titulo: 'AGORA CALCULE',
         texto: `${questao.expressao} = ?`,
@@ -51,7 +51,7 @@ MatGame.ChallengeScene = {
         if (calculoCorreto && primeiraTentativa && primeiraNoCalculo) {
           app.placar.adicionar(MatGame.CONFIG.pontos.primeiraTentativa);
         }
-        if (bonusCalculo) app.adicionarTempo(bonusCalculo);
+        app.adicionarTempo(this.ajustarBonus(bonusCalculo, opcoes));
         aoFim();
       });
     });
@@ -62,7 +62,12 @@ MatGame.ChallengeScene = {
     if (segundos <= config.respostaMuitoRapidaAte) return config.bonusMuitoRapido;
     if (segundos <= config.respostaRapidaAte) return config.bonusRapido;
     if (segundos <= config.perguntaBonusMaximo) return config.bonusComCalma;
-    return 0;
+    return MatGame.CONFIG.tempo.respostaSemPressa;
+  },
+
+  ajustarBonus(bonus, opcoes) {
+    const fator = opcoes.bonusMultiplicador || 1;
+    return Math.max(1, Math.round(bonus * fator));
   },
 
   pergunta(app, dados, callback) {

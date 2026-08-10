@@ -12,6 +12,11 @@ MatGame.GameScene = class {
     this.magos = [];
     this.estrelasPoder = [];
     this.cartasCoringa = [];
+    this.fantasmas = [];
+    this.gigantes = [];
+    this.particulas = [];
+    this.ultimoDesafioTempo = 0;
+    this.proximoGigante = MatGame.CONFIG.tempo.giganteIntervalo;
     this.ultimaCartaX = -2000;
     this.proximaEstrelaPoder = 0;
     this.proximoMago = 20;
@@ -23,7 +28,7 @@ MatGame.GameScene = class {
   iniciar() {
     this.rodando = true;
     this.app.pausado = false;
-    this.jogador = { x: 90, y: 460, w: 38, h: 56, vx: 0, vy: 0, noChao: false, invulneravelAte: 0, poderAte: 0 };
+    this.jogador = { x: 90, y: 460, w: 38, h: 56, vx: 0, vy: 0, noChao: false, invulneravelAte: 0, poderAte: 0, danoAte: 0 };
     this.pontoRetorno = { x: 90, y: 460 };
     this.gerarAte(3200);
     this.agendarEstrelaPoder();
@@ -138,18 +143,24 @@ MatGame.GameScene = class {
     }
 
     for (const bicho of this.bichos) {
-      if (bicho.derrotado) continue;
+      if (bicho.derrotado) {
+        bicho.y -= 45 * delta;
+        if (agora >= bicho.derrotadoAte) bicho.invisivel = true;
+        continue;
+      }
       bicho.x += bicho.vx * delta;
       if (bicho.x <= bicho.inicio || bicho.x + bicho.w >= bicho.fim) bicho.vx *= -1;
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, bicho)) {
         const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= bicho.y + 14;
         if (pisouPorCima) {
           bicho.derrotado = true;
+          bicho.derrotadoAte = agora + 800;
           jogador.vy = -430;
           this.app.adicionarTempo(config.tempo.pisarBicho);
           this.app.placar.adicionar(config.pontos.especial);
         } else {
           jogador.invulneravelAte = agora + 1500;
+          jogador.danoAte = agora + 500;
           jogador.vy = -360;
           jogador.x -= Math.sign(bicho.vx || 1) * 45;
           this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
@@ -165,6 +176,11 @@ MatGame.GameScene = class {
       if (this.toca(jogador, { x: estrela.x - 24, y: estrela.y - 24, w: 48, h: 48 })) {
         estrela.ativa = false;
         jogador.poderAte = agora + config.tempo.estrelaPoderDuracao * 1000;
+        for (const bicho of this.bichos) if (!bicho.derrotado && Math.abs(bicho.x - jogador.x) < this.app.canvas.width) {
+          bicho.derrotado = true;
+          bicho.derrotadoAte = agora + 900;
+          this.criarExplosao(bicho.x + bicho.w / 2, bicho.y + bicho.h / 2);
+        }
         this.app.placar.adicionar(config.pontos.especial);
       }
     }
@@ -195,6 +211,49 @@ MatGame.GameScene = class {
       }
     }
 
+    if (this.app.tempoDecorrido - this.ultimoDesafioTempo >= config.tempo.fantasmaApos && !this.fantasmas.some((fantasma) => fantasma.ativa)) {
+      this.fantasmas.push({ x: jogador.x - 420, y: jogador.y, ativa: true });
+    }
+    for (const fantasma of this.fantasmas) {
+      if (!fantasma.ativa) continue;
+      const dx = jogador.x - fantasma.x;
+      const dy = jogador.y - fantasma.y;
+      const distancia = Math.max(1, Math.hypot(dx, dy));
+      fantasma.x += dx / distancia * 155 * delta;
+      fantasma.y += dy / distancia * 90 * delta;
+      if (this.toca(jogador, { x: fantasma.x - 24, y: fantasma.y - 30, w: 48, h: 60 })) {
+        fantasma.ativa = false;
+        this.desafioFantasma();
+        this.app.atualizarHud();
+        return;
+      }
+    }
+
+    if (this.app.tempoDecorrido >= this.proximoGigante) {
+      this.gigantes.push({ nascimento: this.app.tempoDecorrido, ativa: true, atingiu: false });
+      this.proximoGigante += config.tempo.giganteIntervalo;
+    }
+    for (const gigante of this.gigantes) {
+      if (!gigante.ativa) continue;
+      const idade = this.app.tempoDecorrido - gigante.nascimento;
+      gigante.x = this.camera + this.app.canvas.width + 100 - idade * 330;
+      gigante.y = 520;
+      if (idade > 6) { gigante.ativa = false; continue; }
+      if (!gigante.atingiu && agora >= jogador.invulneravelAte && this.toca(jogador, { x: gigante.x, y: gigante.y, w: 82, h: 100 })) {
+        gigante.atingiu = true;
+        jogador.danoAte = agora + 650;
+        jogador.invulneravelAte = agora + 1600;
+        jogador.vy = -420;
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoGigante);
+      }
+    }
+    for (const particula of this.particulas) {
+      particula.x += particula.vx * delta;
+      particula.y += particula.vy * delta;
+      particula.vy += 260 * delta;
+      particula.vida -= delta;
+    }
+
     this.camera = Math.max(0, jogador.x - 330);
     this.app.distancia = Math.max(this.app.distancia, Math.floor(jogador.x / 10));
     this.gerarAte(jogador.x + config.mundo.gerarAdiante);
@@ -209,6 +268,7 @@ MatGame.GameScene = class {
     for (const obstaculo of this.obstaculos) {
       if (this.toca(jogador, obstaculo)) {
         jogador.vx = -180;
+        jogador.danoAte = agora + 500;
         jogador.vy = -350;
         jogador.x -= 35;
         this.app.placar.combo = 0;
@@ -230,6 +290,23 @@ MatGame.GameScene = class {
 
     if (jogador.y > 800) this.tratarQueda();
     this.app.atualizarHud();
+  }
+
+  desafioFantasma() {
+    this.ultimoDesafioTempo = this.app.tempoDecorrido;
+    const questao = this.app.seletor.selecionarDificil();
+    this.app.questaoDebug = questao;
+    MatGame.ChallengeScene.mostrar(this.app, questao, 'problema', () => {
+      this.app.panel.classList.add('hidden');
+      this.app.pausado = false;
+    }, { bonusMultiplicador: 0.4, origem: 'fantasma' });
+  }
+
+  criarExplosao(x, y) {
+    for (let i = 0; i < 12; i += 1) {
+      const angulo = i / 12 * Math.PI * 2;
+      this.particulas.push({ x, y, vx: Math.cos(angulo) * 150, vy: Math.sin(angulo) * 150, vida: 0.8 });
+    }
   }
 
   agendarEstrelaPoder() {
@@ -275,6 +352,7 @@ MatGame.GameScene = class {
   desafio() {
     const categoria = this.app.seletor.categoria();
     const questao = this.app.seletor.selecionar(categoria, this.app.gerador.dificuldade());
+    if (categoria === 'problema') this.ultimoDesafioTempo = this.app.tempoDecorrido;
     this.app.questaoDebug = questao;
     MatGame.ChallengeScene.mostrar(this.app, questao, categoria, () => {
       this.app.panel.classList.add('hidden');
@@ -340,7 +418,7 @@ MatGame.GameScene = class {
       ctx.fill();
     }
     for (const bicho of this.bichos) {
-      if (bicho.derrotado) continue;
+      if (bicho.invisivel) continue;
       ctx.fillStyle = bicho.nivel >= 3 ? '#9b5de5' : '#ef476f';
       ctx.beginPath();
       ctx.arc(bicho.x + bicho.w / 2 - camera, bicho.y + 18, 20, 0, Math.PI * 2);
@@ -351,6 +429,34 @@ MatGame.GameScene = class {
       ctx.fillStyle = '#102a43';
       ctx.fillRect(bicho.x + 13 - camera, bicho.y + 12, 3, 4);
       ctx.fillRect(bicho.x + 30 - camera, bicho.y + 12, 3, 4);
+      if (bicho.derrotado) {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(bicho.x + 22 - camera, bicho.y + 27, 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    for (const fantasma of this.fantasmas) if (fantasma.ativa) {
+      ctx.globalAlpha = 0.78;
+      ctx.font = '58px sans-serif';
+      ctx.fillText('👻', fantasma.x - camera - 28, fantasma.y + 28);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillText('PROBLEMA!', fantasma.x - camera - 35, fantasma.y - 35);
+    }
+    for (const gigante of this.gigantes) if (gigante.ativa) {
+      ctx.font = '96px sans-serif';
+      ctx.fillText('🧌', gigante.x - camera, gigante.y + 88);
+      ctx.fillStyle = '#ef476f';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText('PULE!', gigante.x - camera + 15, gigante.y - 8);
+    }
+    for (const particula of this.particulas) if (particula.vida > 0) {
+      ctx.globalAlpha = particula.vida;
+      ctx.fillStyle = '#fff176';
+      ctx.beginPath(); ctx.arc(particula.x - camera, particula.y, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
     }
     for (const estrela of this.estrelasPoder) if (estrela.ativa) {
       const brilho = 1 + Math.sin(performance.now() / 120) * 0.12;
@@ -397,7 +503,15 @@ MatGame.GameScene = class {
 
     const jogador = this.jogador;
     const telaX = jogador.x - camera;
-    const protegido = performance.now() < Math.max(jogador.invulneravelAte, jogador.poderAte);
+    const agoraVisual = performance.now();
+    const pulando = !jogador.noChao;
+    const machucado = agoraVisual < jogador.danoAte;
+    const corrida = jogador.noChao && Math.abs(jogador.vx) > 10 ? Math.sin(agoraVisual / 75) : 0;
+    ctx.save();
+    ctx.translate(telaX + 19, jogador.y + 29);
+    ctx.rotate(machucado ? 0.28 * Math.sin(agoraVisual / 35) : pulando ? -0.14 : corrida * 0.035);
+    ctx.translate(-(telaX + 19), -(jogador.y + 29));
+    const protegido = agoraVisual < Math.max(jogador.invulneravelAte, jogador.poderAte);
     ctx.globalAlpha = protegido && Math.floor(performance.now() / 100) % 2 ? 0.45 : 1;
     if (performance.now() < jogador.poderAte) {
       ctx.strokeStyle = ['#fff176', '#6ee7ff', '#ef476f'][Math.floor(performance.now() / 120) % 3];
@@ -410,8 +524,8 @@ MatGame.GameScene = class {
     const cor = personagemCores[this.app.personagem] || '#ff8c42';
     // Pernas e botas dão uma silhueta de corredor em vez de um único retângulo.
     ctx.fillStyle = '#183153';
-    ctx.fillRect(telaX + 7, jogador.y + 40, 9, 15);
-    ctx.fillRect(telaX + 24, jogador.y + 40, 9, 15);
+    ctx.fillRect(telaX + 7, jogador.y + 40 + corrida * 3, 9, 15);
+    ctx.fillRect(telaX + 24, jogador.y + 40 - corrida * 3, 9, 15);
     ctx.fillStyle = '#ffd166';
     ctx.fillRect(telaX + 2, jogador.y + 51, 16, 7);
     ctx.fillRect(telaX + 22, jogador.y + 51, 17, 7);
@@ -453,6 +567,7 @@ MatGame.GameScene = class {
     ctx.fillStyle = '#102a43';
     ctx.font = 'bold 15px sans-serif';
     ctx.fillText(this.app.personagem === 'cientista' ? '⚗' : this.app.personagem === 'inventora' ? '⚙' : '◆', telaX + 11, jogador.y + 39);
+    ctx.restore();
 
     if (this.app.debug) {
       ctx.fillStyle = '#000b';

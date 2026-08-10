@@ -86,6 +86,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (!resposta.ok) throw Error('Banco indisponível');
       app.banco = await resposta.json();
     }
+    const edicoes = JSON.parse(localStorage.getItem('aventura-matematica-banco-editor-v1') || 'null');
+    if (edicoes) app.banco = edicoes;
     new Phaser.Game({ start: () => MatGame.MenuScene.mostrar(app) });
   } catch (erro) {
     app.panel.innerHTML = '<h2>Não foi possível abrir o banco</h2><p>Verifique se a pasta <b>banco</b> foi copiada junto com o jogo.</p>';

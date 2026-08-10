@@ -85,8 +85,9 @@ MatGame.MenuScene = {
   },
 
   config(app) {
-    app.panel.innerHTML = `<h2>CONFIGURAÇÕES</h2><label class="question"><input id="debug" type="checkbox" style="width:auto" ${app.debug ? 'checked' : ''}> Mostrar informações de professor/debug</label><p class="hint">O volume não é necessário neste protótipo sem áudio.</p><button id="back">VOLTAR</button>`;
+    app.panel.innerHTML = `<h2>CONFIGURAÇÕES</h2><label class="question"><input id="debug" type="checkbox" style="width:auto" ${app.debug ? 'checked' : ''}> Mostrar informações de professor/debug</label><p class="hint">O volume não é necessário neste protótipo sem áudio.</p><div class="actions"><button id="editor" class="secondary">📝 EDITOR DE QUESTÕES</button><button id="back">VOLTAR</button></div>`;
     app.panel.querySelector('#debug').onchange = (evento) => { app.debug = evento.target.checked; };
+    app.panel.querySelector('#editor').onclick = () => { window.location.href = 'editor.html'; };
     app.panel.querySelector('#back').onclick = () => this.mostrar(app);
   },
 

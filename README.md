@@ -102,3 +102,11 @@ As bolinhas patrulham apenas pisos largos. Pular sobre uma delas concede 5 segun
 Cair em um buraco custa 20 segundos e devolve o personagem a uma posição segura da plataforma anterior. Se restarem menos de 21 segundos, a queda encerra a partida. Em intervalos determinísticos de 35 a 65 segundos pode surgir uma estrela de poder: ela fica disponível por 12 segundos e, quando coletada, deixa o personagem invulnerável e 45% mais rápido durante 10 segundos.
 
 Cartas coringa aparecem sobre plataformas elevadas e difíceis. O estudante pode guardar somente uma; nas estações, o botão do coringa elimina exatamente duas alternativas erradas e consome a carta. A progressão reduz gradualmente a quantidade de bolinhas azuis de tempo, adiciona mais inimigos e libera o chunk `ABISMO`, com saltos maiores ainda dentro dos limites do personagem. O céu passa de claro para entardecer e finalmente noite conforme a dificuldade motora aumenta.
+
+## Animações, perseguições e editor do professor
+
+O personagem possui poses procedurais de corrida, salto e dano, além de aura durante a estrela de poder. A estrela explode visualmente as bolinhas inimigas próximas; antes de desaparecer, cada bolinha exibe uma expressão de surpresa. Se o estudante passar 45 segundos sem encontrar uma estação, um fantasma começa a persegui-lo e, ao tocar, abre obrigatoriamente um problema de dificuldade 3 com bônus de tempo reduzido. Mesmo uma resposta após o fim da faixa rápida sempre concede pelo menos 1 segundo.
+
+A cada 60 segundos, um gigante atravessa a tela por aproximadamente 6 segundos. O aviso “PULE!” sinaliza a ação; um contato custa 12 segundos e concede invulnerabilidade breve para não repetir a punição.
+
+Professores podem abrir **Configurações → Editor de questões** ou acessar `editor.html`. O editor altera, valida e salva questões no `LocalStorage`, permite duplicar questões e exportar/importar o banco completo em JSON. O jogo carrega automaticamente o banco editado. Isso não modifica `banco/conteudo.json`: para distribuir as mesmas edições em outros computadores, exporte o arquivo no editor e importe-o em cada máquina, ou altere o JSON-fonte e regenere `banco/conteudo.js`.
