@@ -824,7 +824,7 @@
       "id": "DIN_001",
       "categoria": "dinheiro",
       "dificuldade": 1,
-      "pergunta": "1 unidade(s) de suco custam R$ 7,50. O pagamento foi de R$ 10,00. Qual é o troco?",
+      "pergunta": "1 suco custa R$ 7,50. O pagamento foi de R$ 10,00. Qual é o troco?",
       "resposta": 250,
       "alternativas": [
         250,
@@ -837,7 +837,7 @@
       "id": "DIN_002",
       "categoria": "dinheiro",
       "dificuldade": 1,
-      "pergunta": "Caderno custa R$ 13,75. Quanto custam 2 unidades?",
+      "pergunta": "1 caderno custa R$ 13,75. Quanto custam 2 cadernos?",
       "resposta": 2750,
       "alternativas": [
         2750,
@@ -850,7 +850,7 @@
       "id": "DIN_003",
       "categoria": "dinheiro",
       "dificuldade": 1,
-      "pergunta": "3 unidade(s) de lápis custam R$ 6,75. O pagamento foi de R$ 10,00. Qual é o troco?",
+      "pergunta": "3 lápis custam R$ 6,75. O pagamento foi de R$ 10,00. Qual é o troco?",
       "resposta": 325,
       "alternativas": [
         325,
@@ -863,20 +863,20 @@
       "id": "DIN_004",
       "categoria": "dinheiro",
       "dificuldade": 1,
-      "pergunta": "Sanduíche custa R$ 9,50. Quanto custam 1 unidades?",
-      "resposta": 950,
+      "pergunta": "1 sanduíche custa R$ 9,50. Quanto custam 3 sanduíches?",
+      "resposta": 2850,
       "alternativas": [
+        2850,
+        1900,
         950,
-        1050,
-        0,
-        1000
+        2950
       ]
     },
     {
       "id": "DIN_005",
       "categoria": "dinheiro",
       "dificuldade": 1,
-      "pergunta": "2 unidade(s) de livro custam R$ 37,00. O pagamento foi de R$ 40,00. Qual é o troco?",
+      "pergunta": "2 livros custam R$ 37,00. O pagamento foi de R$ 40,00. Qual é o troco?",
       "resposta": 300,
       "alternativas": [
         300,
@@ -889,7 +889,7 @@
       "id": "DIN_006",
       "categoria": "dinheiro",
       "dificuldade": 1,
-      "pergunta": "Fruta custa R$ 3,50. Quanto custam 3 unidades?",
+      "pergunta": "1 fruta custa R$ 3,50. Quanto custam 3 frutas?",
       "resposta": 1050,
       "alternativas": [
         1050,
@@ -902,7 +902,7 @@
       "id": "DIN_007",
       "categoria": "dinheiro",
       "dificuldade": 1,
-      "pergunta": "1 unidade(s) de garrafa custam R$ 12,00. O pagamento foi de R$ 15,00. Qual é o troco?",
+      "pergunta": "1 garrafa custa R$ 12,00. O pagamento foi de R$ 15,00. Qual é o troco?",
       "resposta": 300,
       "alternativas": [
         300,
@@ -915,7 +915,7 @@
       "id": "DIN_008",
       "categoria": "dinheiro",
       "dificuldade": 2,
-      "pergunta": "Borracha custa R$ 2,75. Quanto custam 2 unidades?",
+      "pergunta": "1 borracha custa R$ 2,75. Quanto custam 2 borrachas?",
       "resposta": 550,
       "alternativas": [
         550,
@@ -928,7 +928,7 @@
       "id": "DIN_009",
       "categoria": "dinheiro",
       "dificuldade": 2,
-      "pergunta": "3 unidade(s) de caneta custam R$ 12,75. O pagamento foi de R$ 15,00. Qual é o troco?",
+      "pergunta": "3 canetas custam R$ 12,75. O pagamento foi de R$ 15,00. Qual é o troco?",
       "resposta": 225,
       "alternativas": [
         225,
@@ -941,20 +941,20 @@
       "id": "DIN_010",
       "categoria": "dinheiro",
       "dificuldade": 2,
-      "pergunta": "Régua custa R$ 5,50. Quanto custam 1 unidades?",
-      "resposta": 550,
+      "pergunta": "1 régua custa R$ 5,50. Quanto custam 3 réguas?",
+      "resposta": 1650,
       "alternativas": [
+        1650,
+        1100,
         550,
-        650,
-        0,
-        600
+        1750
       ]
     },
     {
       "id": "DIN_011",
       "categoria": "dinheiro",
       "dificuldade": 2,
-      "pergunta": "2 unidade(s) de suco custam R$ 15,00. O pagamento foi de R$ 15,00. Qual é o troco?",
+      "pergunta": "2 sucos custam R$ 15,00. O pagamento foi de R$ 15,00. Qual é o troco?",
       "resposta": 0,
       "alternativas": [
         0,
@@ -967,7 +967,7 @@
       "id": "DIN_012",
       "categoria": "dinheiro",
       "dificuldade": 2,
-      "pergunta": "Caderno custa R$ 13,75. Quanto custam 3 unidades?",
+      "pergunta": "1 Caderno custa R$ 13,75. Quanto custam 3 unidades?",
       "resposta": 4125,
       "alternativas": [
         4125,
@@ -980,7 +980,7 @@
       "id": "DIN_013",
       "categoria": "dinheiro",
       "dificuldade": 2,
-      "pergunta": "1 unidade(s) de lápis custam R$ 2,25. O pagamento foi de R$ 5,00. Qual é o troco?",
+      "pergunta": "1 lápis custa R$ 2,25. O pagamento foi de R$ 5,00. Qual é o troco?",
       "resposta": 275,
       "alternativas": [
         275,
@@ -993,7 +993,7 @@
       "id": "DIN_014",
       "categoria": "dinheiro",
       "dificuldade": 2,
-      "pergunta": "Sanduíche custa R$ 9,50. Quanto custam 2 unidades?",
+      "pergunta": "1 sanduíche custa R$ 9,50. Quanto custam 2 sanduíches?",
       "resposta": 1900,
       "alternativas": [
         1900,
@@ -1006,7 +1006,7 @@
       "id": "DIN_015",
       "categoria": "dinheiro",
       "dificuldade": 3,
-      "pergunta": "3 unidade(s) de livro custam R$ 55,50. O pagamento foi de R$ 60,00. Qual é o troco?",
+      "pergunta": "3 livros custam R$ 55,50. O pagamento foi de R$ 60,00. Qual é o troco?",
       "resposta": 450,
       "alternativas": [
         450,
@@ -1019,20 +1019,20 @@
       "id": "DIN_016",
       "categoria": "dinheiro",
       "dificuldade": 3,
-      "pergunta": "Fruta custa R$ 3,50. Quanto custam 1 unidades?",
-      "resposta": 350,
+      "pergunta": "1 fruta custa R$ 3,50. Quanto custam 2 frutas?",
+      "resposta": 700,
       "alternativas": [
+        700,
         350,
-        450,
-        0,
-        400
+        1050,
+        800
       ]
     },
     {
       "id": "DIN_017",
       "categoria": "dinheiro",
       "dificuldade": 3,
-      "pergunta": "2 unidade(s) de garrafa custam R$ 24,00. O pagamento foi de R$ 25,00. Qual é o troco?",
+      "pergunta": "2 garrafas custam R$ 24,00. O pagamento foi de R$ 25,00. Qual é o troco?",
       "resposta": 100,
       "alternativas": [
         100,
@@ -1045,7 +1045,7 @@
       "id": "DIN_018",
       "categoria": "dinheiro",
       "dificuldade": 3,
-      "pergunta": "Borracha custa R$ 2,75. Quanto custam 3 unidades?",
+      "pergunta": "1 borracha custa R$ 2,75. Quanto custam 3 borrachas?",
       "resposta": 825,
       "alternativas": [
         825,
@@ -1058,7 +1058,7 @@
       "id": "DIN_019",
       "categoria": "dinheiro",
       "dificuldade": 3,
-      "pergunta": "1 unidade(s) de caneta custam R$ 4,25. O pagamento foi de R$ 5,00. Qual é o troco?",
+      "pergunta": "1 caneta custa R$ 4,25. O pagamento foi de R$ 5,00. Qual é o troco?",
       "resposta": 75,
       "alternativas": [
         75,
@@ -1071,7 +1071,7 @@
       "id": "DIN_020",
       "categoria": "dinheiro",
       "dificuldade": 3,
-      "pergunta": "Régua custa R$ 5,50. Quanto custam 2 unidades?",
+      "pergunta": "1 régua custa R$ 5,50. Quanto custam 2 réguas?",
       "resposta": 1100,
       "alternativas": [
         1100,
