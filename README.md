@@ -166,3 +166,7 @@ Cada aparição usa uma das quatro paletas predefinidas — floresta, oceano, ru
 O fundo muda automaticamente a cada 500 metros entre cinco cenários Canvas: **Floresta dos Números**, **Deserto das Operações**, **Montanhas da Lógica**, **Cidade das Expressões** e **Cosmos Matemático**. Cada cenário possui silhueta própria — árvores, dunas e sol, picos nevados, prédios com janelas ou estrelas e planeta com anel — além dos símbolos matemáticos transparentes.
 
 Depois de completar os cinco cenários, o ciclo recomeça com outra variação de cores. Há três variações por cenário, totalizando 15 combinações visuais antes da repetição completa. As plataformas também recebem as cores de superfície e borda do cenário atual, sem alterar hitboxes, chunks ou a reprodução da seed.
+
+## Camuflagem adaptativa
+
+O inimigo camuflado acompanha o cenário atual em vez de usar sempre um arbusto verde. Na floresta ele assume forma de moita; no deserto, de rocha arredondada; nas montanhas, de pico irregular; na cidade, de caixa; e no cosmos, de cristal. A cor principal e a borda são herdadas da paleta atual da plataforma, incluindo as três variações cromáticas de cada cenário. Ao saltar, ele revela a aparência original para que o estudante identifique claramente o perigo.

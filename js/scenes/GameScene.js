@@ -765,8 +765,22 @@ MatGame.GameScene = class {
     for (const camuflado of this.camuflados) {
       if (camuflado.morto) continue;
       if (!camuflado.revelado) {
-        ctx.fillStyle = '#216e4e'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 20, camuflado.y + 42, 25, Math.PI, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#63d471'; ctx.fillRect(camuflado.x - camera - 3, camuflado.y + 35, 46, 7);
+        const xCamuflado = camuflado.x - camera;
+        ctx.fillStyle = tema.plataforma;
+        ctx.beginPath();
+        if (tema.indice === 0) {
+          ctx.arc(xCamuflado + 20, camuflado.y + 42, 25, Math.PI, Math.PI * 2);
+        } else if (tema.indice === 1) {
+          ctx.moveTo(xCamuflado - 4, camuflado.y + 42); ctx.quadraticCurveTo(xCamuflado + 8, camuflado.y + 10, xCamuflado + 22, camuflado.y + 24); ctx.quadraticCurveTo(xCamuflado + 35, camuflado.y + 8, xCamuflado + 45, camuflado.y + 42);
+        } else if (tema.indice === 2) {
+          ctx.moveTo(xCamuflado - 3, camuflado.y + 42); ctx.lineTo(xCamuflado + 12, camuflado.y + 18); ctx.lineTo(xCamuflado + 22, camuflado.y + 27); ctx.lineTo(xCamuflado + 33, camuflado.y + 12); ctx.lineTo(xCamuflado + 45, camuflado.y + 42);
+        } else if (tema.indice === 3) {
+          ctx.rect(xCamuflado - 2, camuflado.y + 16, 46, 26);
+        } else {
+          ctx.moveTo(xCamuflado, camuflado.y + 42); ctx.lineTo(xCamuflado + 8, camuflado.y + 13); ctx.lineTo(xCamuflado + 21, camuflado.y + 26); ctx.lineTo(xCamuflado + 32, camuflado.y + 8); ctx.lineTo(xCamuflado + 43, camuflado.y + 42);
+        }
+        ctx.fill();
+        ctx.fillStyle = tema.borda; ctx.fillRect(xCamuflado - 3, camuflado.y + 35, 46, 7);
       } else {
         ctx.fillStyle = '#17a589'; ctx.beginPath(); ctx.roundRect(camuflado.x - camera, camuflado.y, 40, 42, 12); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(camuflado.x - camera + 12, camuflado.y + 13, 6, 0, 7); ctx.arc(camuflado.x - camera + 29, camuflado.y + 13, 6, 0, 7); ctx.fill();
