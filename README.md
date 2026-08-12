@@ -35,6 +35,8 @@ Caia para encerrar uma tentativa. Espinhos apenas empurram o personagem, sem pun
 
 ## Arquitetura
 
+Para uma descrição técnica completa e reutilizável — incluindo macroestrutura, fluxos, banco, editor, offline-first, instalador, riscos, ADRs e checklists — consulte [`infra.md`](infra.md).
+
 - `index.html` e `css/game.css`: página, HUD, painéis responsivos e acessíveis;
 - `vendor/phaser.min.js`: adaptador de runtime local no namespace Phaser, sem dependências externas;
 - `js/config.js`: física, frequência, probabilidades e toda a pontuação;
