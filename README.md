@@ -24,6 +24,12 @@ Copie a pasta inteira para o computador ou pendrive e dê duplo clique em `Abrir
 
 `python iniciar.py` continua disponível apenas para desenvolvimento. Ele não é necessário no laboratório. Ao usá-lo, abra `http://127.0.0.1:8000`. Não instala pacotes nem acessa a internet.
 
+## Ajustes recentes de progressão
+
+- Uma alternativa errada desconta o tempo e atualiza o HUD imediatamente durante o desafio.
+- Depois que o Guardião atinge sua cadência máxima, cada nova aparição aumenta em 1 segundo o dano de seus projéteis, limitado a 8 segundos.
+- O zumbi `🧟‍♂️` surge a partir de 1.000 m, reaparece a cada 1.000 m e pula na direção do jogador com velocidade progressiva e limite seguro.
+
 ## Controles
 
 - **← / →** ou **A / D**: andar;

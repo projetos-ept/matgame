@@ -142,6 +142,7 @@ MatGame.ChallengeScene = {
           botao.textContent += ' — tente outra';
           app.tempoRestante = Math.max(1, app.tempoRestante - MatGame.CONFIG.tempo.erroPergunta);
           app.ultimoBonusTempo = { segundos: -MatGame.CONFIG.tempo.erroPergunta, ate: performance.now() + 1400 };
+          app.atualizarHud();
           painel.querySelector('.feedback').textContent = `Ainda não. A tentativa custou ${MatGame.CONFIG.tempo.erroPergunta}s; pense com calma e tente novamente!`;
           app.placar.combo = 0;
         }

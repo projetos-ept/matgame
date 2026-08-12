@@ -25,6 +25,7 @@ MatGame.GameScene = class {
     this.chifres = [];
     this.reciclagens = [];
     this.monstrosAvancados = [];
+    this.ultimoNivelZumbi = 0;
     this.fadas = [];
     this.proximaFada = MatGame.CONFIG.tempo.fadaPrimeira;
     this.particulas = [];
@@ -116,8 +117,11 @@ MatGame.GameScene = class {
           this.congelantes.push({ x: item.x + item.w * 0.32, y: 576, w: 44, h: 44, inicio: item.x + 35, fim: item.x + item.w - 35, vx: 70 + nivelExtremo * 9, morto: false });
           congelanteCriado = true;
         }
-        if (!avancadoCriado && metrosChunk >= mundo.monstroMolaMetros && metrosChunk < mundo.monstroBumerangueMetros && item.y === 620 && item.w >= 300) {
-          this.monstrosAvancados.push({ tipo: 'mola', x: item.x + item.w * 0.45, y: 574, baseY: 574, w: 44, h: 46, vy: 0, proximoSalto: 0, morto: false });
+        const nivelZumbi = Math.floor(metrosChunk / mundo.zumbiIntervaloMetros);
+        if (metrosChunk >= mundo.zumbiInicioMetros && nivelZumbi > this.ultimoNivelZumbi && item.y === 620 && item.w >= 300) {
+          const velocidadeZumbi = Math.min(mundo.zumbiVelocidadeMaxima, mundo.zumbiVelocidadeInicial + (nivelZumbi - 1) * mundo.zumbiVelocidadePorNivel);
+          this.monstrosAvancados.push({ tipo: 'zumbi', x: item.x + 45, y: 570, baseY: 570, w: 48, h: 50, vy: 0, vx: 0, inicio: item.x + 20, fim: item.x + item.w - 20, nivel: nivelZumbi, velocidade: velocidadeZumbi, proximoSalto: 0, morto: false });
+          this.ultimoNivelZumbi = nivelZumbi;
           avancadoCriado = true;
         }
         if (!avancadoCriado && metrosChunk >= mundo.monstroBumerangueMetros && metrosChunk < mundo.monstroSombraMetros && item.y === 620 && item.w >= 300) {
@@ -444,9 +448,16 @@ MatGame.GameScene = class {
 
     for (const monstro of this.monstrosAvancados) {
       if (monstro.morto) continue;
-      if (monstro.tipo === 'mola') {
-        if (this.app.tempoDecorrido >= monstro.proximoSalto && monstro.y >= monstro.baseY) { monstro.vy = -590; monstro.proximoSalto = this.app.tempoDecorrido + 2.8; }
-        monstro.vy += config.gravidade * delta; monstro.y = Math.min(monstro.baseY, monstro.y + monstro.vy * delta);
+      if (monstro.tipo === 'zumbi') {
+        if (this.app.tempoDecorrido >= monstro.proximoSalto && monstro.y >= monstro.baseY) {
+          monstro.vy = -570;
+          monstro.vx = (Math.sign(jogador.x - monstro.x) || 1) * monstro.velocidade;
+          monstro.proximoSalto = this.app.tempoDecorrido + Math.max(1.15, 2.35 - monstro.nivel * 0.08);
+        }
+        monstro.vy += config.gravidade * delta;
+        monstro.x = Math.max(monstro.inicio, Math.min(monstro.fim - monstro.w, monstro.x + monstro.vx * delta));
+        monstro.y = Math.min(monstro.baseY, monstro.y + monstro.vy * delta);
+        if (monstro.y >= monstro.baseY) monstro.vx = 0;
       }
       if (monstro.tipo === 'bumerangue' && this.app.tempoDecorrido >= monstro.proximoAtaque) {
         const direcao = Math.sign(jogador.x - monstro.x) || 1;
@@ -644,7 +655,9 @@ MatGame.GameScene = class {
       if (projetil.x < chefe.arenaInicio || projetil.x > chefe.arenaFim || projetil.y < 0 || projetil.y > 700) projetil.ativo = false;
       if (projetil.ativo && agora >= Math.max(this.jogador.invulneravelAte, this.jogador.poderAte) && this.toca(this.jogador, { x: projetil.x - 13, y: projetil.y - 13, w: 26, h: 26 })) {
         projetil.ativo = false; this.app.sons?.tocar('jogadorHit'); this.jogador.danoAte = agora + 450; this.jogador.invulneravelAte = agora + 900;
-        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - MatGame.CONFIG.tempo.projetilChefe);
+        const aparicaoVelocidadeMaxima = Math.ceil((MatGame.CONFIG.tempo.projetilChefeInicial - MatGame.CONFIG.tempo.projetilChefeMinimo) / MatGame.CONFIG.tempo.projetilChefeReducao) + 1;
+        const penalidadeProjetil = Math.min(MatGame.CONFIG.tempo.projetilChefePenalidadeMaxima, MatGame.CONFIG.tempo.projetilChefe + Math.max(0, chefe.aparicao - aparicaoVelocidadeMaxima));
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - penalidadeProjetil);
       }
     }
     const escala = 0.55 + chefe.vida * 0.11;
@@ -930,11 +943,12 @@ MatGame.GameScene = class {
       ctx.font = '40px sans-serif'; ctx.fillText('🕷', aranha.x - camera, aranha.y + 36);
     }
     for (const monstro of this.monstrosAvancados) if (!monstro.morto) {
-      if (monstro.tipo === 'mola') {
-        ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(monstro.x - camera + 10, monstro.y + 15);
-        for (let i = 1; i < 4; i += 1) ctx.lineTo(monstro.x - camera + (i % 2 ? 34 : 10), monstro.y + 15 + i * 9);
-        ctx.stroke(); ctx.fillStyle = '#ff6b6b'; ctx.beginPath(); ctx.arc(monstro.x - camera + 22, monstro.y + 10, 20, 0, 7); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.fillRect(monstro.x - camera + 10, monstro.y + 5, 8, 8); ctx.fillRect(monstro.x - camera + 27, monstro.y + 5, 8, 8);
+      if (monstro.tipo === 'zumbi') {
+        ctx.save();
+        ctx.translate(monstro.x - camera + monstro.w / 2, 0);
+        ctx.scale(monstro.vx < 0 ? -1 : 1, 1);
+        ctx.font = '46px sans-serif'; ctx.fillText('🧟‍♂️', -25, monstro.y + 43);
+        ctx.restore();
       } else if (monstro.tipo === 'bumerangue') {
         const mx = monstro.x - camera;
         ctx.fillStyle = '#0fa3b1'; ctx.beginPath(); ctx.ellipse(mx + 23, monstro.y + 25, 23, 21, 0, 0, 7); ctx.fill();
