@@ -190,3 +190,5 @@ A migração de MIDI para OGG simplifica a arquitetura: Chrome, Edge e navegador
 A reprodução continua tolerante a falhas: arquivo ausente, OGG inválido ou bloqueio de autoplay não interrompe a partida nem mostra aviso técnico ao estudante. A música pausa e retoma junto com o jogo. O botão **CONTINUAR** mantém o caminho explícito de retomada que não é bloqueado pela proteção dos demais painéis.
 
 Ao executar `criar-instalador.cmd`, as cinco faixas OGG são verificadas antes da compilação e incluídas explicitamente. Se qualquer faixa estiver ausente, a criação para com o nome do arquivo faltante. O script apaga o instalador antigo antes do build. Depois de adicionar ou substituir música, gere novamente o instalador.
+
+O design de som opcional fica em `assets/audio/effects/`. A pasta documenta nomes estáveis para música de abertura, game over, clique, pulo, estrela, dragão, bumerangue, Guardião e gigante. Diferentemente das cinco músicas de cenário, esses efeitos podem ser adicionados gradualmente: a ausência de qualquer arquivo não bloqueia o jogo nem a montagem do instalador.

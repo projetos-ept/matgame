@@ -7,7 +7,7 @@ MatGame.CONFIG = Object.freeze({
   velocidade: 300,
   pulo: 680,
   debug: false,
-  audio: { volumeTrilha: 0.35 },
+  audio: { volumeTrilha: 0.35, volumeEfeitos: 0.45, volumeAbertura: 0.3 },
   mundo: {
     larguraChunk: 960,
     gerarAdiante: 2200,

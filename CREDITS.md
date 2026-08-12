@@ -16,3 +16,5 @@ O projeto de instalador em `installer/AventuraMatematica.iss` pode ser compilado
 ## Trilhas opcionais fornecidas pelo responsável pela instalação
 
 O código possui referências opcionais para cinco arquivos OGG em `assets/audio/soundtrack/`. Os arquivos de música convertidos **não são distribuídos neste repositório** e nenhuma licença sobre eles é concedida pelo projeto. A pessoa que os adicionar ao instalador é responsável por confirmar os direitos de uso e redistribuição. A origem e os nomes informados estão documentados no README da pasta de trilhas.
+
+Os arquivos futuros de design de som em `assets/audio/effects/` também são opcionais e não estão incluídos. Cada efeito adicionado deve ter origem, autoria e licença registradas antes da distribuição.

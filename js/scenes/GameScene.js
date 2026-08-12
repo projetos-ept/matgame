@@ -198,6 +198,7 @@ MatGame.GameScene = class {
     if (!paralisado && (this.teclas.ArrowUp || this.teclas.KeyW || this.teclas.Space) && jogador.noChao) {
       jogador.vy = -config.pulo;
       jogador.noChao = false;
+      this.app.sons?.tocar('pulo');
     }
 
     // As plataformas móveis são opcionais: a rota principal permanece sempre estática.
@@ -269,6 +270,7 @@ MatGame.GameScene = class {
       if (this.app.tempoDecorrido - estrela.nascimento > 12) { estrela.ativa = false; continue; }
       if (this.toca(jogador, { x: estrela.x - 24, y: estrela.y - 24, w: 48, h: 48 })) {
         estrela.ativa = false;
+        this.app.sons?.tocar('estrela');
         jogador.poderAte = agora + config.tempo.estrelaPoderDuracao * 1000;
         this.eliminarInimigosNaTela(agora);
         this.app.placar.adicionar(config.pontos.especial);
@@ -351,6 +353,7 @@ MatGame.GameScene = class {
         const direcao = Math.sign(distanciaX) || 1;
         const origemFogo = atirador.x + direcao * 28;
         this.projeteis.push({ tipo: 'fogo', x: origemFogo, origemX: origemFogo, y: atirador.y + 20, vx: direcao * 255, vy: 0, escala: 1, opacidade: 1, idade: 0, ativa: true });
+        this.app.sons?.tocar('dragaoTiro');
         const etapas = Math.floor(this.app.distancia / config.tempo.projetilReducaoCadaMetros);
         const intervalo = Math.max(config.tempo.projetilIntervaloMinimo, config.tempo.projetilIntervaloInicial - etapas * 0.35);
         atirador.rajadaRestante = atirador.rajadaRestante || config.tempo.dragaoTirosPorRajada;
@@ -441,6 +444,7 @@ MatGame.GameScene = class {
       if (monstro.tipo === 'bumerangue' && this.app.tempoDecorrido >= monstro.proximoAtaque) {
         const direcao = Math.sign(jogador.x - monstro.x) || 1;
         this.bumerangues.push({ x: monstro.x + 23, y: monstro.y + 18, vx: direcao * 260, vy: -80, fase: 'ida', idade: 0, dono: monstro, ativo: true });
+        this.app.sons?.tocar('bumerangue');
         monstro.proximoAtaque = this.app.tempoDecorrido + 3.2;
       }
       if (monstro.tipo === 'sombra') {
@@ -506,6 +510,7 @@ MatGame.GameScene = class {
 
     if (!this.chefe?.ativo && this.app.tempoDecorrido >= this.proximoGigante) {
       this.gigantes.push({ nascimento: this.app.tempoDecorrido, ativa: true, atingiu: false });
+      this.app.sons?.tocar('gigantePule');
       this.agendarGigante();
     }
     for (const gigante of this.gigantes) {
@@ -579,6 +584,7 @@ MatGame.GameScene = class {
       this.plataformas.push({ x: inicio, y: 620, w: this.app.canvas.width + 180, h: 100 });
       const aparicao = Math.round(this.proximoChefeMetros / mundo.chefeCadaMetros);
       this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: 3, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0, aparicao, paleta: (aparicao - 1) % 4, proximoTiro: this.app.tempoDecorrido + MatGame.CONFIG.tempo.projetilChefeInicial };
+      this.app.sons?.tocar('bossAparece');
       this.fantasmas.forEach((item) => { item.ativa = false; });
       this.gigantes.forEach((item) => { item.ativa = false; });
       this.magos.forEach((item) => { item.ativa = false; });
@@ -593,6 +599,7 @@ MatGame.GameScene = class {
     if (this.proximoChefeMetros >= mundo.chefeAtiradorMetros && this.app.tempoDecorrido >= chefe.proximoTiro) {
       const origemX = chefe.x + chefe.w / 2; const origemY = 520; const dx = this.jogador.x - origemX; const dy = this.jogador.y - origemY; const distancia = Math.max(1, Math.hypot(dx, dy));
       this.projeteisChefe.push({ x: origemX, y: origemY, vx: dx / distancia * 210, vy: dy / distancia * 150, ativo: true, simbolo: ['+', '−', '×', '÷'][chefe.aparicao % 4] });
+      this.app.sons?.tocar('bossTiro');
       const reducao = Math.max(0, chefe.aparicao - 3) * 0.25;
       chefe.proximoTiro = this.app.tempoDecorrido + Math.max(MatGame.CONFIG.tempo.projetilChefeMinimo, MatGame.CONFIG.tempo.projetilChefeInicial - reducao);
     }

@@ -510,6 +510,14 @@ Não existe mais `banco/soundtrack.js` nem `tools/gerar-soundtrack-js.py`. O bui
 
 A conversão de MIDI para OGG não cria direito de redistribuição. Origem, autorização e licença precisam permanecer registradas em `CREDITS.md`.
 
+### 10.5 Design de som opcional
+
+Efeitos curtos ficam separados das músicas em `assets/audio/effects/`. `js/game/soundEffects.js` centraliza o manifesto de nomes, volume, música de abertura e política de falha silenciosa. Essa separação evita espalhar caminhos de arquivos pelo motor: as cenas disparam nomes semânticos como `pulo`, `estrela`, `dragaoTiro`, `bossTiro` e `gigantePule`.
+
+Os efeitos não são requisitos do build. O instalador os copia pela regra recursiva quando presentes, mas continua válido quando a pasta contém apenas seu README. Isso permite produzir e revisar o design de som incrementalmente. A música de cenário permanece obrigatória no preflight porque representa uma coleção fechada já definida; efeitos são uma camada de enriquecimento progressivo.
+
+Cada reprodução cria um elemento `Audio` independente, permitindo sobreposição de sons curtos. Falhas de arquivo e rejeições de autoplay são absorvidas. A música de abertura usa uma instância em loop, encerrada ao começar a partida. Um listener delegado em `document` produz feedback consistente para botões atuais e futuros sem cadastrar handlers sonoros individualmente.
+
 ## 11. Modelo offline-first
 
 ### 11.1 Matriz de execução

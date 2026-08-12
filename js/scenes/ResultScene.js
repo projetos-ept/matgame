@@ -1,6 +1,7 @@
 MatGame.ResultScene = {
   mostrar(app, motivo) {
     app.parar();
+    if (motivo === 'tempo' || motivo === 'queda') app.sons?.tocar('gameOver');
     const recorde = MatGame.Recordes.salvar(app.modo, {
       pontos: app.placar.pontos,
       distancia: app.distancia,

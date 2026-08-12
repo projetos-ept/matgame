@@ -22,6 +22,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     iniciar(seed, modo, aluno, personagem) {
       this.parar();
+      this.sons?.pararAbertura();
       this.seed = String(seed);
       this.modo = modo;
       this.aluno = aluno;
@@ -90,6 +91,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
+  app.sons = new MatGame.SoundEffects();
+  document.addEventListener('click', (evento) => {
+    if (evento.target.closest('button, .button-link, .import-button')) {
+      app.sons.tocar('cliqueMenu');
+      if (!app.cena) app.sons.tocarAbertura();
+    }
+  });
   app.pause.onclick = () => app.alternarPausa();
   try {
     // Mantém o suporte offline por file://. Não remover durante resoluções de conflito.

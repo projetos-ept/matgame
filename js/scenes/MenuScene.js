@@ -7,6 +7,7 @@ MatGame.MenuScene = {
 
   mostrar(app) {
     app.parar();
+    app.sons?.tocarAbertura();
     const painel = app.panel;
     painel.className = 'panel';
     painel.innerHTML = `
