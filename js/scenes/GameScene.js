@@ -584,7 +584,8 @@ MatGame.GameScene = class {
       const inicio = this.camera;
       this.plataformas.push({ x: inicio, y: 620, w: this.app.canvas.width + 180, h: 100 });
       const aparicao = Math.round(this.proximoChefeMetros / mundo.chefeCadaMetros);
-      this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: 3, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0, aparicao, paleta: (aparicao - 1) % 4, proximoTiro: this.app.tempoDecorrido + MatGame.CONFIG.tempo.projetilChefePrimeiro };
+      const vidaMaxima = Math.min(mundo.chefeVidaMaxima, mundo.chefeVidaInicial + aparicao - 1);
+      this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: vidaMaxima, vidaMaxima, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0, aparicao, paleta: (aparicao - 1) % 4, proximoTiro: this.app.tempoDecorrido + MatGame.CONFIG.tempo.projetilChefePrimeiro };
       this.app.sons?.tocar('bossAparece');
       if (this.proximoChefeMetros >= mundo.chefeFantasmasMetros) {
         const expira = this.app.tempoDecorrido + MatGame.CONFIG.tempo.chefeFantasmaEspera;
@@ -609,7 +610,8 @@ MatGame.GameScene = class {
       return true;
     }
     this.jogador.x = Math.max(chefe.arenaInicio, Math.min(this.jogador.x, chefe.arenaFim - this.jogador.w));
-    chefe.x += chefe.direcao * (72 + (3 - chefe.vida) * 18) * delta;
+    const golpesRecebidos = chefe.vidaMaxima - chefe.vida;
+    chefe.x += chefe.direcao * (72 + golpesRecebidos * 18) * delta;
     if (chefe.x <= chefe.arenaInicio + 500 || chefe.x + chefe.w >= chefe.arenaFim) chefe.direcao *= -1;
     if (this.app.tempoDecorrido >= chefe.proximoTiro) {
       const origemX = chefe.x + chefe.w / 2; const origemY = 520; const dx = this.jogador.x - origemX; const dy = this.jogador.y - origemY; const distancia = Math.max(1, Math.hypot(dx, dy));
@@ -627,7 +629,7 @@ MatGame.GameScene = class {
         this.app.tempoRestante = Math.max(1, this.app.tempoRestante - MatGame.CONFIG.tempo.projetilChefe);
       }
     }
-    const escala = 0.55 + chefe.vida * 0.15;
+    const escala = 0.55 + chefe.vida * 0.11;
     const hitbox = { x: chefe.x + chefe.w * (1 - escala) / 2, y: 620 - chefe.h * escala, w: chefe.w * escala, h: chefe.h * escala };
     if (this.toca(this.jogador, hitbox)) {
       const pisou = this.jogador.vy > 0 && yAnterior + this.jogador.h <= hitbox.y + 18;
@@ -953,7 +955,7 @@ MatGame.GameScene = class {
       ctx.restore();
     }
     if (this.chefe?.ativo) {
-      const chefe = this.chefe; const escala = 0.55 + chefe.vida * 0.15; const cx = chefe.x - camera + chefe.w / 2; const base = 620;
+      const chefe = this.chefe; const escala = 0.55 + chefe.vida * 0.11; const cx = chefe.x - camera + chefe.w / 2; const base = 620;
       const paletasChefe = [
         { corpo: '#315c42', rosto: '#5fbf72', espinho: '#264536' },
         { corpo: '#295b7a', rosto: '#56a6c9', espinho: '#183b59' },

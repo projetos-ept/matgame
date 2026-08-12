@@ -518,6 +518,8 @@ Os efeitos não são requisitos do build. O instalador os copia pela regra recur
 
 Efeitos usam pequenos pools de elementos `Audio` pré-carregados, permitindo sobreposição sem criar e decodificar um novo OGG a cada evento. O dragão reserva três vozes para sua rajada. Falhas de arquivo e rejeições de autoplay são absorvidas. A música de abertura usa uma instância em loop, encerrada ao começar a partida. Um listener delegado em `document` produz feedback consistente para botões atuais e futuros sem cadastrar handlers sonoros individualmente.
 
+Chefes progressivos mantêm limites explícitos na configuração: vida cresce de 3 até 5 corações, o intervalo de tiro cai em passos de 0,3 segundo de 1,8 até 0,6 segundo e jamais chega a zero. A escala visual depende da vida corrente, não apenas da aparição, de modo que cada impacto comunica redução de resistência. Velocidade de patrulha usa `vidaMaxima - vida`, evitando fórmulas incorretas quando a vida inicial supera três.
+
 ## 11. Modelo offline-first
 
 ### 11.1 Matriz de execução
