@@ -29,6 +29,7 @@ Copie a pasta inteira para o computador ou pendrive e dê duplo clique em `Abrir
 - Uma alternativa errada desconta o tempo e atualiza o HUD imediatamente durante o desafio.
 - Depois que o Guardião atinge sua cadência máxima, cada nova aparição aumenta em 1 segundo o dano de seus projéteis, limitado a 8 segundos.
 - O zumbi `🧟‍♂️` surge a partir de 1.000 m, reaparece a cada 1.000 m e pula na direção do jogador com velocidade progressiva e limite seguro.
+- A partir de 4.000 m, o bisão `🦬` anuncia sua investida piscando em preto três vezes, atravessa rapidamente a tela e desconta 10 segundos se atingir o jogador.
 
 ## Controles
 

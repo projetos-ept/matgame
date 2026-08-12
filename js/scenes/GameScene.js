@@ -16,6 +16,7 @@ MatGame.GameScene = class {
     this.fantasmas = [];
     this.fantasmasChefe = [];
     this.gigantes = [];
+    this.bisoes = [];
     this.atiradores = [];
     this.projeteis = [];
     this.bumerangues = [];
@@ -34,6 +35,7 @@ MatGame.GameScene = class {
     this.proximoChefeMetros = MatGame.CONFIG.mundo.chefeCadaMetros;
     this.ultimoDesafioTempo = 0;
     this.proximoGigante = 0;
+    this.proximoBisaoMetros = MatGame.CONFIG.mundo.bisaoInicioMetros;
     this.ultimaCartaX = -2000;
     this.proximaEstrelaPoder = 0;
     this.proximoMago = this.app.powerRng.inteiro(MatGame.CONFIG.tempo.magoMinimo, MatGame.CONFIG.tempo.magoMaximo);
@@ -78,7 +80,7 @@ MatGame.GameScene = class {
       const nivel = this.app.gerador.dificuldadeMotora();
       const metrosChunk = base / 10;
       const mundo = MatGame.CONFIG.mundo;
-      const populacao = metrosChunk < mundo.monstrosInicioMetros ? 0 : metrosChunk < mundo.atiradoresInicioMetros ? 1 : metrosChunk < mundo.monstroMolaMetros ? 2 : 3;
+      const populacao = metrosChunk < mundo.monstrosInicioMetros ? 0 : metrosChunk < mundo.atiradoresInicioMetros ? 1 : metrosChunk < mundo.zumbiInicioMetros ? 2 : 3;
       const nivelExtremo = metrosChunk < mundo.extremoInicioMetros ? 0 : 1 + Math.floor((metrosChunk - mundo.extremoInicioMetros) / mundo.extremoCadaMetros);
       let atiradorCriado = false;
       let camufladoCriado = false;
@@ -546,6 +548,30 @@ MatGame.GameScene = class {
         this.app.tempoRestante = Math.max(1, this.app.tempoRestante * 0.5);
       }
     }
+
+    if (!this.chefe?.ativo && this.app.distancia >= this.proximoBisaoMetros && !this.bisoes.some((bisao) => bisao.ativo)) {
+      this.bisoes.push({ x: this.camera + this.app.canvas.width + 115, y: 520, w: 110, h: 96, ativo: true, estado: 'aviso', nascimento: this.app.tempoDecorrido, direcao: 0 });
+      this.proximoBisaoMetros += config.mundo.bisaoIntervaloMetros;
+    }
+    for (const bisao of this.bisoes) {
+      if (!bisao.ativo) continue;
+      const idade = this.app.tempoDecorrido - bisao.nascimento;
+      if (bisao.estado === 'aviso' && idade >= config.tempo.bisaoAvisoDuracao) {
+        bisao.estado = 'investida';
+        bisao.direcao = Math.sign(jogador.x - bisao.x) || -1;
+      }
+      if (bisao.estado === 'investida') bisao.x += bisao.direcao * config.mundo.bisaoVelocidade * delta;
+      if (bisao.estado === 'investida' && (bisao.x < this.camera - bisao.w - 80 || bisao.x > this.camera + this.app.canvas.width + bisao.w + 80)) bisao.ativo = false;
+      if (bisao.estado === 'investida' && agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, bisao)) {
+        bisao.ativo = false;
+        this.app.sons?.tocar('jogadorHit');
+        jogador.danoAte = agora + 700;
+        jogador.invulneravelAte = agora + 1400;
+        jogador.vy = -420;
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBisao);
+        this.app.atualizarHud();
+      }
+    }
     for (const particula of this.particulas) {
       particula.x += particula.vx * delta;
       particula.y += particula.vy * delta;
@@ -613,6 +639,7 @@ MatGame.GameScene = class {
       this.fantasmasChefe = [];
       this.fantasmas.forEach((item) => { item.ativa = false; });
       this.gigantes.forEach((item) => { item.ativa = false; });
+      this.bisoes.forEach((item) => { item.ativo = false; });
       this.magos.forEach((item) => { item.ativa = false; });
       this.fadas.forEach((item) => { item.ativa = false; });
       this.eliminarInimigosNaTela(agora);
@@ -699,6 +726,7 @@ MatGame.GameScene = class {
     for (const aranha of this.aranhas) if (!aranha.morto && perto(aranha)) { aranha.morto = true; this.criarExplosao(aranha.x, aranha.y); }
     for (const monstro of this.monstrosAvancados) if (!monstro.morto && perto(monstro)) { monstro.morto = true; this.criarExplosao(monstro.x, monstro.y); }
     for (const gigante of this.gigantes) if (gigante.ativa && perto(gigante)) { gigante.ativa = false; this.criarExplosao(gigante.x, gigante.y); }
+    for (const bisao of this.bisoes) if (bisao.ativo && perto(bisao)) { bisao.ativo = false; this.criarExplosao(bisao.x, bisao.y); }
     for (const projetil of this.projeteis) projetil.ativa = false;
     for (const bumerangue of this.bumerangues) bumerangue.ativo = false;
     for (const projetil of this.projeteisChefe) projetil.ativo = false;
@@ -1009,6 +1037,22 @@ MatGame.GameScene = class {
       const gx = gigante.x - camera;
       ctx.font = '88px sans-serif'; ctx.fillText('👹', gx - 3, gigante.y + 82);
       ctx.fillStyle = '#ef476f'; ctx.font = 'bold 16px sans-serif'; ctx.fillText('PULE!', gx + 15, gigante.y - 31);
+    }
+    for (const bisao of this.bisoes) if (bisao.ativo) {
+      const bx = bisao.x - camera;
+      const idade = this.app.tempoDecorrido - bisao.nascimento;
+      const piscarPreto = bisao.estado === 'aviso' && Math.floor(idade / 0.25) % 2 === 0;
+      ctx.save();
+      ctx.translate(bx + bisao.w / 2, 0);
+      ctx.scale(bisao.direcao > 0 ? -1 : 1, 1);
+      if (piscarPreto) ctx.filter = 'brightness(0)';
+      ctx.font = '96px sans-serif'; ctx.fillText('🦬', -52, bisao.y + 87);
+      ctx.restore();
+      if (bisao.estado === 'aviso') {
+        ctx.fillStyle = piscarPreto ? '#111' : '#ef476f';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText('⚠ INVESTIDA!', bx - 6, bisao.y - 18);
+      }
     }
     for (const particula of this.particulas) if (particula.vida > 0) {
       ctx.globalAlpha = particula.vida;
