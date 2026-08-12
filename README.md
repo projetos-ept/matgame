@@ -183,12 +183,10 @@ O inimigo camuflado acompanha o cenário atual em vez de usar sempre um arbusto 
 
 ## Trilha sonora offline por cenário
 
-O jogo procura cinco arquivos MIDI locais em `assets/audio/soundtrack/` e troca a faixa junto com o cenário a cada 500 metros. Consulte o `README.md` dessa pasta para ver os nomes exatos. O volume inicial pode ser alterado em `js/config.js`, na propriedade `audio.volumeTrilha`.
+O projeto usa cinco arquivos **OGG Vorbis** locais em `assets/audio/soundtrack/` e troca a faixa junto com o cenário a cada 500 metros. Os nomes exatos estão no README da pasta; o volume inicial fica em `js/config.js`, na propriedade `audio.volumeTrilha`.
 
-A reprodução é tolerante a falhas: arquivo ausente, formato MIDI não suportado ou bloqueio de reprodução pelo navegador não interrompem a partida nem exibem aviso ao estudante. Como o suporte nativo a MIDI varia entre navegadores, para uma distribuição mais previsível também é possível converter, mediante autorização, as faixas para um formato amplamente aceito e atualizar os caminhos em `js/game/soundtrack.js`.
+A migração de MIDI para OGG simplifica a arquitetura: Chrome, Edge e navegadores Chromium decodificam OGG nativamente pelo elemento `<audio>`. Não há parser MIDI, sintetizador por osciladores, snapshot base64 nem aumento artificial do JavaScript. A música conserva os timbres da conversão, reduz código próprio e facilita manutenção e testes.
 
-Ao executar `criar-instalador.cmd`, os cinco MIDI são verificados antes da compilação e incluídos explicitamente no instalador. Se qualquer faixa estiver ausente, a criação é interrompida com o nome do arquivo faltante. O script também apaga um instalador antigo antes de compilar, evitando distribuir por engano um `.exe` desatualizado. Depois de adicionar ou trocar uma música, é necessário executar novamente `criar-instalador.cmd`: instaladores já gerados não são atualizados automaticamente.
+A reprodução continua tolerante a falhas: arquivo ausente, OGG inválido ou bloqueio de autoplay não interrompe a partida nem mostra aviso técnico ao estudante. A música pausa e retoma junto com o jogo. O botão **CONTINUAR** mantém o caminho explícito de retomada que não é bloqueado pela proteção dos demais painéis.
 
-### Reprodução MIDI e pausa
-
-Como navegadores Chromium não reproduzem MIDI de forma confiável pelo elemento `<audio>`, o build executa `tools/gerar-soundtrack-js.py`: ele incorpora as cinco faixas em `banco/soundtrack.js`. O controlador lê os eventos MIDI e os sintetiza localmente com Web Audio, inclusive quando o jogo abre por `file://`. Esse arquivo gerado pode ficar grande e deve ser recriado sempre que uma faixa mudar. A música pausa e retoma junto com a partida; o botão **CONTINUAR** possui um caminho explícito de retomada que não fica bloqueado pela proteção dos demais painéis.
+Ao executar `criar-instalador.cmd`, as cinco faixas OGG são verificadas antes da compilação e incluídas explicitamente. Se qualquer faixa estiver ausente, a criação para com o nome do arquivo faltante. O script apaga o instalador antigo antes do build. Depois de adicionar ou substituir música, gere novamente o instalador.

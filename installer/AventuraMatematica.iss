@@ -20,14 +20,14 @@ UninstallDisplayName={#MyAppName}
 ArchitecturesAllowed=x64compatible
 
 [Files]
-; Os MIDI sao excluidos da regra geral e incluidos explicitamente abaixo. Assim,
+; Os OGG sao excluidos da regra geral e incluidos explicitamente abaixo. Assim,
 ; uma compilacao nunca depende de o wildcard recursivo reconhecer esses binarios.
-Source: "..\*"; DestDir: "{app}"; Excludes: ".git\*,installer\Output\*,.gitkeep,assets\audio\soundtrack\*.mid"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\assets\audio\soundtrack\NinjaForest.mid"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
-Source: "..\assets\audio\soundtrack\T_SoldierBlade_Track03.mid"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
-Source: "..\assets\audio\soundtrack\Zone1-MG.mid"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
-Source: "..\assets\audio\soundtrack\City_Hunter_Level_1.mid"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
-Source: "..\assets\audio\soundtrack\salalvl2.mid"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
+Source: "..\*"; DestDir: "{app}"; Excludes: ".git\*,installer\Output\*,.gitkeep,assets\audio\soundtrack\*.ogg"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\assets\audio\soundtrack\NinjaForest.ogg"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
+Source: "..\assets\audio\soundtrack\T_SoldierBlade_Track03.ogg"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
+Source: "..\assets\audio\soundtrack\Zone1-MG.ogg"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
+Source: "..\assets\audio\soundtrack\City_Hunter_Level_1.ogg"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
+Source: "..\assets\audio\soundtrack\salalvl2.ogg"; DestDir: "{app}\assets\audio\soundtrack"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppLauncher}"; WorkingDir: "{app}"

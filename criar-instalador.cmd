@@ -12,11 +12,11 @@ if not exist "%ISCC%" (
 
 rem Nao permita gerar um instalador sem as cinco trilhas esperadas.
 for %%F in (
-  NinjaForest.mid
-  T_SoldierBlade_Track03.mid
-  Zone1-MG.mid
-  City_Hunter_Level_1.mid
-  salalvl2.mid
+  NinjaForest.ogg
+  T_SoldierBlade_Track03.ogg
+  Zone1-MG.ogg
+  City_Hunter_Level_1.ogg
+  salalvl2.ogg
 ) do (
   if not exist "assets\audio\soundtrack\%%F" (
     echo ERRO: falta assets\audio\soundtrack\%%F
@@ -29,8 +29,6 @@ for %%F in (
 rem Remove um executavel antigo para ele nao ser confundido com a nova versao.
 if exist "installer\Output\Instalar-Aventura-Matematica.exe" del /q "installer\Output\Instalar-Aventura-Matematica.exe"
 python tools\gerar-banco-js.py
-if errorlevel 1 exit /b 1
-python tools\gerar-soundtrack-js.py
 if errorlevel 1 exit /b 1
 "%ISCC%" installer\AventuraMatematica.iss
 if errorlevel 1 exit /b 1

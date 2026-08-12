@@ -61,7 +61,7 @@ A principal decisão arquitetural é tratar **offline** como restrição de proj
 - JavaScript executado diretamente no navegador, sem bundler;
 - scripts carregados em ordem e compartilhando o namespace global `MatGame`;
 - persistência associada à origem e ao perfil do navegador;
-- arquivos MIDI podem não ter suporte nativo em todos os navegadores;
+- trilhas OGG são direcionadas a Chrome, Edge e navegadores Chromium;
 - o runtime `vendor/phaser.min.js` deste MVP é um adaptador mínimo compatível com o ponto de entrada utilizado, e não deve ser confundido com uma distribuição completa do Phaser 3;
 - o instalador é compilado apenas em Windows com Inno Setup 6.
 
@@ -479,23 +479,36 @@ LocalStorage é isolado por origem. `file://`, `http://127.0.0.1:8000` e diferen
 
 ## 10. Soundtrack offline
 
-### 10.1 Contrato
+### 10.1 Decisão de formato
 
-`soundtrack.js` mantém uma lista ordenada de caminhos locais. O índice é calculado pela mesma faixa de 500 metros dos cenários.
+As trilhas usam **OGG Vorbis**, formato decodificado nativamente pelos navegadores Chromium de destino. Cada cenário aponta para um arquivo local e o índice da música deriva da mesma faixa de 500 metros usada pela ambientação visual.
 
-O build converte os binários MIDI em base64 por `tools/gerar-soundtrack-js.py` e grava `banco/soundtrack.js`. O controlador decodifica Standard MIDI Files, interpreta delta time, running status, tempo e eventos note-on/note-off, e agenda os sons com Web Audio. Assim ele não depende do suporte MIDI do elemento `<audio>` nem de `fetch()` sob `file://`. O controlador usa loop, volume central, janela curta de agendamento e pausa/retomada sincronizada com o jogo. Arquivo ausente ou MIDI inválido produz uma lista vazia e não abre painel de erro.
+A escolha por áudio pré-renderizado é intencional. Comparado ao MIDI, OGG:
 
-### 10.2 Falha silenciosa
+- preserva os timbres definidos na conversão;
+- dispensa parser de Standard MIDI Files;
+- dispensa sintetizador Web Audio e gerenciamento de osciladores;
+- não precisa incorporar binários em base64 dentro de JavaScript;
+- reduz código próprio, superfície de bugs e tempo de build;
+- oferece comportamento previsível no Edge e Chrome.
 
-Áudio é periférico. Arquivo ausente, autoplay bloqueado ou codec incompatível não pode impedir a matemática e a plataforma. A política é **silent degradation**: jogo sem áudio, sem modal técnico para o aluno.
+O custo é um arquivo maior que MIDI. Para um jogo instalado localmente, esse custo é aceitável e pode ser controlado com Vorbis entre 128 e 192 kbit/s.
 
-### 10.3 Compatibilidade MIDI
+### 10.2 Contrato do controlador
 
-Suporte MIDI nativo não é uniforme; por isso este projeto inclui um sintetizador Web Audio simples. Ele não reproduz timbres General MIDI originais: programas e instrumentos são aproximados por osciladores. Um projeto novo pode preferir OGG/MP3, se licenças e tamanho permitirem, ou adotar um sintetizador local mais completo e licenciado — nunca CDN.
+`js/game/soundtrack.js` mantém a lista ordenada de caminhos `.ogg`. O controlador cria um elemento `Audio`, configura loop, volume e preload, troca de faixa por cenário e acompanha o ciclo de pausa, retomada e encerramento da partida.
 
-### 10.4 Licenciamento
+Uma rejeição de `play()` por política de autoplay não marca o arquivo como defeituoso: uma interação posterior pode tentar reproduzi-lo novamente. O evento `error`, por outro lado, marca a faixa como indisponível para evitar tentativas repetidas.
 
-Não confunda “arquivo disponível” com “arquivo redistribuível”. Todo áudio deve ter licença documentada em `CREDITS.md`. O manifesto da pasta registra nomes, mas a responsabilidade de autorização permanece com quem empacota.
+### 10.3 Falha silenciosa
+
+Áudio é periférico. Arquivo ausente, corrompido ou bloqueado não pode impedir a matemática e o platformer. A política continua sendo **silent degradation**: a partida segue sem música e sem modal técnico para o estudante.
+
+### 10.4 Pipeline e licenciamento
+
+Não existe mais `banco/soundtrack.js` nem `tools/gerar-soundtrack-js.py`. O build verifica os cinco OGG e o Inno Setup os inclui explicitamente. Isso torna os arquivos auditáveis no manifesto sem duplicar dados em JavaScript.
+
+A conversão de MIDI para OGG não cria direito de redistribuição. Origem, autorização e licença precisam permanecer registradas em `CREDITS.md`.
 
 ## 11. Modelo offline-first
 
@@ -570,7 +583,7 @@ Computadores dos alunos recebem somente arquivos do jogo e atalhos.
 1. localizar ISCC.exe
 2. verificar as cinco trilhas obrigatórias
 3. apagar instalador anterior
-4. regenerar banco/conteudo.js e banco/soundtrack.js
+4. regenerar banco/conteudo.js
 5. invocar Inno Setup
 6. verificar se o .exe novo existe
 7. informar caminho de saída
@@ -588,11 +601,11 @@ O `.iss` define:
 - compressão e arquitetura;
 - cópia recursiva do projeto;
 - exclusões de `.git`, output e arquivos de controle;
-- inclusão explícita dos cinco MIDI;
+- inclusão explícita dos cinco OGG;
 - atalhos no Menu Iniciar e Área de Trabalho;
 - opção de abrir após instalar.
 
-Os MIDI são excluídos do wildcard geral e adicionados individualmente. Isso transforma seus nomes em contrato de build e impede omissão silenciosa.
+Os OGG são excluídos do wildcard geral e adicionados individualmente. Isso transforma seus nomes em contrato de build e impede omissão silenciosa.
 
 ### 13.4 Conteúdo esperado do instalador
 
@@ -604,7 +617,7 @@ Os MIDI são excluídos do wildcard geral e adicionados individualmente. Isso tr
 ├─ js/
 ├─ banco/
 ├─ vendor/
-├─ assets/audio/soundtrack/*.mid
+├─ assets/audio/soundtrack/*.ogg
 ├─ Abrir Jogo.cmd
 ├─ README.md
 └─ CREDITS.md
@@ -621,7 +634,7 @@ Arquivos de desenvolvimento podem ser excluídos em uma evolução futura para r
 5. incrementar `MyAppVersion`;
 6. executar `criar-instalador.cmd`;
 7. instalar em uma máquina limpa ou VM;
-8. conferir a pasta instalada, inclusive MIDI;
+8. conferir a pasta instalada, inclusive OGG;
 9. desligar rede;
 10. jogar, abrir editor, salvar recorde e reiniciar;
 11. calcular hash do instalador e arquivar junto à versão.
@@ -652,7 +665,7 @@ O `AppId` estável permite atualização sobre a instalação anterior. O instal
 - ausência de repetição imediata;
 - editor offline;
 - soundtrack local e falha silenciosa;
-- manifesto dos MIDI no instalador;
+- manifesto dos OGG no instalador;
 - ausência de URLs externas nos artefatos verificados.
 
 ### 14.3 Pirâmide recomendada para evolução
@@ -721,7 +734,7 @@ Falhas críticas e periféricas têm políticas diferentes:
 - áudio ausente: continuar silenciosamente;
 - LocalStorage indisponível: continuar sem persistir;
 - Inno Setup ausente: interromper build com instrução;
-- MIDI ausente no build: interromper build e nomear arquivo;
+- OGG ausente no build: interromper build e nomear arquivo;
 - resposta inválida no editor: não persistir e explicar.
 
 ### 16.3 Acessibilidade
@@ -754,7 +767,7 @@ Evite enviar telemetria sem consentimento. Para pesquisa pedagógica, prefira ex
 |---|---|---|
 | `file://` bloquear JSON | jogo não inicia | snapshot `conteudo.js` |
 | JSON e JS divergirem | conteúdo diferente por modo | gerador + teste estrutural |
-| MIDI sem suporte | jogo silencioso | falha silenciosa; considerar OGG |
+| OGG ausente ou inválido | jogo silencioso | falha silenciosa + preflight do instalador |
 | asset faltar no instalador | trilha ausente | preflight + entradas explícitas |
 | `.exe` antigo permanecer | distribuição errada | apagar antes do build |
 | LocalStorage ser limpo | perda de ranking/editor | exportação; documentação |
@@ -777,7 +790,7 @@ Este MVP privilegia execução simples e legibilidade, portanto há débitos con
 - não há pipeline automatizado que compile o `.exe` em CI Windows;
 - não há descarte sistemático de entidades antigas;
 - o editor valida apenas parte do schema;
-- MIDI tem suporte inconsistente;
+- o loop e volume das conversões OGG exigem revisão auditiva;
 - CSS e HTML estão compactados, reduzindo diffs e manutenção.
 
 Registrar dívida é parte da infraestrutura: evita que uma decisão de MVP seja interpretada como padrão definitivo.
@@ -892,44 +905,44 @@ Registrar dívida é parte da infraestrutura: evita que uma decisão de MVP seja
 
 ### ADR-001 — aplicação estática como unidade de implantação
 
-**Decisão:** usar HTML/CSS/JS e arquivos locais, sem backend.  
-**Motivo:** implantação escolar offline e manutenção simples.  
+**Decisão:** usar HTML/CSS/JS e arquivos locais, sem backend.
+**Motivo:** implantação escolar offline e manutenção simples.
 **Consequência:** persistência é local e não há sincronização central.
 
 ### ADR-002 — banco duplo JSON + JS gerado
 
-**Decisão:** JSON canônico e snapshot global gerado.  
-**Motivo:** autoria estruturada e compatibilidade `file://`.  
+**Decisão:** JSON canônico e snapshot global gerado.
+**Motivo:** autoria estruturada e compatibilidade `file://`.
 **Consequência:** build precisa garantir sincronização.
 
 ### ADR-003 — geração por chunks e seed
 
-**Decisão:** selecionar blocos válidos com PRNG determinístico.  
-**Motivo:** rejogabilidade sem plataformas impossíveis e competição justa.  
+**Decisão:** selecionar blocos válidos com PRNG determinístico.
+**Motivo:** rejogabilidade sem plataformas impossíveis e competição justa.
 **Consequência:** alterações no catálogo podem mudar sequências de versões futuras.
 
 ### ADR-004 — LocalStorage para dados locais
 
-**Decisão:** recordes, ranking e editor ficam no navegador.  
-**Motivo:** zero infraestrutura e privacidade local.  
+**Decisão:** recordes, ranking e editor ficam no navegador.
+**Motivo:** zero infraestrutura e privacidade local.
 **Consequência:** dados dependem de origem/perfil e exigem exportação para transporte.
 
 ### ADR-005 — falha silenciosa de áudio
 
-**Decisão:** soundtrack nunca bloqueia gameplay.  
-**Motivo:** suporte e presença dos codecs variam.  
+**Decisão:** soundtrack nunca bloqueia gameplay.
+**Motivo:** suporte e presença dos codecs variam.
 **Consequência:** instalação pode funcionar sem música sem alertar o aluno.
 
 ### ADR-006 — assets críticos explícitos no instalador
 
-**Decisão:** MIDI listado individualmente e validado antes do build.  
-**Motivo:** evitar omissão por wildcard ou branch incompleta.  
+**Decisão:** OGG listado individualmente e validado antes do build.
+**Motivo:** evitar omissão por wildcard ou branch incompleta.
 **Consequência:** adicionar faixa exige atualizar manifesto e teste.
 
 ### ADR-007 — ferramentas de build fora do laboratório
 
-**Decisão:** Python, Node e Inno Setup são necessários apenas na preparação.  
-**Motivo:** instalação em poucos cliques em muitos computadores.  
+**Decisão:** Python, Node e Inno Setup são necessários apenas na preparação.
+**Motivo:** instalação em poucos cliques em muitos computadores.
 **Consequência:** manter scripts e documentação reproduzíveis é obrigatório.
 
 ## 23. Critério de prontidão de infraestrutura
