@@ -17,5 +17,8 @@ Adicione os efeitos em **OGG Vorbis** com exatamente estes nomes:
 | Resposta matemática correta | `resposta_correta.ogg` |
 | Alternativa errada | `resposta_errada.ogg` |
 | Aparição de fantasma | `fantasma_aparece.ogg` |
+| Jogador recebe dano | `jogador_hit.ogg` |
+| Monstro destruído ou coração perdido pelo boss | `monstro_destruido.ogg` |
+| Vitória contra o Guardião | `boss_vitoria.ogg` |
 
 Todos são opcionais: arquivo ausente, inválido ou reprodução bloqueada não mostra erro e não interrompe o jogo. Evite normalização muito alta; efeitos simultâneos devem permanecer confortáveis. Confirme licença e registre a origem em `CREDITS.md` antes de distribuir.

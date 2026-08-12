@@ -250,11 +250,13 @@ MatGame.GameScene = class {
         const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= bicho.y + 14;
         if (pisouPorCima) {
           bicho.derrotado = true;
+          this.app.sons?.tocar('destruirMonstro');
           bicho.derrotadoAte = agora + 800;
           jogador.vy = -430;
           this.app.adicionarTempo(config.tempo.pisarBicho);
           this.app.placar.adicionar(config.pontos.especial);
         } else {
+          this.app.sons?.tocar('jogadorHit');
           jogador.invulneravelAte = agora + 1500;
           jogador.danoAte = agora + 500;
           jogador.vy = -360;
@@ -339,12 +341,14 @@ MatGame.GameScene = class {
         const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= atirador.y + 14;
         if (pisouPorCima) {
           atirador.derrotado = true;
+          this.app.sons?.tocar('destruirMonstro');
           atirador.derrotadoAte = agora + 800;
           jogador.vy = -430;
           this.app.adicionarTempo(config.tempo.pisarBicho);
           this.app.placar.adicionar(config.pontos.especial);
           continue;
         }
+        this.app.sons?.tocar('jogadorHit');
         jogador.danoAte = agora + 450;
         jogador.invulneravelAte = agora + 1000;
         jogador.vy = -350;
@@ -378,6 +382,7 @@ MatGame.GameScene = class {
       if (distanciaFogo >= config.tempo.dragaoFogoDistancia || projetil.opacidade <= 0 || projetil.y > 760) projetil.ativa = false;
       if (projetil.ativa && agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: projetil.x - 7, y: projetil.y - 7, w: 14, h: 14 })) {
         projetil.ativa = false;
+        this.app.sons?.tocar('jogadorHit');
         jogador.danoAte = agora + 420;
         jogador.invulneravelAte = agora + 700;
         this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.projetil);
@@ -399,11 +404,11 @@ MatGame.GameScene = class {
         if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, camuflado)) {
           const pisou = jogador.vy > 0 && yAnterior + jogador.h <= camuflado.y + 14;
           if (pisou) {
-            camuflado.morto = true; jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho);
+            camuflado.morto = true; this.app.sons?.tocar('destruirMonstro'); jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho);
             this.chifres.push({ x: camuflado.x + 10, y: camuflado.y - 18, w: 25, h: 14, vy: -250, baseY: camuflado.baseY + camuflado.h - 14, ativo: true });
             this.criarExplosao(camuflado.x + 20, camuflado.y + 20);
           } else {
-            jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -390;
+            this.app.sons?.tocar('jogadorHit'); jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -390;
             this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho);
           }
         }
@@ -422,8 +427,8 @@ MatGame.GameScene = class {
       if (congelante.x <= congelante.inicio || congelante.x + congelante.w >= congelante.fim) congelante.vx *= -1;
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, congelante)) {
         const pisou = jogador.vy > 0 && yAnterior + jogador.h <= congelante.y + 14;
-        if (pisou) { congelante.morto = true; jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(congelante.x, congelante.y); }
-        else { jogador.paralisadoAte = agora + config.tempo.congelamentoDuracao * 1000; jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 900; }
+        if (pisou) { congelante.morto = true; this.app.sons?.tocar('destruirMonstro'); jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(congelante.x, congelante.y); }
+        else { this.app.sons?.tocar('jogadorHit'); jogador.paralisadoAte = agora + config.tempo.congelamentoDuracao * 1000; jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 900; }
       }
     }
     for (const aranha of this.aranhas) {
@@ -432,8 +437,8 @@ MatGame.GameScene = class {
       aranha.y = aranha.tetoY + ciclo * 315;
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, aranha)) {
         const pisou = jogador.vy > 0 && yAnterior + jogador.h <= aranha.y + 13;
-        if (pisou) { aranha.morto = true; jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(aranha.x, aranha.y); }
-        else { jogador.danoAte = agora + 450; jogador.invulneravelAte = agora + 1000; this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho); }
+        if (pisou) { aranha.morto = true; this.app.sons?.tocar('destruirMonstro'); jogador.vy = -430; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(aranha.x, aranha.y); }
+        else { this.app.sons?.tocar('jogadorHit'); jogador.danoAte = agora + 450; jogador.invulneravelAte = agora + 1000; this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho); }
       }
     }
 
@@ -468,8 +473,8 @@ MatGame.GameScene = class {
       }
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, monstro)) {
         const pisou = jogador.vy > 0 && yAnterior + jogador.h <= monstro.y + 15;
-        if (pisou) { monstro.morto = true; jogador.vy = -440; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(monstro.x + 22, monstro.y + 20); }
-        else { jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -380; this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho); }
+        if (pisou) { monstro.morto = true; this.app.sons?.tocar('destruirMonstro'); jogador.vy = -440; this.app.adicionarTempo(config.tempo.pisarBicho); this.criarExplosao(monstro.x + 22, monstro.y + 20); }
+        else { this.app.sons?.tocar('jogadorHit'); jogador.danoAte = agora + 500; jogador.invulneravelAte = agora + 1200; jogador.vy = -380; this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoBicho); }
       }
     }
     for (const bumerangue of this.bumerangues) {
@@ -485,7 +490,7 @@ MatGame.GameScene = class {
         if (distancia < 20) { bumerangue.ativo = false; continue; }
       }
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: bumerangue.x - 12, y: bumerangue.y - 8, w: 24, h: 16 })) {
-        bumerangue.ativo = false; jogador.danoAte = agora + 400; jogador.invulneravelAte = agora + 800;
+        bumerangue.ativo = false; this.app.sons?.tocar('jogadorHit'); jogador.danoAte = agora + 400; jogador.invulneravelAte = agora + 800;
         this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.projetil);
       }
     }
@@ -523,6 +528,7 @@ MatGame.GameScene = class {
       if (idade > 6) { gigante.ativa = false; continue; }
       if (!gigante.atingiu && agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: gigante.x, y: gigante.y, w: 82, h: 100 })) {
         gigante.atingiu = true;
+        this.app.sons?.tocar('jogadorHit');
         jogador.danoAte = agora + 650;
         jogador.invulneravelAte = agora + 1600;
         jogador.vy = -420;
@@ -553,9 +559,11 @@ MatGame.GameScene = class {
       }
     }
     for (const obstaculo of this.obstaculos) {
-      if (this.toca(jogador, obstaculo)) {
+      if (agora >= jogador.invulneravelAte && this.toca(jogador, obstaculo)) {
         jogador.vx = -180;
+        this.app.sons?.tocar('jogadorHit');
         jogador.danoAte = agora + 500;
+        jogador.invulneravelAte = agora + 900;
         jogador.vy = -350;
         jogador.x -= 35;
         this.app.placar.combo = 0;
@@ -635,7 +643,7 @@ MatGame.GameScene = class {
       projetil.x += projetil.vx * delta; projetil.y += projetil.vy * delta;
       if (projetil.x < chefe.arenaInicio || projetil.x > chefe.arenaFim || projetil.y < 0 || projetil.y > 700) projetil.ativo = false;
       if (projetil.ativo && agora >= Math.max(this.jogador.invulneravelAte, this.jogador.poderAte) && this.toca(this.jogador, { x: projetil.x - 13, y: projetil.y - 13, w: 26, h: 26 })) {
-        projetil.ativo = false; this.jogador.danoAte = agora + 450; this.jogador.invulneravelAte = agora + 900;
+        projetil.ativo = false; this.app.sons?.tocar('jogadorHit'); this.jogador.danoAte = agora + 450; this.jogador.invulneravelAte = agora + 900;
         this.app.tempoRestante = Math.max(1, this.app.tempoRestante - MatGame.CONFIG.tempo.projetilChefe);
       }
     }
@@ -644,15 +652,16 @@ MatGame.GameScene = class {
     if (this.toca(this.jogador, hitbox)) {
       const pisou = this.jogador.vy > 0 && yAnterior + this.jogador.h <= hitbox.y + 18;
       if (pisou && agora >= chefe.invulneravelAte) {
-        chefe.vida -= 1; chefe.invulneravelAte = agora + 900; this.jogador.vy = -480; this.criarExplosao(hitbox.x + hitbox.w / 2, hitbox.y);
+        chefe.vida -= 1; this.app.sons?.tocar('destruirMonstro'); chefe.invulneravelAte = agora + 900; this.jogador.vy = -480; this.criarExplosao(hitbox.x + hitbox.w / 2, hitbox.y);
         if (chefe.vida <= 0) {
+          this.app.sons?.tocar('bossVitoria');
           this.fantasmasChefe.forEach((fantasma) => { fantasma.ativo = false; });
           chefe.ativo = false; this.projeteisChefe.forEach((item) => { item.ativo = false; }); this.app.adicionarTempo(MatGame.CONFIG.tempo.chefe); this.app.placar.adicionar(MatGame.CONFIG.pontos.checkpoint);
           this.reciclagens.push({ x: chefe.x + chefe.w / 2, y: 555, ativa: true });
           this.proximoChefeMetros += mundo.chefeCadaMetros; this.chefe = null;
         }
       } else if (agora >= Math.max(this.jogador.invulneravelAte, this.jogador.poderAte)) {
-        this.jogador.danoAte = agora + 550; this.jogador.invulneravelAte = agora + 1300; this.jogador.vy = -400;
+        this.app.sons?.tocar('jogadorHit'); this.jogador.danoAte = agora + 550; this.jogador.invulneravelAte = agora + 1300; this.jogador.vy = -400;
         this.app.tempoRestante = Math.max(1, this.app.tempoRestante - MatGame.CONFIG.tempo.colisaoChefe);
       }
     }
@@ -872,7 +881,8 @@ MatGame.GameScene = class {
       if (atirador.invisivel) continue;
       ctx.save();
       ctx.translate(atirador.x - camera, 0);
-      ctx.scale(atirador.direcao < 0 ? -1 : 1, 1);
+      // O glifo 🐉 aponta para a esquerda em sua orientação original.
+      ctx.scale(atirador.direcao > 0 ? -1 : 1, 1);
       ctx.font = '48px sans-serif'; ctx.fillText('🐉', -24, atirador.y + 43);
       ctx.restore();
       if (atirador.derrotado) { ctx.font = '25px sans-serif'; ctx.fillText('😲', atirador.x - camera - 12, atirador.y + 28); }

@@ -17,7 +17,10 @@ MatGame.SoundEffects = class {
       gigantePule: 'gigante_pule.ogg',
       acerto: 'resposta_correta.ogg',
       erro: 'resposta_errada.ogg',
-      fantasma: 'fantasma_aparece.ogg'
+      fantasma: 'fantasma_aparece.ogg',
+      jogadorHit: 'jogador_hit.ogg',
+      destruirMonstro: 'monstro_destruido.ogg',
+      bossVitoria: 'boss_vitoria.ogg'
     });
     this.indisponiveis = new Set();
     this.abertura = null;
