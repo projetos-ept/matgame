@@ -70,15 +70,18 @@ window.addEventListener('DOMContentLoaded', async () => {
         <span class="pill">SEED ${this.seed}</span>`;
     },
 
-    alternarPausa() {
-      if (!this.cena || !this.panel.classList.contains('hidden')) return;
+    alternarPausa(forcarRetomada = false) {
+      if (!this.cena) return;
+      // Durante a pausa o painel está visível. O botão Continuar recebe uma
+      // permissão explícita para atravessar a proteção contra outros modais.
+      if (!forcarRetomada && !this.panel.classList.contains('hidden')) return;
       this.pausado = !this.pausado;
       if (this.pausado) {
         this.soundtrack?.pausar();
         this.panel.className = 'panel compact';
         this.panel.classList.remove('hidden');
         this.panel.innerHTML = '<h2>JOGO PAUSADO</h2><p>Respire um pouco. Sua aventura está esperando!</p><button id="resume">CONTINUAR</button><button id="quit" class="secondary">ENCERRAR PARTIDA</button>';
-        this.panel.querySelector('#resume').onclick = () => this.alternarPausa();
+        this.panel.querySelector('#resume').onclick = () => this.alternarPausa(true);
         this.panel.querySelector('#quit').onclick = () => MatGame.ResultScene.mostrar(this, 'pausa');
       } else {
         this.soundtrack?.continuar();

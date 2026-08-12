@@ -30,6 +30,8 @@ rem Remove um executavel antigo para ele nao ser confundido com a nova versao.
 if exist "installer\Output\Instalar-Aventura-Matematica.exe" del /q "installer\Output\Instalar-Aventura-Matematica.exe"
 python tools\gerar-banco-js.py
 if errorlevel 1 exit /b 1
+python tools\gerar-soundtrack-js.py
+if errorlevel 1 exit /b 1
 "%ISCC%" installer\AventuraMatematica.iss
 if errorlevel 1 exit /b 1
 if not exist "installer\Output\Instalar-Aventura-Matematica.exe" (

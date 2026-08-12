@@ -483,15 +483,7 @@ LocalStorage é isolado por origem. `file://`, `http://127.0.0.1:8000` e diferen
 
 `soundtrack.js` mantém uma lista ordenada de caminhos locais. O índice é calculado pela mesma faixa de 500 metros dos cenários.
 
-O controlador:
-
-- cria `Audio` sob demanda;
-- usa loop;
-- aplica volume central;
-- pausa/retoma com o jogo;
-- encerra e limpa `src` ao trocar/parar;
-- marca faixas indisponíveis;
-- captura evento `error` e rejeição de `play()` sem abrir painel.
+O build converte os binários MIDI em base64 por `tools/gerar-soundtrack-js.py` e grava `banco/soundtrack.js`. O controlador decodifica Standard MIDI Files, interpreta delta time, running status, tempo e eventos note-on/note-off, e agenda os sons com Web Audio. Assim ele não depende do suporte MIDI do elemento `<audio>` nem de `fetch()` sob `file://`. O controlador usa loop, volume central, janela curta de agendamento e pausa/retomada sincronizada com o jogo. Arquivo ausente ou MIDI inválido produz uma lista vazia e não abre painel de erro.
 
 ### 10.2 Falha silenciosa
 
@@ -499,7 +491,7 @@ O controlador:
 
 ### 10.3 Compatibilidade MIDI
 
-Suporte MIDI nativo não é uniforme. Um projeto novo deve preferir formatos amplamente aceitos, como OGG/MP3, se licenças e tamanho permitirem. Se MIDI for requisito, valide no navegador exato instalado na escola ou inclua um sintetizador local licenciado — nunca CDN.
+Suporte MIDI nativo não é uniforme; por isso este projeto inclui um sintetizador Web Audio simples. Ele não reproduz timbres General MIDI originais: programas e instrumentos são aproximados por osciladores. Um projeto novo pode preferir OGG/MP3, se licenças e tamanho permitirem, ou adotar um sintetizador local mais completo e licenciado — nunca CDN.
 
 ### 10.4 Licenciamento
 
@@ -578,7 +570,7 @@ Computadores dos alunos recebem somente arquivos do jogo e atalhos.
 1. localizar ISCC.exe
 2. verificar as cinco trilhas obrigatórias
 3. apagar instalador anterior
-4. regenerar banco/conteudo.js
+4. regenerar banco/conteudo.js e banco/soundtrack.js
 5. invocar Inno Setup
 6. verificar se o .exe novo existe
 7. informar caminho de saída
