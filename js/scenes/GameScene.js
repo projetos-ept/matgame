@@ -333,6 +333,7 @@ MatGame.GameScene = class {
         continue;
       }
       const direcaoPasso = Math.sign(jogador.x - atirador.x) || 1;
+      atirador.direcao = direcaoPasso;
       atirador.x = Math.max(atirador.inicio, Math.min(atirador.fim - atirador.w, atirador.x + direcaoPasso * 18 * delta));
       if (agora >= Math.max(jogador.invulneravelAte, jogador.poderAte) && this.toca(jogador, { x: atirador.x - 19, y: atirador.y, w: atirador.w, h: atirador.h })) {
         const pisouPorCima = jogador.vy > 0 && yAnterior + jogador.h <= atirador.y + 14;
@@ -525,7 +526,7 @@ MatGame.GameScene = class {
         jogador.danoAte = agora + 650;
         jogador.invulneravelAte = agora + 1600;
         jogador.vy = -420;
-        this.app.tempoRestante = Math.max(1, this.app.tempoRestante - config.tempo.colisaoGigante);
+        this.app.tempoRestante = Math.max(1, this.app.tempoRestante * 0.5);
       }
     }
     for (const particula of this.particulas) {
@@ -585,16 +586,12 @@ MatGame.GameScene = class {
       this.plataformas.push({ x: inicio, y: 620, w: this.app.canvas.width + 180, h: 100 });
       const aparicao = Math.round(this.proximoChefeMetros / mundo.chefeCadaMetros);
       const vidaMaxima = Math.min(mundo.chefeVidaMaxima, mundo.chefeVidaInicial + aparicao - 1);
-      this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: vidaMaxima, vidaMaxima, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0, aparicao, paleta: (aparicao - 1) % 4, proximoTiro: this.app.tempoDecorrido + MatGame.CONFIG.tempo.projetilChefePrimeiro };
+      const invocaFantasmasEm = this.proximoChefeMetros >= mundo.chefeFantasmasMetros
+        ? this.app.tempoDecorrido + MatGame.CONFIG.tempo.chefeFantasmaEspera
+        : 0;
+      this.chefe = { x: inicio + 930, y: 490, w: 105, h: 130, vida: vidaMaxima, vidaMaxima, ativo: true, direcao: -1, arenaInicio: inicio + 45, arenaFim: inicio + 1130, invulneravelAte: 0, aparicao, paleta: (aparicao - 1) % 4, proximoTiro: this.app.tempoDecorrido + MatGame.CONFIG.tempo.projetilChefePrimeiro, invocaFantasmasEm, fantasmasInvocados: false };
       this.app.sons?.tocar('bossAparece');
-      if (this.proximoChefeMetros >= mundo.chefeFantasmasMetros) {
-        const expira = this.app.tempoDecorrido + MatGame.CONFIG.tempo.chefeFantasmaEspera;
-        this.fantasmasChefe = [
-          { x: inicio + 300, y: 350, expira, ativo: true },
-          { x: inicio + 760, y: 285, expira, ativo: true }
-        ];
-        this.app.sons?.tocar('fantasma');
-      }
+      this.fantasmasChefe = [];
       this.fantasmas.forEach((item) => { item.ativa = false; });
       this.gigantes.forEach((item) => { item.ativa = false; });
       this.magos.forEach((item) => { item.ativa = false; });
@@ -603,11 +600,24 @@ MatGame.GameScene = class {
     }
     const chefe = this.chefe;
     if (!chefe?.ativo) return;
-    const fantasmasAtivos = this.fantasmasChefe.filter((fantasma) => fantasma.ativo);
-    if (fantasmasAtivos.length && this.app.tempoDecorrido >= fantasmasAtivos[0].expira) {
-      fantasmasAtivos.forEach((fantasma) => { fantasma.ativo = false; });
-      this.desafioFantasmasChefe(fantasmasAtivos.length);
-      return true;
+    if (chefe.invocaFantasmasEm && !chefe.fantasmasInvocados && this.app.tempoDecorrido >= chefe.invocaFantasmasEm) {
+      chefe.fantasmasInvocados = true;
+      this.fantasmasChefe = [
+        { x: chefe.arenaInicio + 30, y: 330, ativo: true, lado: 'esquerda' },
+        { x: chefe.arenaFim - 70, y: 330, ativo: true, lado: 'direita' }
+      ];
+      this.app.sons?.tocar('fantasma');
+    }
+    for (const fantasma of this.fantasmasChefe) {
+      if (!fantasma.ativo) continue;
+      const dx = this.jogador.x - fantasma.x; const dy = this.jogador.y - fantasma.y;
+      const distancia = Math.max(1, Math.hypot(dx, dy));
+      fantasma.x += dx / distancia * 135 * delta; fantasma.y += dy / distancia * 85 * delta;
+      if (this.toca(this.jogador, { x: fantasma.x - 24, y: fantasma.y - 30, w: 48, h: 60 })) {
+        fantasma.ativo = false;
+        this.desafioFantasmaChefe();
+        return true;
+      }
     }
     this.jogador.x = Math.max(chefe.arenaInicio, Math.min(this.jogador.x, chefe.arenaFim - this.jogador.w));
     const golpesRecebidos = chefe.vidaMaxima - chefe.vida;
@@ -649,15 +659,10 @@ MatGame.GameScene = class {
     return false;
   }
 
-  desafioFantasmasChefe(restantes) {
+  desafioFantasmaChefe() {
     const questao = this.app.seletor.selecionarDificil();
     this.app.questaoDebug = questao;
     MatGame.ChallengeScene.mostrar(this.app, questao, 'problema', () => {
-      if (restantes > 1) {
-        this.app.sons?.tocar('fantasma');
-        this.desafioFantasmasChefe(restantes - 1);
-        return;
-      }
       this.app.panel.classList.add('hidden');
       this.app.pausado = false;
     }, { bonusMultiplicador: 0.35, origem: 'fantasma-chefe' });
@@ -865,7 +870,11 @@ MatGame.GameScene = class {
     }
     for (const atirador of this.atiradores) {
       if (atirador.invisivel) continue;
-      ctx.font = '48px sans-serif'; ctx.fillText('🐉', atirador.x - camera - 24, atirador.y + 43);
+      ctx.save();
+      ctx.translate(atirador.x - camera, 0);
+      ctx.scale(atirador.direcao < 0 ? -1 : 1, 1);
+      ctx.font = '48px sans-serif'; ctx.fillText('🐉', -24, atirador.y + 43);
+      ctx.restore();
       if (atirador.derrotado) { ctx.font = '25px sans-serif'; ctx.fillText('😲', atirador.x - camera - 12, atirador.y + 28); }
     }
     for (const projetil of this.projeteis) if (projetil.ativa) {
@@ -950,8 +959,7 @@ MatGame.GameScene = class {
       ctx.save(); ctx.globalAlpha = visivel ? 0.9 : 0.25;
       ctx.font = '62px sans-serif'; ctx.fillText('👻', fantasma.x - camera - 30, fantasma.y + 25);
       ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif';
-      const restante = Math.max(0, Math.ceil(fantasma.expira - this.app.tempoDecorrido));
-      ctx.fillText(`PROBLEMA DIFÍCIL EM ${restante}s`, fantasma.x - camera - 82, fantasma.y - 42);
+      ctx.fillText('PROBLEMA DIFÍCIL!', fantasma.x - camera - 68, fantasma.y - 42);
       ctx.restore();
     }
     if (this.chefe?.ativo) {
@@ -975,14 +983,7 @@ MatGame.GameScene = class {
     }
     for (const gigante of this.gigantes) if (gigante.ativa) {
       const gx = gigante.x - camera;
-      const passo = Math.sin(performance.now() / 65) * 8;
-      ctx.fillStyle = '#5a2d82'; ctx.beginPath(); ctx.ellipse(gx + 42, gigante.y + 48, 42, 48, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#8ac926'; ctx.beginPath(); ctx.arc(gx + 42, gigante.y + 18, 31, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#3b225f'; ctx.beginPath(); ctx.moveTo(gx + 12, gigante.y + 10); ctx.lineTo(gx + 25, gigante.y - 24); ctx.lineTo(gx + 38, gigante.y + 4); ctx.lineTo(gx + 54, gigante.y - 25); ctx.lineTo(gx + 70, gigante.y + 12); ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(gx + 31, gigante.y + 17, 8, 0, 7); ctx.arc(gx + 55, gigante.y + 17, 8, 0, 7); ctx.fill();
-      ctx.fillStyle = '#102a43'; ctx.beginPath(); ctx.arc(gx + 33, gigante.y + 19, 4, 0, 7); ctx.arc(gx + 57, gigante.y + 19, 4, 0, 7); ctx.fill();
-      ctx.strokeStyle = '#102a43'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(gx + 43, gigante.y + 32, 14, 0.1, Math.PI - 0.1); ctx.stroke();
-      ctx.fillStyle = '#3b225f'; ctx.fillRect(gx + 8, gigante.y + 82 + passo, 25, 18); ctx.fillRect(gx + 52, gigante.y + 82 - passo, 25, 18);
+      ctx.font = '88px sans-serif'; ctx.fillText('👹', gx - 3, gigante.y + 82);
       ctx.fillStyle = '#ef476f'; ctx.font = 'bold 16px sans-serif'; ctx.fillText('PULE!', gx + 15, gigante.y - 31);
     }
     for (const particula of this.particulas) if (particula.vida > 0) {

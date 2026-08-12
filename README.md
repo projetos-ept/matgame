@@ -109,7 +109,7 @@ Cartas coringa aparecem sobre plataformas elevadas e difíceis. O estudante pode
 
 O personagem possui poses procedurais de corrida, salto e dano, além de aura durante a estrela de poder. A estrela explode visualmente as bolinhas inimigas próximas; antes de desaparecer, cada bolinha exibe uma expressão de surpresa. Se o estudante passar 45 segundos sem encontrar uma estação, um fantasma começa a persegui-lo e, ao tocar, abre obrigatoriamente um problema de dificuldade 3 com bônus de tempo reduzido. Mesmo uma resposta após o fim da faixa rápida sempre concede 5 segundos.
 
-Em intervalos variáveis, um gigante atravessa a tela por aproximadamente 6 segundos. O aviso “PULE!” sinaliza a ação; um contato custa 12 segundos e concede invulnerabilidade breve para não repetir a punição.
+Em intervalos variáveis, o monstro 👹 atravessa a tela por aproximadamente 6 segundos mantendo a hitbox do antigo gigante. O aviso “PULE!” sinaliza a ação; um contato corta pela metade o tempo restante e concede invulnerabilidade breve para não repetir a punição.
 
 Professores podem abrir **Configurações → Editor de questões** ou acessar `editor.html`. O editor altera, valida e salva questões no `LocalStorage`, permite duplicar questões e exportar/importar o banco completo em JSON. O jogo carrega automaticamente o banco editado. Isso não modifica `banco/conteudo.json`: para distribuir as mesmas edições em outros computadores, exporte o arquivo no editor e importe-o em cada máquina, ou altere o JSON-fonte e regenere `banco/conteudo.js`.
 
@@ -159,7 +159,7 @@ Até 10.000 metros, o equilíbrio anterior é preservado. A partir daí existe u
 
 A borda de urgência agora começa somente quando restam 10 segundos. Ela continua piscando sem cobrir o cenário, e é removida imediatamente ao receber tempo suficiente ou encerrar a partida.
 
-Todo Guardião da Incógnita atira desde a primeira aparição. O intervalo começa em 1,8 segundo e diminui 0,3 segundo a cada novo chefe, até o limite técnico e jogável de 0,6 segundo — nunca zero, pois disparos contínuos seriam injustos e poderiam sobrecarregar a partida. Os Guardiões começam com 3 corações, passam a 4 no segundo encontro e chegam ao máximo de 5 no terceiro. O tamanho inicial acompanha a vida e diminui visivelmente a cada golpe, inclusive nos chefes de 4 e 5 corações. Cada orbe remove 4 segundos e respeita a invulnerabilidade da estrela. Nos chefes encontrados a partir de 1.500 metros, dois fantasmas piscantes surgem na arena. Se o Guardião não for derrotado em 10 segundos, eles apresentam em sequência dois dos problemas mais difíceis do banco, com bônus de tempo reduzido.
+Todo Guardião da Incógnita atira desde a primeira aparição. O intervalo começa em 1,8 segundo e diminui 0,3 segundo a cada novo chefe, até o limite técnico e jogável de 0,6 segundo — nunca zero, pois disparos contínuos seriam injustos e poderiam sobrecarregar a partida. Os Guardiões começam com 3 corações, passam a 4 no segundo encontro e chegam ao máximo de 5 no terceiro. O tamanho inicial acompanha a vida e diminui visivelmente a cada golpe, inclusive nos chefes de 4 e 5 corações. Cada orbe remove 4 segundos e respeita a invulnerabilidade da estrela. Nos chefes encontrados a partir de 1.500 metros, há uma janela de 10 segundos para derrotá-lo. Se ele continuar vivo, dois fantasmas piscantes são invocados simultaneamente — um à esquerda e outro à direita — e passam a perseguir o estudante. Tocar em cada fantasma abre um dos problemas mais difíceis do banco, com bônus de tempo reduzido.
 
 Cada aparição usa uma das quatro paletas predefinidas — floresta, oceano, rubi e ametista — repetidas em ciclo. Corpo, rosto e espinhos mudam juntos, enquanto a barriga continua alternando cores durante a batalha. A estrela remove os orbes ativos, mas não causa dano direto ao chefe.
 
@@ -176,7 +176,7 @@ O inimigo camuflado acompanha o cenário atual em vez de usar sempre um arbusto 
 ### Novidades de progressão
 
 - A partir de 1.000 m podem surgir plataformas móveis horizontais opcionais; após 3.000 m também aparecem versões verticais. Elas percorrem trechos mais amplos e rápidos, mas não exibem rótulos sobre a arte. A rota estática continua jogável e checkpoints nunca são gravados sobre plataformas móveis.
-- O dragão 🐉 caminha lentamente na plataforma e dispara rajadas de três fogos lineares, com uma pausa clara entre rajadas. Cada fogo cresce, esmaece progressivamente e desaparece após 720 pixels. O morcego usa uma investida reta e retorna suavemente ao ponto de espera.
+- O dragão 🐉 vira horizontalmente para olhar o estudante e caminha lentamente na plataforma e dispara rajadas de três fogos lineares, com uma pausa clara entre rajadas. Cada fogo cresce, esmaece progressivamente e desaparece após 720 pixels. O morcego usa uma investida reta e retorna suavemente ao ponto de espera.
 - Quando deixa o disfarce, o inimigo camuflado recebe uma de seis cores por meio do gerador determinístico da partida, mantendo a reprodução por seed.
 - O mago segue o mesmo percurso previsível da fada, mas aparece raramente, em um intervalo determinístico entre 90 e 180 segundos.
 - Cada Guardião da Incógnita derrotado deixa um ♻. É possível guardar até três trocas e consumir uma durante um desafio para receber outro problema, sem registrar erro na questão substituída.
