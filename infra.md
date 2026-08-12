@@ -516,7 +516,7 @@ Efeitos curtos ficam separados das músicas em `assets/audio/effects/`. `js/game
 
 Os efeitos não são requisitos do build. O instalador os copia pela regra recursiva quando presentes, mas continua válido quando a pasta contém apenas seu README. Isso permite produzir e revisar o design de som incrementalmente. A música de cenário permanece obrigatória no preflight porque representa uma coleção fechada já definida; efeitos são uma camada de enriquecimento progressivo.
 
-Cada reprodução cria um elemento `Audio` independente, permitindo sobreposição de sons curtos. Falhas de arquivo e rejeições de autoplay são absorvidas. A música de abertura usa uma instância em loop, encerrada ao começar a partida. Um listener delegado em `document` produz feedback consistente para botões atuais e futuros sem cadastrar handlers sonoros individualmente.
+Efeitos usam pequenos pools de elementos `Audio` pré-carregados, permitindo sobreposição sem criar e decodificar um novo OGG a cada evento. O dragão reserva três vozes para sua rajada. Falhas de arquivo e rejeições de autoplay são absorvidas. A música de abertura usa uma instância em loop, encerrada ao começar a partida. Um listener delegado em `document` produz feedback consistente para botões atuais e futuros sem cadastrar handlers sonoros individualmente.
 
 ## 11. Modelo offline-first
 

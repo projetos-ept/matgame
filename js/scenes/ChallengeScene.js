@@ -11,7 +11,7 @@ MatGame.ChallengeScene = {
       problema: 'INTERPRETAÇÃO'
     }[categoria];
     const aoTrocar = () => {
-      const nova = opcoes.origem === 'fantasma'
+      const nova = opcoes.origem?.startsWith('fantasma')
         ? app.seletor.selecionarDificil()
         : app.seletor.selecionar(categoria, app.gerador.dificuldade());
       app.questaoDebug = nova;
@@ -126,6 +126,7 @@ MatGame.ChallengeScene = {
       botao.onclick = () => {
         tentativas += 1;
         if (alternativa === dados.resposta) {
+          app.sons?.tocar('acerto');
           finalizada = true;
           clearInterval(timer);
           const segundos = (performance.now() - inicio) / 1000;
@@ -136,6 +137,7 @@ MatGame.ChallengeScene = {
           [...caixa.children].forEach((item) => { item.disabled = true; });
           setTimeout(() => callback(true, tentativas === 1, bonus), 650);
         } else {
+          app.sons?.tocar('erro');
           botao.disabled = true;
           botao.textContent += ' — tente outra';
           app.tempoRestante = Math.max(1, app.tempoRestante - MatGame.CONFIG.tempo.erroPergunta);

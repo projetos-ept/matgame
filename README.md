@@ -159,7 +159,7 @@ Até 10.000 metros, o equilíbrio anterior é preservado. A partir daí existe u
 
 A borda de urgência agora começa somente quando restam 10 segundos. Ela continua piscando sem cobrir o cenário, e é removida imediatamente ao receber tempo suficiente ou encerrar a partida.
 
-Os dois primeiros Guardiões da Incógnita mantêm apenas patrulha e contato. A partir do chefe dos 3.000 metros, ele lança orbes matemáticos mirando a posição do estudante. O primeiro intervalo é deliberadamente lento, com 4,2 segundos entre disparos; nos chefes seguintes diminui 0,25 segundo por aparição até o limite seguro de 1,8 segundo. Cada orbe remove 4 segundos e respeita a invulnerabilidade da estrela.
+Todo Guardião da Incógnita atira desde a primeira aparição: o primeiro orbe surge após 1,2 segundo e os seguintes começam espaçados em 4,2 segundos. A cadência acelera 0,3 segundo a cada novo chefe, até o limite seguro de 1,8 segundo. Cada orbe remove 4 segundos e respeita a invulnerabilidade da estrela. Nos chefes encontrados a partir de 1.500 metros, dois fantasmas piscantes surgem na arena. Se o Guardião não for derrotado em 10 segundos, eles apresentam em sequência dois dos problemas mais difíceis do banco, com bônus de tempo reduzido.
 
 Cada aparição usa uma das quatro paletas predefinidas — floresta, oceano, rubi e ametista — repetidas em ciclo. Corpo, rosto e espinhos mudam juntos, enquanto a barriga continua alternando cores durante a batalha. A estrela remove os orbes ativos, mas não causa dano direto ao chefe.
 
@@ -191,4 +191,4 @@ A reprodução continua tolerante a falhas: arquivo ausente, OGG inválido ou bl
 
 Ao executar `criar-instalador.cmd`, as cinco faixas OGG são verificadas antes da compilação e incluídas explicitamente. Se qualquer faixa estiver ausente, a criação para com o nome do arquivo faltante. O script apaga o instalador antigo antes do build. Depois de adicionar ou substituir música, gere novamente o instalador.
 
-O design de som opcional fica em `assets/audio/effects/`. A pasta documenta nomes estáveis para música de abertura, game over, clique, pulo, estrela, dragão, bumerangue, Guardião e gigante. Diferentemente das cinco músicas de cenário, esses efeitos podem ser adicionados gradualmente: a ausência de qualquer arquivo não bloqueia o jogo nem a montagem do instalador.
+O design de som opcional fica em `assets/audio/effects/`. A pasta documenta nomes estáveis para música de abertura, game over, clique, pulo, estrela, respostas correta/errada, dragão, bumerangue, fantasma, Guardião e gigante. Diferentemente das cinco músicas de cenário, esses efeitos podem ser adicionados gradualmente: a ausência de qualquer arquivo não bloqueia o jogo nem a montagem do instalador.

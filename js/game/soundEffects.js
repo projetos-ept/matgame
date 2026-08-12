@@ -14,18 +14,35 @@ MatGame.SoundEffects = class {
       bumerangue: 'bumerangue_lancamento.ogg',
       bossAparece: 'boss_aparece.ogg',
       bossTiro: 'boss_tiro.ogg',
-      gigantePule: 'gigante_pule.ogg'
+      gigantePule: 'gigante_pule.ogg',
+      acerto: 'resposta_correta.ogg',
+      erro: 'resposta_errada.ogg',
+      fantasma: 'fantasma_aparece.ogg'
     });
     this.indisponiveis = new Set();
     this.abertura = null;
+    this.pools = new Map();
+    // Pré-carrega pequenos pools. A rajada tripla do dragão reutiliza elementos
+    // já decodificados em vez de criar três Audio e decodificar OGG no ataque.
+    this.pools.set('dragaoTiro', Array.from({ length: 3 }, () => this.criarAudio('dragaoTiro')));
+  }
+
+  criarAudio(nome) {
+    const audio = new Audio(this.pasta + this.arquivos[nome]);
+    audio.volume = MatGame.CONFIG.audio.volumeEfeitos;
+    audio.preload = 'auto';
+    audio.addEventListener('error', () => this.indisponiveis.add(nome), { once: true });
+    return audio;
   }
 
   tocar(nome) {
     const arquivo = this.arquivos[nome];
     if (!arquivo || this.indisponiveis.has(nome)) return;
-    const audio = new Audio(this.pasta + arquivo);
-    audio.volume = MatGame.CONFIG.audio.volumeEfeitos;
-    audio.addEventListener('error', () => this.indisponiveis.add(nome), { once: true });
+    if (!this.pools.has(nome)) this.pools.set(nome, Array.from({ length: 2 }, () => this.criarAudio(nome)));
+    const pool = this.pools.get(nome);
+    let audio = pool.find((item) => item.paused || item.ended);
+    if (!audio) audio = pool[0];
+    try { audio.currentTime = 0; } catch (erro) { /* metadados ainda carregando */ }
     const tentativa = audio.play();
     if (tentativa?.catch) tentativa.catch(() => {});
   }
