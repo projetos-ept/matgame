@@ -13,6 +13,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       const avisoTempo = document.querySelector('#time-warning');
       avisoTempo.classList.add('hidden');
       avisoTempo.textContent = '';
+      delete this.panel.dataset.tipo;
       if (this.cena) this.cena.destruir();
       this.soundtrack?.parar();
       this.cena = null;
@@ -71,23 +72,31 @@ window.addEventListener('DOMContentLoaded', async () => {
         <span class="pill">SEED ${this.seed}</span>`;
     },
 
-    alternarPausa(forcarRetomada = false) {
+    alternarPausa() {
       if (!this.cena) return;
-      // Durante a pausa o painel está visível. O botão Continuar recebe uma
-      // permissão explícita para atravessar a proteção contra outros modais.
-      if (!forcarRetomada && !this.panel.classList.contains('hidden')) return;
-      this.pausado = !this.pausado;
-      if (this.pausado) {
-        this.soundtrack?.pausar();
-        this.panel.className = 'panel compact';
-        this.panel.classList.remove('hidden');
-        this.panel.innerHTML = '<h2>JOGO PAUSADO</h2><p>Respire um pouco. Sua aventura está esperando!</p><button id="resume">CONTINUAR</button><button id="quit" class="secondary">ENCERRAR PARTIDA</button>';
-        this.panel.querySelector('#resume').onclick = () => this.alternarPausa(true);
-        this.panel.querySelector('#quit').onclick = () => MatGame.ResultScene.mostrar(this, 'pausa');
-      } else {
-        this.soundtrack?.continuar();
-        this.panel.classList.add('hidden');
+      if (this.pausado && this.panel.dataset.tipo === 'pausa') {
+        this.retomarPausa();
+        return;
       }
+      // Não permita que Esc ou o botão de pausa fechem uma questão/modal.
+      if (!this.panel.classList.contains('hidden')) return;
+      this.pausado = true;
+      this.soundtrack?.pausar();
+      this.panel.dataset.tipo = 'pausa';
+      this.panel.className = 'panel compact';
+      this.panel.classList.remove('hidden');
+      this.panel.innerHTML = '<h2>JOGO PAUSADO</h2><p>Respire um pouco. Sua aventura está esperando!</p><button type="button" id="resume">CONTINUAR</button><button type="button" id="quit" class="secondary">ENCERRAR PARTIDA</button>';
+      this.panel.querySelector('#resume').addEventListener('click', () => this.retomarPausa());
+      this.panel.querySelector('#quit').addEventListener('click', () => MatGame.ResultScene.mostrar(this, 'pausa'));
+    },
+
+    retomarPausa() {
+      if (!this.cena || this.panel.dataset.tipo !== 'pausa') return;
+      // Atualize primeiro o estado e a interface; áudio nunca pode bloquear a volta.
+      this.pausado = false;
+      delete this.panel.dataset.tipo;
+      this.panel.classList.add('hidden');
+      try { this.soundtrack?.continuar(); } catch (erro) { /* áudio é opcional */ }
     }
   };
 
